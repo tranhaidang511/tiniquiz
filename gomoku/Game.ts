@@ -1,6 +1,8 @@
+import { GomokuAI } from './AI';
+
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type Player = 'BLACK' | 'WHITE';
-export type GameMode = 'TWO_PLAYER' | 'VS_AI'; // For future expansion
+export type GameMode = 'TWO_PLAYER' | 'VS_AI';
 
 export interface Stone {
     row: number;
@@ -22,13 +24,17 @@ export class Game {
     private moves: Stone[] = [];
     private winner: Player | null = null;
     private winningLine: Position[] | null = null;
+    private ai: GomokuAI;
+    private isAIThinking: boolean = false;
 
     // Event listeners
     private stateListeners: ((state: GameState) => void)[] = [];
     private moveListeners: ((stone: Stone) => void)[] = [];
     private boardListeners: ((board: (Player | null)[][]) => void)[] = [];
+    private aiThinkingListeners: ((thinking: boolean) => void)[] = [];
 
     constructor() {
+        this.ai = new GomokuAI(this.boardSize);
         this.initializeBoard();
     }
 
@@ -45,6 +51,7 @@ export class Game {
             throw new Error('Board size must be 15 or 19');
         }
         this.boardSize = size;
+        this.ai.setBoardSize(size);
         this.initializeBoard();
     }
 
@@ -75,8 +82,12 @@ export class Game {
 
     makeMove(row: number, col: number): boolean {
         if (this.state !== 'PLAYING') return false;
+        if (this.isAIThinking) return false; // Block moves during AI turn
         if (row < 0 || row >= this.boardSize || col < 0 || col >= this.boardSize) return false;
         if (this.board[row][col] !== null) return false;
+
+        // In VS_AI mode, only allow player (BLACK) to make moves via this method
+        if (this.mode === 'VS_AI' && this.currentPlayer !== 'BLACK') return false;
 
         // Place stone
         const stone: Stone = { row, col, player: this.currentPlayer };
@@ -99,7 +110,54 @@ export class Game {
 
         // Switch player
         this.currentPlayer = this.currentPlayer === 'BLACK' ? 'WHITE' : 'BLACK';
+
+        // If VS_AI mode and now it's AI's turn, trigger AI move
+        if (this.mode === 'VS_AI' && this.currentPlayer === 'WHITE') {
+            this.makeAIMove();
+        }
+
         return true;
+    }
+
+    private async makeAIMove() {
+        // Add small delay for better UX
+        this.isAIThinking = true;
+        this.emitAIThinking(true);
+
+        setTimeout(() => {
+            const aiMove = this.ai.getBestMove(this.board, 'WHITE');
+
+            if (aiMove) {
+                // Place AI's stone
+                const stone: Stone = { row: aiMove.row, col: aiMove.col, player: 'WHITE' };
+                this.board[aiMove.row][aiMove.col] = 'WHITE';
+                this.moves.push(stone);
+                this.emitMove(stone);
+
+                // Check for win
+                if (this.checkWin(aiMove.row, aiMove.col)) {
+                    this.winner = 'WHITE';
+                    this.setState('RESULT');
+                    this.isAIThinking = false;
+                    this.emitAIThinking(false);
+                    return;
+                }
+
+                // Check for draw
+                if (this.moves.length === this.boardSize * this.boardSize) {
+                    this.setState('RESULT');
+                    this.isAIThinking = false;
+                    this.emitAIThinking(false);
+                    return;
+                }
+
+                // Switch back to player
+                this.currentPlayer = 'BLACK';
+            }
+
+            this.isAIThinking = false;
+            this.emitAIThinking(false);
+        }, 500); // 500ms delay
     }
 
     private checkWin(row: number, col: number): boolean {
@@ -187,6 +245,14 @@ export class Game {
         return this.state === 'RESULT' && this.winner === null;
     }
 
+    isAITurn(): boolean {
+        return this.mode === 'VS_AI' && this.currentPlayer === 'WHITE';
+    }
+
+    getAIThinking(): boolean {
+        return this.isAIThinking;
+    }
+
     // --- Event Management ---
 
     onStateChange(listener: (state: GameState) => void) {
@@ -201,12 +267,20 @@ export class Game {
         this.boardListeners.push(listener);
     }
 
+    onAIThinking(listener: (thinking: boolean) => void) {
+        this.aiThinkingListeners.push(listener);
+    }
+
     private emitMove(stone: Stone) {
         this.moveListeners.forEach(l => l(stone));
     }
 
     private emitBoard() {
         this.boardListeners.forEach(l => l(this.board));
+    }
+
+    private emitAIThinking(thinking: boolean) {
+        this.aiThinkingListeners.forEach(l => l(thinking));
     }
 }
 

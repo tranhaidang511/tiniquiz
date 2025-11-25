@@ -29,7 +29,7 @@ const renderApp = () => {
           <label id="label-mode">Game Mode</label>
           <div class="mode-selector">
             <button id="mode-two-player" class="mode-btn active" data-mode="TWO_PLAYER">2 Players</button>
-            <button id="mode-vs-ai" class="mode-btn disabled" data-mode="VS_AI">vs AI</button>
+            <button id="mode-vs-ai" class="mode-btn" data-mode="VS_AI">vs AI</button>
           </div>
         </div>
 
@@ -488,3 +488,4 @@ localization.subscribe(() => {
 
 // --- Initialize ---
 renderApp();
+
