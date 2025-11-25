@@ -6,7 +6,10 @@
   "scripts": {
     "dev:geogame": "vite --config geogame/vite.config.ts",
     "build:geogame": "tsc && vite build --config geogame/vite.config.ts",
-    "preview:geogame": "vite preview --config geogame/vite.config.ts"
+    "preview:geogame": "vite preview --config geogame/vite.config.ts",
+    "dev:gomoku": "vite --config gomoku/vite.config.ts",
+    "build:gomoku": "tsc && vite build --config gomoku/vite.config.ts",
+    "preview:gomoku": "vite preview --config gomoku/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

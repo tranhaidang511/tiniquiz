@@ -28,6 +28,8 @@
   },
   "include": [
     "geogame",
-    "geogame/vite.config.ts"
+    "geogame/vite.config.ts",
+    "gomoku",
+    "gomoku/vite.config.ts"
   ]
 }
