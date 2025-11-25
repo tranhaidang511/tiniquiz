@@ -1,5 +1,6 @@
 import { countries } from './data';
 import type { Country } from './data';
+import { localization } from './Localization';
 
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type GameMode = 'CAPITALS' | 'FLAGS';
@@ -60,7 +61,7 @@ export class Game {
 
     start(questionCount: number = 5) {
         if (this.filteredCountries.length < questionCount) {
-            alert("Not enough countries to play! Please select a larger region.");
+            alert(localization.getUIText('notEnoughCountries'));
             return;
         }
         this.score = 0;

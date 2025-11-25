@@ -15,7 +15,8 @@ export default {
         modeCapitals: "Thủ đô",
         modeFlags: "Quốc kỳ",
         questionTemplate: "Thủ đô của {country} là gì?",
-        guessTheFlag: "Quốc kỳ này của nước nào?"
+        guessTheFlag: "Quốc kỳ này của nước nào?",
+        notEnoughCountries: "Không đủ quốc gia để chơi! Vui lòng chọn khu vực lớn hơn."
     },
     regions: {
         "Asia": "Châu Á",
