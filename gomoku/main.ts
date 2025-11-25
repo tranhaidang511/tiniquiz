@@ -193,7 +193,7 @@ const setupEventListeners = () => {
 // --- Board Rendering ---
 
 const renderBoard = () => {
-    const svg = document.getElementById('board') as SVGSVGElement;
+    const svg = document.getElementById('board') as unknown as SVGSVGElement;
     if (!svg) return;
 
     svg.innerHTML = '';
@@ -324,7 +324,7 @@ const renderBoard = () => {
 };
 
 const addStone = (stone: Stone) => {
-    const svg = document.getElementById('board') as SVGSVGElement;
+    const svg = document.getElementById('board') as unknown as SVGSVGElement;
     const stonesGroup = document.getElementById('stones-group');
     if (!svg || !stonesGroup) return;
 
