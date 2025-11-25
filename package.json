@@ -1,0 +1,16 @@
+{
+  "name": "tiniquiz",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev:geogame": "vite --config geogame/vite.config.ts",
+    "build:geogame": "tsc && vite build --config geogame/vite.config.ts",
+    "preview:geogame": "vite preview --config geogame/vite.config.ts"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4",
+    "vite-plugin-singlefile": "^2.3.0"
+  }
+}
