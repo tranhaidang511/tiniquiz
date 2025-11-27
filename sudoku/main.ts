@@ -26,9 +26,11 @@ const renderApp = () => {
         <div class="option-group">
           <label id="label-difficulty">Difficulty</label>
           <div class="difficulty-selector">
-            <button class="diff-btn active" data-diff="EASY">Easy</button>
+            <button class="diff-btn active" data-diff="BEGINNER">Beginner</button>
+            <button class="diff-btn" data-diff="EASY">Easy</button>
             <button class="diff-btn" data-diff="MEDIUM">Medium</button>
             <button class="diff-btn" data-diff="HARD">Hard</button>
+            <button class="diff-btn" data-diff="EXPERT">Expert</button>
           </div>
         </div>
 
@@ -46,6 +48,10 @@ const renderApp = () => {
         <div class="stat">
           <div class="stat-label" id="label-mistakes">Mistakes</div>
           <div class="stat-value error" id="mistakes-display">0/3</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label" id="label-hints">Hints</div>
+          <div class="stat-value" id="hints-display">0</div>
         </div>
       </div>
       
@@ -88,6 +94,10 @@ const renderApp = () => {
           <div class="stat-label" id="label-final-mistakes">Mistakes</div>
           <div class="stat-value error" id="final-mistakes">0</div>
         </div>
+        <div class="stat">
+          <div class="stat-label" id="label-final-hints">Hints</div>
+          <div class="stat-value" id="final-hints">0</div>
+        </div>
       </div>
 
       <button id="play-again-btn" class="primary">Play Again</button>
@@ -117,7 +127,7 @@ const updateTexts = () => {
 
     const diffButtons = document.querySelectorAll('.diff-btn');
     diffButtons.forEach((btn, i) => {
-        const difficulties = ['easy', 'medium', 'hard'];
+        const difficulties = ['beginner', 'easy', 'medium', 'hard', 'expert'];
         btn.textContent = localization.getUIText(difficulties[i]);
     });
 
@@ -129,6 +139,9 @@ const updateTexts = () => {
 
     const labelMistakes = document.getElementById('label-mistakes');
     if (labelMistakes) labelMistakes.textContent = localization.getUIText('mistakes');
+
+    const labelHints = document.getElementById('label-hints');
+    if (labelHints) labelHints.textContent = localization.getUIText('hints');
 
     const eraseBtn = document.getElementById('erase-btn');
     if (eraseBtn) eraseBtn.textContent = localization.getUIText('erase');
@@ -147,6 +160,9 @@ const updateTexts = () => {
 
     const labelFinalMistakes = document.getElementById('label-final-mistakes');
     if (labelFinalMistakes) labelFinalMistakes.textContent = localization.getUIText('mistakes');
+
+    const labelFinalHints = document.getElementById('label-final-hints');
+    if (labelFinalHints) labelFinalHints.textContent = localization.getUIText('hints');
 
     const playAgainBtn = document.getElementById('play-again-btn');
     if (playAgainBtn) playAgainBtn.textContent = localization.getUIText('playAgain');
@@ -278,7 +294,7 @@ const updateGrid = () => {
             if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
                 cellDiv.classList.add('selected');
             }
-            if (selectedValue && cell.value === selectedValue && !cell.isFixed) {
+            if (selectedValue && cell.value === selectedValue) {
                 cellDiv.classList.add('same-number');
             }
 
@@ -316,6 +332,12 @@ const updateGameInfo = () => {
     const mistakesDisplay = document.getElementById('mistakes-display');
     if (mistakesDisplay) {
         mistakesDisplay.textContent = `${mistakes}/${maxMistakes}`;
+    }
+
+    const hintsUsed = game.getHintsUsed();
+    const hintsDisplay = document.getElementById('hints-display');
+    if (hintsDisplay) {
+        hintsDisplay.textContent = hintsUsed.toString();
     }
 };
 
@@ -390,6 +412,11 @@ const displayResult = () => {
 
     if (finalMistakes) {
         finalMistakes.textContent = game.getMistakes().toString();
+    }
+
+    const finalHints = document.getElementById('final-hints');
+    if (finalHints) {
+        finalHints.textContent = game.getHintsUsed().toString();
     }
 };
 

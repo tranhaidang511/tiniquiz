@@ -1,5 +1,5 @@
 export type GameState = 'MENU' | 'PLAYING' | 'PAUSED' | 'RESULT';
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+export type Difficulty = 'BEGINNER' | 'EASY' | 'MEDIUM' | 'HARD' | 'EXPERT';
 
 export interface Cell {
     value: number | null;
@@ -10,11 +10,12 @@ export interface Cell {
 
 export class Game {
     private state: GameState = 'MENU';
-    private difficulty: Difficulty = 'EASY';
+    private difficulty: Difficulty = 'BEGINNER';
     private board: Cell[][] = [];
     private solution: number[][] = [];
     private mistakes: number = 0;
     private maxMistakes: number = 3;
+    private hintsUsed: number = 0;
     private startTime: number = 0;
     private elapsedTime: number = 0;
     private selectedCell: { row: number; col: number } | null = null;
@@ -58,6 +59,7 @@ export class Game {
         this.initializeEmptyBoard();
         this.generatePuzzle();
         this.mistakes = 0;
+        this.hintsUsed = 0;
         this.startTime = Date.now();
         this.elapsedTime = 0;
         this.selectedCell = null;
@@ -84,9 +86,11 @@ export class Game {
 
     private getCellsToRemove(): number {
         switch (this.difficulty) {
-            case 'EASY': return 40;
-            case 'MEDIUM': return 50;
-            case 'HARD': return 56;
+            case 'BEGINNER': return 20;
+            case 'EASY': return 30;
+            case 'MEDIUM': return 40;
+            case 'HARD': return 50;
+            case 'EXPERT': return 60;
             default: return 40;
         }
     }
@@ -281,6 +285,7 @@ export class Game {
 
         if (cell.isFixed) return;
 
+        this.hintsUsed++;
         cell.value = this.solution[row][col];
         cell.isFixed = true;
         cell.notes.clear();
@@ -371,6 +376,10 @@ export class Game {
 
     getMaxMistakes(): number {
         return this.maxMistakes;
+    }
+
+    getHintsUsed(): number {
+        return this.hintsUsed;
     }
 
     getElapsedTime(): number {
