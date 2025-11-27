@@ -45,6 +45,38 @@ h1 {
   -webkit-text-fill-color: transparent;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  position: absolute;
+  left: 0;
+}
+
+.icon-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
 /* Cards */
 .card {
   background-color: var(--card-bg);

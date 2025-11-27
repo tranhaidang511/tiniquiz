@@ -10,7 +10,12 @@ const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const renderApp = () => {
     app.innerHTML = `
-    <h1 id="game-title">Sudoku</h1>
+    <div class="header-controls">
+      <button id="home-btn" class="icon-btn" aria-label="Back to Home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      </button>
+      <h1 id="game-title">Sudoku</h1>
+    </div>
     
     <!-- Language Switcher -->
     <div class="lang-switcher">
@@ -171,6 +176,11 @@ const updateTexts = () => {
 // --- Event Listeners ---
 
 const setupEventListeners = () => {
+    // Home button
+    document.getElementById('home-btn')?.addEventListener('click', () => {
+        window.location.href = '/';
+    });
+
     // Language switcher
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
