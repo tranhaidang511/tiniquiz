@@ -3,7 +3,7 @@ export default {
         gameTitle: "Sudoku",
         gameSetup: "Thiết Lập Trò Chơi",
         difficulty: "Độ Khó",
-        beginner: "Mới Bắt Đầu",
+        beginner: "Nhập Môn",
         easy: "Dễ",
         medium: "Trung Bình",
         hard: "Khó",

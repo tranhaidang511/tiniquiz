@@ -27,7 +27,7 @@ export class Localization {
     setLanguage(lang: Language) {
         if (this.currentLang !== lang) {
             this.currentLang = lang;
-            localStorage.setItem('gomokuLanguage', lang);
+            localStorage.setItem('anguage', lang);
             this.notifyListeners();
         }
     }
@@ -47,5 +47,5 @@ export class Localization {
 }
 
 // Initialize with saved language or default to 'en'
-const savedLang = localStorage.getItem('gomokuLanguage') as Language | null;
+const savedLang = localStorage.getItem('language') as Language | null;
 export const localization = new Localization(savedLang || 'en');
