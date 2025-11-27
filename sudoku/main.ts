@@ -1,8 +1,8 @@
 import './style.css';
 import { game } from './Game';
 import type { GameState, Difficulty } from './Game';
-import { localization } from './Localization';
-import type { Language } from './Localization';
+import { localization } from './i18n/Localization';
+import type { Language } from './i18n/Localization';
 import { ConsentBanner } from './ConsentBanner';
 
 // Initialize Consent Banner

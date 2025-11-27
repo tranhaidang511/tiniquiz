@@ -1,6 +1,6 @@
-import en from './i18n/en';
-import ja from './i18n/ja';
-import vi from './i18n/vi';
+import en from './en';
+import ja from './ja';
+import vi from './vi';
 
 export type Language = 'en' | 'ja' | 'vi';
 
@@ -27,7 +27,7 @@ export class Localization {
     setLanguage(lang: Language) {
         if (this.currentLang !== lang) {
             this.currentLang = lang;
-            localStorage.setItem('language', lang);
+            localStorage.setItem('anguage', lang);
             this.notifyListeners();
         }
     }

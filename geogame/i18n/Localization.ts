@@ -1,6 +1,6 @@
-import en from './i18n/en';
-import ja from './i18n/ja';
-import vi from './i18n/vi';
+import en from './en';
+import ja from './ja';
+import vi from './vi';
 
 export type Language = 'en' | 'ja' | 'vi';
 

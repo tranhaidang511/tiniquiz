@@ -1,8 +1,8 @@
 import './style.css';
 import { game } from './Game';
 import type { GameState, Question } from './Game';
-import { localization } from './Localization';
-import type { Language } from './Localization';
+import { localization } from './i18n/Localization';
+import type { Language } from './i18n/Localization';
 import type { Country } from './data';
 import { ConsentBanner } from './ConsentBanner';
 
@@ -345,8 +345,10 @@ const showView = (viewId: string) => {
 // --- Game Logic Integration ---
 
 let timerInterval: number | null = null;
+let currentGameState: GameState = 'MENU';
 
 game.onStateChange((state: GameState) => {
+  currentGameState = state;
   if (state === 'MENU') {
     showView('menu-view');
     if (timerInterval) {
@@ -456,7 +458,7 @@ interface HighScore {
   score: number;
   total: number;
   time: number;
-  date: string;
+  date: number | string; // timestamp or legacy string
 }
 
 const saveHighScore = () => {
@@ -465,7 +467,7 @@ const saveHighScore = () => {
   const mode = game.getGameMode();
   const region = game.getRegion();
   const key = `geogame_highscores_${mode}_${region}`;
-  const date = new Date().toLocaleDateString();
+  const date = Date.now();
 
   const newScore: HighScore = { score, total, time, date };
 
@@ -531,11 +533,20 @@ const displayResult = () => {
         tr.classList.add('current-run');
       }
 
+      let dateStr = '';
+      if (typeof s.date === 'number') {
+        const lang = localization.language;
+        const locale = lang === 'vi' ? 'vi-VN' : 'en-US'; // Use vi-VN for Vietnamese, en-US (or default) for others
+        dateStr = new Date(s.date).toLocaleDateString(locale);
+      } else {
+        dateStr = s.date as string; // Legacy string support
+      }
+
       tr.innerHTML = `
           <td>${index + 1}</td>
           <td>${s.score}/${s.total}</td>
           <td>${game.formatTime(s.time)}</td>
-          <td>${s.date}</td>
+          <td>${dateStr}</td>
         `;
       tbody.appendChild(tr);
     });
@@ -545,6 +556,9 @@ const displayResult = () => {
 localization.subscribe(() => {
   updateTexts();
   populateFilters();
+  if (currentGameState === 'RESULT') {
+    displayResult();
+  }
 });
 
 // Init

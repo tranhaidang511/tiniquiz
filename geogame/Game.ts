@@ -1,6 +1,6 @@
 import { countries } from './data';
 import type { Country } from './data';
-import { localization } from './Localization';
+import { localization } from './i18n/Localization';
 
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type GameMode = 'CAPITALS' | 'FLAGS';
