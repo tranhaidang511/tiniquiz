@@ -293,6 +293,201 @@ button.primary:hover {
   animation: fadeIn 0.5s ease forwards;
 }
 
+}
+
+select,
+button,
+input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #334155;
+  background-color: #0f172a;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+select:focus,
+button:focus,
+input:focus {
+  outline: 2px solid var(--accent);
+  border-color: transparent;
+}
+
+button.primary {
+  background-color: var(--accent);
+  color: #0f172a;
+  font-weight: 600;
+  border: none;
+}
+
+button.primary:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-2px);
+}
+
+/* Language Switcher */
+.lang-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.lang-btn {
+  background: transparent;
+  border: 1px solid #334155;
+  padding: 0.5rem 1rem;
+  width: auto;
+}
+
+.lang-btn.active {
+  background-color: var(--accent);
+  color: #0f172a;
+  border-color: var(--accent);
+}
+
+/* Mode Selector */
+.mode-selector {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: #334155;
+  border: 2px solid transparent;
+  border-radius: 0.5rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.mode-btn.active {
+  background-color: var(--accent);
+  color: #0f172a;
+  border-color: var(--accent);
+}
+
+.mode-btn:hover:not(.active) {
+  background-color: #475569;
+  color: white;
+}
+
+/* Game UI */
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.game-timer {
+  font-family: monospace;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.progress-bar {
+  flex-grow: 1;
+  height: 0.5rem;
+  background-color: #334155;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--accent);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.question-text {
+  font-size: 1.25rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+#flag-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+#flag-image {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  object-fit: cover;
+}
+
+.choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.choice-btn {
+  background-color: #334155;
+  border: none;
+  padding: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.choice-btn:hover {
+  background-color: #475569;
+}
+
+.choice-btn.correct {
+  background-color: var(--success) !important;
+  color: white;
+}
+
+.choice-btn.wrong {
+  background-color: var(--error) !important;
+  color: white;
+}
+
+/* Result UI */
+.score-display {
+  font-size: 4rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--accent);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
 @media (max-width: 640px) {
   .choices-grid {
     grid-template-columns: 1fr;
@@ -300,5 +495,114 @@ button.primary:hover {
 
   h1 {
     font-size: 2rem;
+  }
+}
+
+/* Consent Banner Modal */
+.consent-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.consent-content {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.3s ease;
+}
+
+.consent-content h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.consent-content p {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.consent-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-accept,
+.btn-reject {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-accept {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-accept:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
+.btn-reject {
+  background: transparent;
+  border: 2px solid var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.btn-reject:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .consent-content {
+    padding: 1.5rem;
+  }
+
+  .consent-buttons {
+    flex-direction: column;
+  }
+
+  .btn-accept,
+  .btn-reject {
+    width: 100%;
   }
 }

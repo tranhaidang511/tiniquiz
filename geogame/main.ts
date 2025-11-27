@@ -4,8 +4,10 @@ import type { GameState, Question } from './Game';
 import { localization } from './Localization';
 import type { Language } from './Localization';
 import type { Country } from './data';
+import { ConsentBanner } from './ConsentBanner';
 
-console.log("Main.ts loading...");
+// Initialize Consent Banner
+new ConsentBanner();
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 

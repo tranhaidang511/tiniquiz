@@ -3,6 +3,10 @@ import { game } from './Game';
 import type { GameState, Difficulty } from './Game';
 import { localization } from './Localization';
 import type { Language } from './Localization';
+import { ConsentBanner } from './ConsentBanner';
+
+// Initialize Consent Banner
+new ConsentBanner();
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
