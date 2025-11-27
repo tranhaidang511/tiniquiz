@@ -2,6 +2,19 @@
 <html lang="en">
 
 <head>
+    <!-- Google Consent Mode -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+        });
+    </script>
+    <!-- End Google Consent Mode -->
+
     <!-- Google Tag Manager -->
     <script>
         (function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', 'GTM-56G5F5W4');
@@ -398,6 +411,21 @@
         </footer>
     </div>
 
+    <div id="consent-dialog" class="consent-dialog">
+        <div class="consent-content">
+            <h3>We value your privacy</h3>
+            <p>We use cookies to improve your experience, analyze traffic, and show relevant ads.</p>
+            <p>You can choose to accept or reject these cookies.</p>
+            <p>Essential cookies are always on because they are required for the site to work.</p>
+            <div class="consent-buttons">
+                <button id="btn-reject" class="btn-reject">Reject All</button>
+                <button id="btn-accept" class="btn-accept">Accept All</button>
+            </div>
+        </div>
+    </div>
+
+
+
     <script>
         const translations = {
             en: {
@@ -456,7 +484,7 @@
             }
         };
 
-        let currentLang = localStorage.getItem('homepageLanguage') || 'en';
+        let currentLang = localStorage.getItem('language') || 'en';
 
         function updateTexts() {
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -476,7 +504,7 @@
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 currentLang = e.target.dataset.lang;
-                localStorage.setItem('homepageLanguage', currentLang);
+                localStorage.setItem('language', currentLang);
                 updateTexts();
                 updateActiveLangButton();
             });
@@ -484,6 +512,46 @@
 
         updateTexts();
         updateActiveLangButton();
+
+        // Consent Dialog Logic
+        (function () {
+            const STORAGE_KEY = 'consentMode';
+            const dialog = document.getElementById('consent-dialog');
+            const btnAccept = document.getElementById('btn-accept');
+            const btnReject = document.getElementById('btn-reject');
+
+            function init() {
+                const savedConsent = localStorage.getItem(STORAGE_KEY);
+                if (!savedConsent) {
+                    dialog.style.display = 'flex';
+                } else {
+                    updateConsent(savedConsent === 'granted');
+                }
+
+                btnAccept.addEventListener('click', () => setConsent(true));
+                btnReject.addEventListener('click', () => setConsent(false));
+            }
+
+            function setConsent(granted) {
+                localStorage.setItem(STORAGE_KEY, granted ? 'granted' : 'denied');
+                updateConsent(granted);
+                dialog.style.display = 'none';
+            }
+
+            function updateConsent(granted) {
+                const state = granted ? 'granted' : 'denied';
+                if (typeof gtag === 'function') {
+                    gtag('consent', 'update', {
+                        'ad_storage': state,
+                        'ad_user_data': state,
+                        'ad_personalization': state,
+                        'analytics_storage': state
+                    });
+                }
+            }
+
+            init();
+        })();
     </script>
 </body>
 
