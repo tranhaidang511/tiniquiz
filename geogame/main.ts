@@ -180,6 +180,11 @@ const loadSetup = () => {
 // --- Event Listeners ---
 
 const setupEventListeners = () => {
+  // Home button
+  document.getElementById('home-btn')?.addEventListener('click', () => {
+    window.location.href = '/';
+  });
+
   // Language
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
