@@ -10,7 +10,7 @@ const translations = {
         'gomoku-title': 'Gomoku',
         'gomoku-desc': 'Classic strategy board game. Place 5 stones in a row to win! Play against a friend or challenge the AI.',
         'gomoku-feature1': '2-Player or 1-Player modes',
-        'gomoku-feature2': 'multiple board sizes',
+        'gomoku-feature2': 'Multiple board sizes',
         'gomoku-button': 'Play Gomoku',
         'sudoku-title': 'Sudoku',
         'sudoku-desc': 'Classic number puzzle game. Fill the 9×9 grid with digits so each row, column, and 3×3 box contains all numbers from 1-9.',
