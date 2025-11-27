@@ -173,6 +173,10 @@ h1 {
     --card-accent: var(--accent-gomoku);
 }
 
+.game-card.sudoku {
+    --card-accent: var(--accent-sudoku);
+}
+
 .game-card:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-glow);
