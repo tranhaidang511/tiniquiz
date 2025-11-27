@@ -17,7 +17,11 @@ export default {
         modeFlags: "国旗クイズ",
         questionTemplate: "{country}の首都はどこですか？",
         guessTheFlag: "この国旗はどこの国ですか？",
-        notEnoughCountries: "国の数が不足しています！より広い地域を選択してください。"
+        notEnoughCountries: "国の数が不足しています！より広い地域を選択してください。",
+        highScores: "ハイスコア",
+        rank: "順位",
+        score: "スコア",
+        date: "日付"
     },
     regions: {
         "Asia": "アジア",

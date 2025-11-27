@@ -88,7 +88,25 @@ const renderApp = () => {
       <div class="time-display">
         <span id="time-label">Total Time</span>: <span id="elapsed-time">00:00</span>
       </div>
-      <p id="result-msg"></p>
+      
+      <!-- High Scores Table -->
+      <div class="high-scores-container">
+        <h3 id="high-scores-title">High Scores</h3>
+        <table id="high-scores-table">
+          <thead>
+            <tr>
+              <th id="th-rank">Rank</th>
+              <th id="th-score">Score</th>
+              <th id="th-time">Time</th>
+              <th id="th-date">Date</th>
+            </tr>
+          </thead>
+          <tbody id="high-scores-body">
+            <!-- Scores injected here -->
+          </tbody>
+        </table>
+      </div>
+
       <button id="restart-btn" class="primary">Play Again</button>
     </div>
   `;
@@ -296,6 +314,22 @@ const updateTexts = () => {
 
   const newGameBtn = document.getElementById('new-game-btn');
   if (newGameBtn) newGameBtn.textContent = localization.getUIText('newGame');
+
+  // High Score Table Headers
+  const highScoresTitle = document.getElementById('high-scores-title');
+  if (highScoresTitle) highScoresTitle.textContent = localization.getUIText('highScores');
+
+  const thRank = document.getElementById('th-rank');
+  if (thRank) thRank.textContent = localization.getUIText('rank');
+
+  const thScore = document.getElementById('th-score');
+  if (thScore) thScore.textContent = localization.getUIText('score');
+
+  const thTime = document.getElementById('th-time');
+  if (thTime) thTime.textContent = localization.getUIText('time');
+
+  const thDate = document.getElementById('th-date');
+  if (thDate) thDate.textContent = localization.getUIText('date');
 };
 
 const showView = (viewId: string) => {
@@ -337,14 +371,10 @@ game.onStateChange((state: GameState) => {
       clearInterval(timerInterval);
       timerInterval = null;
     }
-    const { score, total } = game.getScore();
-    document.getElementById('final-score')!.textContent = score.toString();
-    document.getElementById('total-questions')!.textContent = total.toString();
 
-    // Display elapsed time
-    const elapsedSeconds = game.getElapsedTime();
-    const formattedTime = game.formatTime(elapsedSeconds);
-    document.getElementById('elapsed-time')!.textContent = formattedTime;
+    // Save score and update display
+    saveHighScore();
+    displayResult();
   }
 });
 
@@ -418,6 +448,98 @@ const handleAnswer = (choice: Country, btn: HTMLElement, target: Country) => {
   setTimeout(() => {
     game.nextQuestion();
   }, 1000);
+};
+
+// --- High Score Logic ---
+
+interface HighScore {
+  score: number;
+  total: number;
+  time: number;
+  date: string;
+}
+
+const saveHighScore = () => {
+  const { score, total } = game.getScore();
+  const time = game.getElapsedTime();
+  const mode = game.getGameMode();
+  const region = game.getRegion();
+  const key = `geogame_highscores_${mode}_${region}`;
+  const date = new Date().toLocaleDateString();
+
+  const newScore: HighScore = { score, total, time, date };
+
+  try {
+    const existing = localStorage.getItem(key);
+    let scores: HighScore[] = existing ? JSON.parse(existing) : [];
+
+    scores.push(newScore);
+
+    // Sort: Higher score first, then lower time
+    scores.sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      return a.time - b.time;
+    });
+
+    // Keep top 5
+    scores = scores.slice(0, 5);
+
+    localStorage.setItem(key, JSON.stringify(scores));
+  } catch (e) {
+    console.error('Failed to save high score:', e);
+  }
+};
+
+const getHighScores = (): HighScore[] => {
+  const mode = game.getGameMode();
+  const region = game.getRegion();
+  const key = `geogame_highscores_${mode}_${region}`;
+  try {
+    const existing = localStorage.getItem(key);
+    return existing ? JSON.parse(existing) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+const displayResult = () => {
+  const { score, total } = game.getScore();
+  document.getElementById('final-score')!.textContent = score.toString();
+  document.getElementById('total-questions')!.textContent = total.toString();
+
+  // Display elapsed time
+  const elapsedSeconds = game.getElapsedTime();
+  const formattedTime = game.formatTime(elapsedSeconds);
+  document.getElementById('elapsed-time')!.textContent = formattedTime;
+
+  // Render High Scores
+  const scores = getHighScores();
+  const tbody = document.getElementById('high-scores-body');
+  if (tbody) {
+    tbody.innerHTML = '';
+    scores.forEach((s, index) => {
+      const tr = document.createElement('tr');
+
+      // Highlight current score if it matches (simple check)
+      // Note: This isn't perfect if there are duplicate scores, but good enough for now
+      if (s.score === score && s.time === elapsedSeconds && s.total === total) {
+        // We could add a class, but since we just saved it, it might be one of the top 5.
+        // To strictly highlight *this* run, we'd need a unique ID.
+        // For now, let's just render.
+        tr.classList.add('current-run');
+      }
+
+      tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${s.score}/${s.total}</td>
+          <td>${game.formatTime(s.time)}</td>
+          <td>${s.date}</td>
+        `;
+      tbody.appendChild(tr);
+    });
+  }
 };
 
 localization.subscribe(() => {

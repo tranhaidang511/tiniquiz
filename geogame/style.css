@@ -293,7 +293,7 @@ button.primary:hover {
   animation: fadeIn 0.5s ease forwards;
 }
 
-}
+
 
 select,
 button,
@@ -596,6 +596,201 @@ button.primary:hover {
   .consent-content {
     padding: 1.5rem;
   }
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: var(--accent);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.question-text {
+  font-size: 1.25rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+#flag-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+#flag-image {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  object-fit: cover;
+}
+
+.choices-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.choice-btn {
+  background-color: #334155;
+  border: none;
+  padding: 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.choice-btn:hover {
+  background-color: #475569;
+}
+
+.choice-btn.correct {
+  background-color: var(--success) !important;
+  color: white;
+}
+
+.choice-btn.wrong {
+  background-color: var(--error) !important;
+  color: white;
+}
+
+/* Result UI */
+.score-display {
+  font-size: 4rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--accent);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@media (max-width: 640px) {
+  .choices-grid {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Consent Banner Modal */
+.consent-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.consent-content {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.3s ease;
+}
+
+.consent-content h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.consent-content p {
+  margin: 0 0 1.5rem 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.consent-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-accept,
+.btn-reject {
+  flex: 1;
+  min-width: 120px;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-accept {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-accept:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
+.btn-reject {
+  background: transparent;
+  border: 2px solid var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.btn-reject:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .consent-content {
+    padding: 1.5rem;
+  }
 
   .consent-buttons {
     flex-direction: column;
@@ -605,4 +800,48 @@ button.primary:hover {
   .btn-reject {
     width: 100%;
   }
+}
+
+/* High Score Table */
+.high-scores-container {
+  margin: 1.5rem 0;
+  width: 100%;
+  overflow-x: auto;
+}
+
+#high-scores-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+#high-scores-table th,
+#high-scores-table td {
+  padding: 0.75rem;
+  text-align: center;
+  border-bottom: 1px solid #334155;
+}
+
+#high-scores-table th {
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+}
+
+#high-scores-table tr:last-child td {
+  border-bottom: none;
+}
+
+#high-scores-table tr.current-run {
+  background-color: rgba(56, 189, 248, 0.1);
+  /* Accent color with opacity */
+  font-weight: 700;
+  color: var(--accent);
+}
+
+#high-scores-table tr.current-run td {
+  border-bottom-color: var(--accent);
 }

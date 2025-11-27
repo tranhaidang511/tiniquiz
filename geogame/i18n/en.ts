@@ -17,7 +17,11 @@ export default {
         modeFlags: "Flags",
         questionTemplate: "What is the capital of {country}?",
         guessTheFlag: "Which country has this flag?",
-        notEnoughCountries: "Not enough countries to play! Please select a larger region."
+        notEnoughCountries: "Not enough countries to play! Please select a larger region.",
+        highScores: "High Scores",
+        rank: "Rank",
+        score: "Score",
+        date: "Date"
     },
     regions: {
         "Asia": "Asia",
