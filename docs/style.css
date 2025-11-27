@@ -8,6 +8,7 @@
     --accent-secondary: #f28b82;
     --accent-geo: #38bdf8;
     --accent-gomoku: #f59e0b;
+    --accent-sudoku: #a78bfa;
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 30px rgba(138, 180, 248, 0.3);
@@ -131,7 +132,7 @@ h1 {
     border-radius: 1.5rem;
     padding: 2.5rem;
     box-shadow: var(--shadow-lg);
-    backdrop-filter: blur(10px);
+    /* backdrop-filter: blur(10px); */
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
     animation: fadeInUp 0.6s ease;
@@ -235,16 +236,11 @@ h1 {
     font-weight: 600;
     font-size: 1.1rem;
     text-align: center;
-    transition: all 0.3s ease;
     box-shadow: var(--shadow-md);
     border: none;
     cursor: pointer;
 }
 
-.play-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px var(--card-accent);
-}
 
 footer {
     text-align: center;
