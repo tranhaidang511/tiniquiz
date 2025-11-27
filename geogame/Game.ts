@@ -14,7 +14,7 @@ export interface Question {
 export class Game {
     private state: GameState = 'MENU';
     private mode: GameMode = 'CAPITALS';
-    private currentRegion: string = 'all';
+    private currentRegion: string = 'allWorld';
     private filteredCountries: Country[] = [];
     private currentQuestionIndex: number = 0;
     private score: number = 0;
@@ -40,9 +40,9 @@ export class Game {
         return Array.from(new Set(countries.map(c => c.continent))).sort();
     }
 
-    setFilter(type: 'all' | 'continent' | 'region', value?: string) {
-        if (type === 'all') {
-            this.currentRegion = 'all';
+    setFilter(type: 'allWorld' | 'continent' | 'region', value?: string) {
+        if (type === 'allWorld') {
+            this.currentRegion = 'allWorld';
             this.filteredCountries = [...countries];
         } else if (type === 'continent' && value) {
             this.currentRegion = value;

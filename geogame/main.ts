@@ -40,7 +40,7 @@ const renderApp = () => {
 
         <label id="label-filter">Filter by Region</label>
         <select id="region-filter">
-            <option value="all" id="option-all-world">All World</option>
+            <option value="allWorld" id="option-all-world">All World</option>
             <optgroup label="Continents" id="continent-options"></optgroup>
             <optgroup label="Regions" id="region-options"></optgroup>
           </select>
@@ -218,8 +218,8 @@ const setupEventListeners = () => {
       countInput.value = "5";
     }
 
-    if (filterVal === 'all') {
-      game.setFilter('all');
+    if (filterVal === 'allWorld') {
+      game.setFilter('allWorld');
     } else if (game.getContinents().includes(filterVal)) {
       game.setFilter('continent', filterVal);
     } else {
