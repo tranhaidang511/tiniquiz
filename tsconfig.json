@@ -30,6 +30,8 @@
     "geogame",
     "geogame/vite.config.ts",
     "gomoku",
-    "gomoku/vite.config.ts"
+    "gomoku/vite.config.ts",
+    "sudoku",
+    "sudoku/vite.config.ts"
   ]
 }

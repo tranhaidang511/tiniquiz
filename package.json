@@ -9,7 +9,10 @@
     "preview:geogame": "vite preview --config geogame/vite.config.ts",
     "dev:gomoku": "vite --config gomoku/vite.config.ts",
     "build:gomoku": "tsc && vite build --config gomoku/vite.config.ts",
-    "preview:gomoku": "vite preview --config gomoku/vite.config.ts"
+    "preview:gomoku": "vite preview --config gomoku/vite.config.ts",
+    "dev:sudoku": "vite --config sudoku/vite.config.ts",
+    "build:sudoku": "tsc && vite build --config sudoku/vite.config.ts",
+    "preview:sudoku": "vite preview --config sudoku/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

@@ -1,0 +1,28 @@
+export default {
+    ui: {
+        gameTitle: "数独",
+        gameSetup: "ゲーム設定",
+        difficulty: "難易度",
+        easy: "簡単",
+        medium: "普通",
+        hard: "難しい",
+        startGame: "ゲーム開始",
+        pause: "一時停止",
+        resume: "再開",
+        newGame: "新規ゲーム",
+        playAgain: "もう一度",
+        time: "時間",
+        mistakes: "ミス",
+        notes: "メモ",
+        hint: "ヒント",
+        erase: "消去",
+        gameOver: "ゲーム終了！",
+        youWin: "おめでとう！",
+        puzzleCompleted: "パズル完成！",
+        youLose: "チャンスなし！",
+        tooManyMistakes: "ミスが多すぎます。",
+        completedIn: "クリア時間",
+        totalTime: "合計時間",
+        tryAgain: "もう一度挑戦"
+    }
+};
