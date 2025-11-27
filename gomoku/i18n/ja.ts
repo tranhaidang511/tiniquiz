@@ -25,6 +25,12 @@ export default {
         draw: "引き分け！",
         boardFull: "盤面が埋まりました。引き分けです！",
         totalMoves: "合計手数",
-        playAgain: "もう一度"
+        totalTime: "合計時間",
+        playAgain: "もう一度プレイ",
+        highScores: "ハイスコア",
+        rank: "順位",
+        moves: "手数",
+        time: "時間",
+        date: "日付"
     }
 };

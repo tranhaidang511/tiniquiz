@@ -26,6 +26,8 @@ export class Game {
     private winningLine: Position[] | null = null;
     private ai: GomokuAI;
     private isAIThinking: boolean = false;
+    private startTime: number | null = null;
+    private endTime: number | null = null;
 
     // Event listeners
     private stateListeners: ((state: GameState) => void)[] = [];
@@ -76,6 +78,8 @@ export class Game {
         this.moves = [];
         this.winner = null;
         this.winningLine = null;
+        this.startTime = Date.now();
+        this.endTime = null;
         this.setState('PLAYING');
         this.emitBoard();
     }
@@ -98,12 +102,14 @@ export class Game {
         // Check for win
         if (this.checkWin(row, col)) {
             this.winner = this.currentPlayer;
+            this.endTime = Date.now();
             this.setState('RESULT');
             return true;
         }
 
         // Check for draw (board full)
         if (this.moves.length === this.boardSize * this.boardSize) {
+            this.endTime = Date.now();
             this.setState('RESULT');
             return true;
         }
@@ -137,6 +143,7 @@ export class Game {
                 // Check for win
                 if (this.checkWin(aiMove.row, aiMove.col)) {
                     this.winner = 'WHITE';
+                    this.endTime = Date.now();
                     this.setState('RESULT');
                     this.isAIThinking = false;
                     this.emitAIThinking(false);
@@ -145,6 +152,7 @@ export class Game {
 
                 // Check for draw
                 if (this.moves.length === this.boardSize * this.boardSize) {
+                    this.endTime = Date.now();
                     this.setState('RESULT');
                     this.isAIThinking = false;
                     this.emitAIThinking(false);
@@ -281,6 +289,18 @@ export class Game {
 
     private emitAIThinking(thinking: boolean) {
         this.aiThinkingListeners.forEach(l => l(thinking));
+    }
+
+    getElapsedTime(): number {
+        if (!this.startTime) return 0;
+        const end = this.endTime || Date.now();
+        return Math.floor((end - this.startTime) / 1000); // seconds
+    }
+
+    formatTime(seconds: number): string {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 }
 

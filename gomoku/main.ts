@@ -64,6 +64,9 @@ const renderApp = () => {
         <div class="move-count">
           <span id="label-move">Move</span>: <span id="move-number">0</span>
         </div>
+        <div class="game-timer">
+          <span id="label-time">Time</span>: <span id="game-timer">00:00</span>
+        </div>
       </div>
       
       <div id="board-container">
@@ -86,6 +89,28 @@ const renderApp = () => {
           <div class="stat-label" id="label-total-moves">Total Moves</div>
           <div class="stat-value" id="total-moves">0</div>
         </div>
+        <div class="stat">
+            <div class="stat-label" id="label-total-time">Total Time</div>
+            <div class="stat-value" id="total-time">00:00</div>
+        </div>
+      </div>
+
+      <!-- High Scores Table -->
+      <div class="high-scores-container">
+        <h3 id="high-scores-title">High Scores (vs AI)</h3>
+        <table id="high-scores-table">
+          <thead>
+            <tr>
+              <th id="th-rank">Rank</th>
+              <th id="th-moves">Moves</th>
+              <th id="th-time">Time</th>
+              <th id="th-date">Date</th>
+            </tr>
+          </thead>
+          <tbody id="high-scores-body">
+            <!-- Scores injected here -->
+          </tbody>
+        </table>
       </div>
 
       <button id="restart-btn" class="primary">Play Again</button>
@@ -203,6 +228,28 @@ const updateTexts = () => {
 
     const restartBtn = document.getElementById('restart-btn');
     if (restartBtn) restartBtn.textContent = localization.getUIText('playAgain');
+
+    const labelTime = document.getElementById('label-time');
+    if (labelTime) labelTime.textContent = localization.getUIText('time');
+
+    const labelTotalTime = document.getElementById('label-total-time');
+    if (labelTotalTime) labelTotalTime.textContent = localization.getUIText('totalTime');
+
+    // High Score Table Headers
+    const highScoresTitle = document.getElementById('high-scores-title');
+    if (highScoresTitle) highScoresTitle.textContent = localization.getUIText('highScores');
+
+    const thRank = document.getElementById('th-rank');
+    if (thRank) thRank.textContent = localization.getUIText('rank');
+
+    const thMoves = document.getElementById('th-moves');
+    if (thMoves) thMoves.textContent = localization.getUIText('moves');
+
+    const thTime = document.getElementById('th-time');
+    if (thTime) thTime.textContent = localization.getUIText('time');
+
+    const thDate = document.getElementById('th-date');
+    if (thDate) thDate.textContent = localization.getUIText('date');
 };
 
 // --- Event Listeners ---
@@ -509,17 +556,39 @@ const showView = (viewId: string) => {
 
 // --- Game Event Handlers ---
 
+let timerInterval: number | null = null;
+let currentGameState: GameState = 'MENU';
+
 game.onStateChange((state: GameState) => {
+    currentGameState = state;
     if (state === 'MENU') {
         showView('menu-view');
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
     }
     if (state === 'PLAYING') {
         showView('game-view');
         renderBoard();
         updateGameInfo();
+
+        // Start timer
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = window.setInterval(() => {
+            const elapsed = game.getElapsedTime();
+            const formatted = game.formatTime(elapsed);
+            const timerEl = document.getElementById('game-timer');
+            if (timerEl) timerEl.textContent = formatted;
+        }, 1000);
     }
     if (state === 'RESULT') {
         showView('result-view');
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        saveHighScore();
         displayResult();
     }
 });
@@ -529,14 +598,79 @@ game.onMove((stone: Stone) => {
     updateGameInfo();
 });
 
+interface HighScore {
+    moves: number;
+    time: number;
+    date: number | string;
+    boardSize: number;
+}
+
+const saveHighScore = () => {
+    // Only save for VS_AI mode
+    if (game.getGameMode() !== 'VS_AI') return;
+
+    // Only save if Player (Black) won
+    if (game.getWinner() !== 'BLACK') return;
+
+    const moves = Math.ceil(game.getMoves().length / 2); // Approximate moves per player or total turns? Usually total moves. Let's use total moves for now as per UI.
+    // Actually, "Moves" usually means "Turns" in Gomoku context for high score? Or total stones?
+    // Let's use total stones placed (game.getMoves().length).
+    // Wait, if I win in 5 moves, that's 9 stones total (5 black, 4 white).
+    // Let's stick to total moves count as displayed in UI.
+    const totalMovesCount = game.getMoves().length;
+    const time = game.getElapsedTime();
+    const date = Date.now();
+    const boardSize = game.getBoardSize();
+
+    const newScore: HighScore = { moves: totalMovesCount, time, date, boardSize };
+    const key = 'gomoku_highscores';
+
+    try {
+        const existing = localStorage.getItem(key);
+        let scores: HighScore[] = existing ? JSON.parse(existing) : [];
+
+        scores.push(newScore);
+
+        // Sort: Fewer moves first, then lower time
+        scores.sort((a, b) => {
+            if (a.moves !== b.moves) {
+                return a.moves - b.moves;
+            }
+            return a.time - b.time;
+        });
+
+        // Keep top 5
+        scores = scores.slice(0, 5);
+
+        localStorage.setItem(key, JSON.stringify(scores));
+    } catch (e) {
+        console.error('Failed to save high score:', e);
+    }
+};
+
+const getHighScores = (): HighScore[] => {
+    const key = 'gomoku_highscores';
+    try {
+        const existing = localStorage.getItem(key);
+        return existing ? JSON.parse(existing) : [];
+    } catch (e) {
+        return [];
+    }
+};
+
 const displayResult = () => {
     const winner = game.getWinner();
     const winnerDisplay = document.getElementById('winner-display');
     const totalMoves = document.getElementById('total-moves');
+    const totalTime = document.getElementById('total-time');
     const resultTitle = document.getElementById('result-title');
 
     if (totalMoves) {
         totalMoves.textContent = game.getMoves().length.toString();
+    }
+
+    if (totalTime) {
+        totalTime.textContent = game.formatTime(game.getElapsedTime());
     }
 
     if (winner) {
@@ -562,11 +696,62 @@ const displayResult = () => {
             winnerDisplay.innerHTML = `<span>${localization.getUIText('boardFull')}</span>`;
         }
     }
+
+    // Render High Scores
+    const scores = getHighScores();
+    const tbody = document.getElementById('high-scores-body');
+    const container = document.querySelector('.high-scores-container');
+
+    // Only show high scores in VS_AI mode
+    if (game.getGameMode() === 'VS_AI') {
+        if (container) container.classList.remove('hidden');
+        if (tbody) {
+            tbody.innerHTML = '';
+            scores.forEach((s, index) => {
+                const tr = document.createElement('tr');
+
+                // Highlight current run if it matches
+                // Note: Simple matching might highlight duplicates
+                const currentMoves = game.getMoves().length;
+                const currentTime = game.getElapsedTime();
+
+                if (game.getWinner() === 'BLACK' &&
+                    s.moves === currentMoves &&
+                    s.time === currentTime &&
+                    // Check if date is very recent (within last second) to avoid highlighting old identical scores
+                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                    tr.classList.add('current-run');
+                }
+
+                let dateStr = '';
+                if (typeof s.date === 'number') {
+                    const lang = localization.language;
+                    const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
+                    dateStr = new Date(s.date).toLocaleDateString(locale);
+                } else {
+                    dateStr = s.date as string;
+                }
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${s.moves}</td>
+                    <td>${game.formatTime(s.time)}</td>
+                    <td>${dateStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } else {
+        if (container) container.classList.add('hidden');
+    }
 };
 
 // Subscribe to language changes
 localization.subscribe(() => {
     updateTexts();
+    if (currentGameState === 'RESULT') {
+        displayResult();
+    }
 });
 
 // --- Initialize ---

@@ -25,6 +25,12 @@ export default {
         draw: "Hòa!",
         boardFull: "Bàn cờ đã đầy. Trận đấu hòa!",
         totalMoves: "Tổng Số Nước",
-        playAgain: "Chơi Lại"
+        totalTime: "Tổng Thời Gian",
+        playAgain: "Chơi Lại",
+        highScores: "Bảng Xếp Hạng",
+        rank: "Hạng",
+        moves: "Số Nước",
+        time: "Thời Gian",
+        date: "Ngày"
     }
 };

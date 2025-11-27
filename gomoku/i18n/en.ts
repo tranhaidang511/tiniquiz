@@ -25,6 +25,12 @@ export default {
         draw: "It's a Draw!",
         boardFull: "The board is full. It's a draw!",
         totalMoves: "Total Moves",
-        playAgain: "Play Again"
+        totalTime: "Total Time",
+        playAgain: "Play Again",
+        highScores: "High Scores",
+        rank: "Rank",
+        moves: "Moves",
+        time: "Time",
+        date: "Date"
     }
 };
