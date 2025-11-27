@@ -3,10 +3,10 @@ import { game } from './Game';
 import type { GameState, Difficulty } from './Game';
 import { localization } from './i18n/Localization';
 import type { Language } from './i18n/Localization';
-import { ConsentBanner } from './ConsentBanner';
+import { Consent } from './Consent';
 
 // Initialize Consent Banner
-new ConsentBanner();
+new Consent();
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
 

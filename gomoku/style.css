@@ -496,8 +496,8 @@ button.primary:active {
     filter: drop-shadow(var(--shadow-md));
 }
 
-/* Consent Banner Modal */
-.consent-banner {
+/* Consent Dialog Modal */
+.consent-dialog {
     position: fixed;
     top: 0;
     left: 0;
