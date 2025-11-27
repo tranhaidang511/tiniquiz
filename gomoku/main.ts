@@ -612,11 +612,6 @@ const saveHighScore = () => {
     // Only save if Player (Black) won
     if (game.getWinner() !== 'BLACK') return;
 
-    const moves = Math.ceil(game.getMoves().length / 2); // Approximate moves per player or total turns? Usually total moves. Let's use total moves for now as per UI.
-    // Actually, "Moves" usually means "Turns" in Gomoku context for high score? Or total stones?
-    // Let's use total stones placed (game.getMoves().length).
-    // Wait, if I win in 5 moves, that's 9 stones total (5 black, 4 white).
-    // Let's stick to total moves count as displayed in UI.
     const totalMovesCount = game.getMoves().length;
     const time = game.getElapsedTime();
     const date = Date.now();
