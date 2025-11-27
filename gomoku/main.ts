@@ -36,6 +36,7 @@ const renderApp = () => {
         <div class="option-group">
           <label id="label-board-size">Board Size</label>
           <div class="size-selector">
+            <button class="size-btn" data-size="9">9 × 9</button>
             <button class="size-btn active" data-size="15">15 × 15</button>
             <button class="size-btn" data-size="19">19 × 19</button>
           </div>
@@ -47,6 +48,7 @@ const renderApp = () => {
 
     <!-- Game View -->
     <div id="game-view" class="card hidden animate-fade-in">
+      <button id="new-game-btn" class="primary">New Game</button>
       <div class="game-info">
         <div class="current-turn">
           <div class="turn-indicator black"></div>
@@ -128,6 +130,9 @@ const updateTexts = () => {
     const labelMove = document.getElementById('label-move');
     if (labelMove) labelMove.textContent = localization.getUIText('move');
 
+    const newGameBtn = document.getElementById('new-game-btn');
+    if (newGameBtn) newGameBtn.textContent = localization.getUIText('newGame');
+
     updateGameInfo();
 
     // Result view
@@ -184,6 +189,11 @@ const setupEventListeners = () => {
         game.start();
     });
 
+    // New Game (during gameplay)
+    document.getElementById('new-game-btn')?.addEventListener('click', () => {
+        game.restart();
+    });
+
     // Restart game
     document.getElementById('restart-btn')?.addEventListener('click', () => {
         game.restart();
@@ -237,10 +247,15 @@ const renderBoard = () => {
     }
     svg.appendChild(gridGroup);
 
-    // Star points (for 15x15 and 19x19 boards)
-    const starPoints = boardSize === 15
-        ? [[3, 3], [3, 11], [7, 7], [11, 3], [11, 11]]
-        : [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
+    // Star points
+    let starPoints: number[][] = [];
+    if (boardSize === 9) {
+        starPoints = [[2, 2], [2, 6], [4, 4], [6, 2], [6, 6]];
+    } else if (boardSize === 15) {
+        starPoints = [[3, 3], [3, 11], [7, 7], [11, 3], [11, 11]];
+    } else {
+        starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
+    }
 
     starPoints.forEach(([row, col]) => {
         const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');

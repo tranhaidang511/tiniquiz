@@ -11,7 +11,7 @@ export default {
         startGame: "Bắt Đầu",
         pause: "Tạm Dừng",
         resume: "Tiếp Tục",
-        newGame: "Trò Chơi Mới",
+        newGame: "Ván Mới",
         playAgain: "Chơi Lại",
         time: "Thời Gian",
         mistakes: "Sai Lầm",

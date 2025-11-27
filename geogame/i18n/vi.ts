@@ -7,6 +7,7 @@ export default {
         continents: "Châu lục",
         regions: "Khu vực",
         startGame: "Bắt đầu",
+        newGame: "Ván mới",
         gameOver: "Kết thúc!",
         playAgain: "Chơi lại",
         totalTime: "Tổng thời gian",

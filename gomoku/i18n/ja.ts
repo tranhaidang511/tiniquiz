@@ -8,6 +8,7 @@ export default {
         comingSoon: "近日公開",
         boardSize: "盤面サイズ",
         startGame: "ゲーム開始",
+        newGame: "新規ゲーム",
         blackTurn: "黒の番",
         whiteTurn: "白の番",
         yourTurn: "あなたの番",

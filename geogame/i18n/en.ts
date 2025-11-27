@@ -7,6 +7,7 @@ export default {
         continents: "Continents",
         regions: "Regions",
         startGame: "Start Game",
+        newGame: "New Game",
         gameOver: "Game Over!",
         playAgain: "Play Again",
         totalTime: "Total Time",

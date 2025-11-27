@@ -7,6 +7,7 @@ export default {
         continents: "大陸",
         regions: "地域",
         startGame: "ゲーム開始",
+        newGame: "新規ゲーム",
         gameOver: "ゲーム終了！",
         playAgain: "もう一度プレイ",
         totalTime: "合計時間",

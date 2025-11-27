@@ -47,8 +47,8 @@ export class Game {
     }
 
     setBoardSize(size: number) {
-        if (size !== 15 && size !== 19) {
-            throw new Error('Board size must be 15 or 19');
+        if (size !== 9 && size !== 15 && size !== 19) {
+            throw new Error('Board size must be 9, 15 or 19');
         }
         this.boardSize = size;
         this.ai.setBoardSize(size);

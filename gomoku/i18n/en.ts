@@ -8,6 +8,7 @@ export default {
         comingSoon: "Coming Soon",
         boardSize: "Board Size",
         startGame: "Start Game",
+        newGame: "New Game",
         blackTurn: "Black's Turn",
         whiteTurn: "White's Turn",
         yourTurn: "Your Turn",

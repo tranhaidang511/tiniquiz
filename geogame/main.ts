@@ -51,6 +51,8 @@ const renderApp = () => {
 
     <!-- Game View -->
     <div id="game-view" class="card hidden animate-fade-in">
+      <button id="new-game-btn" class="primary">New Game</button>
+
       <div class="game-header">
         <div class="progress-bar">
           <div class="progress-fill" id="progress-fill"></div>
@@ -146,6 +148,12 @@ const setupEventListeners = () => {
     game.start(countVal);
   });
 
+  // New Game (during gameplay)
+  document.getElementById('new-game-btn')?.addEventListener('click', () => {
+    game.restart();
+  });
+
+
   // Restart
   document.getElementById('restart-btn')?.addEventListener('click', () => {
     game.restart();
@@ -222,6 +230,9 @@ const updateTexts = () => {
 
   const gameTimeLabel = document.getElementById('game-time-label');
   if (gameTimeLabel) gameTimeLabel.textContent = localization.getUIText('time');
+
+  const newGameBtn = document.getElementById('new-game-btn');
+  if (newGameBtn) newGameBtn.textContent = localization.getUIText('newGame');
 };
 
 const showView = (viewId: string) => {

@@ -8,6 +8,7 @@ export default {
         comingSoon: "Sắp Ra Mắt",
         boardSize: "Kích Thước Bàn",
         startGame: "Bắt Đầu",
+        newGame: "Ván Mới",
         blackTurn: "Lượt Đen",
         whiteTurn: "Lượt Trắng",
         yourTurn: "Lượt Của Bạn",
