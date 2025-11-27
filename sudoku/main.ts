@@ -120,6 +120,40 @@ const renderApp = () => {
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
     });
+
+    // Load saved setup
+    loadSetup();
+};
+
+// --- Setup Persistence ---
+
+const saveSetup = () => {
+    const activeDiffBtn = document.querySelector('.diff-btn.active') as HTMLElement;
+    if (activeDiffBtn) {
+        const difficulty = activeDiffBtn.dataset.diff as Difficulty;
+        localStorage.setItem('sudokuSetup', JSON.stringify({ difficulty }));
+    }
+};
+
+const loadSetup = () => {
+    try {
+        const saved = localStorage.getItem('sudokuSetup');
+        if (saved) {
+            const { difficulty } = JSON.parse(saved);
+            // Set active difficulty button
+            document.querySelectorAll('.diff-btn').forEach(btn => {
+                const btnDiff = (btn as HTMLElement).dataset.diff;
+                if (btnDiff === difficulty) {
+                    btn.classList.add('active');
+                    game.setDifficulty(difficulty);
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+    } catch (e) {
+        console.error('Failed to load Sudoku setup:', e);
+    }
 };
 
 // --- Text Updates ---
@@ -211,6 +245,7 @@ const setupEventListeners = () => {
 
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
+        saveSetup();
         game.start();
     });
 

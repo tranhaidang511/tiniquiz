@@ -99,6 +99,61 @@ const renderApp = () => {
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
     });
+
+    // Load saved setup
+    loadSetup();
+};
+
+// --- Setup Persistence ---
+
+const saveSetup = () => {
+    const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+    const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
+
+    if (modeBtn && sizeBtn) {
+        const setup = {
+            mode: modeBtn.dataset.mode,
+            size: sizeBtn.dataset.size
+        };
+        localStorage.setItem('gomokuSetup', JSON.stringify(setup));
+    }
+};
+
+const loadSetup = () => {
+    try {
+        const saved = localStorage.getItem('gomokuSetup');
+        if (saved) {
+            const { mode, size } = JSON.parse(saved);
+
+            // Restore Mode
+            if (mode) {
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    const btnMode = (btn as HTMLElement).dataset.mode;
+                    if (btnMode === mode) {
+                        btn.classList.add('active');
+                        game.setGameMode(mode);
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Restore Size
+            if (size) {
+                document.querySelectorAll('.size-btn').forEach(btn => {
+                    const btnSize = (btn as HTMLElement).dataset.size;
+                    if (btnSize === size) {
+                        btn.classList.add('active');
+                        game.setBoardSize(parseInt(size));
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load Gomoku setup:', e);
+    }
 };
 
 // --- Text Updates ---
@@ -198,6 +253,7 @@ const setupEventListeners = () => {
 
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
+        saveSetup();
         game.start();
     });
 

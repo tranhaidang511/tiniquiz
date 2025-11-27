@@ -21,6 +21,14 @@ const renderApp = () => {
       </button>
       <h1>GeoGame</h1>
     </div>
+
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="ja">JA</button>
+      <button class="lang-btn" data-lang="vi">VI</button>
+    </div>
+    
     <div id="menu-view" class="card animate-fade-in">
       <h1 id="menu-title">GeoGame</h1>
       <div class="controls">
@@ -93,6 +101,62 @@ const renderApp = () => {
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
   });
+
+  // Load saved setup
+  loadSetup();
+};
+
+// --- Setup Persistence ---
+
+const saveSetup = () => {
+  const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+  const regionFilter = document.getElementById('region-filter') as HTMLSelectElement;
+  const countFilter = document.getElementById('count-filter') as HTMLInputElement;
+
+  if (modeBtn && regionFilter && countFilter) {
+    const setup = {
+      mode: modeBtn.dataset.mode,
+      region: regionFilter.value,
+      count: countFilter.value
+    };
+    localStorage.setItem('geogameSetup', JSON.stringify(setup));
+  }
+};
+
+const loadSetup = () => {
+  try {
+    const saved = localStorage.getItem('geogameSetup');
+    if (saved) {
+      const { mode, region, count } = JSON.parse(saved);
+
+      // Restore Mode
+      if (mode) {
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+          const btnMode = (btn as HTMLElement).dataset.mode;
+          if (btnMode === mode) {
+            btn.classList.add('active');
+            game.setGameMode(mode);
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      }
+
+      // Restore Region
+      const regionSelect = document.getElementById('region-filter') as HTMLSelectElement;
+      if (regionSelect && region) {
+        regionSelect.value = region;
+      }
+
+      // Restore Count
+      const countInput = document.getElementById('count-filter') as HTMLInputElement;
+      if (countInput && count) {
+        countInput.value = count;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load Geogame setup:', e);
+  }
 };
 
 // --- Event Listeners ---
@@ -126,6 +190,7 @@ const setupEventListeners = () => {
 
   // Start
   document.getElementById('start-btn')?.addEventListener('click', () => {
+    saveSetup();
     const filterVal = (document.getElementById('region-filter') as HTMLSelectElement).value;
     const countInput = document.getElementById('count-filter') as HTMLInputElement;
     let countVal = parseInt(countInput.value, 10);
