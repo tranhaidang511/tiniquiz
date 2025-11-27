@@ -26,6 +26,9 @@ export default {
         tooManyMistakes: "ミスが多すぎます。",
         completedIn: "クリア時間",
         totalTime: "合計時間",
-        tryAgain: "もう一度挑戦"
+        tryAgain: "もう一度挑戦",
+        highScores: "ハイスコア",
+        rank: "順位",
+        date: "日付"
     }
 };

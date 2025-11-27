@@ -26,6 +26,9 @@ export default {
         tooManyMistakes: "Bạn đã có quá nhiều lỗi sai.",
         completedIn: "Hoàn thành trong",
         totalTime: "Tổng Thời Gian",
-        tryAgain: "Thử Lại"
+        tryAgain: "Thử Lại",
+        highScores: "Bảng Xếp Hạng",
+        rank: "Hạng",
+        date: "Ngày"
     }
 };

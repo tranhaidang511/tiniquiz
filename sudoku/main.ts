@@ -109,6 +109,25 @@ const renderApp = () => {
         </div>
       </div>
 
+      <!-- High Scores Table -->
+      <div class="high-scores-container">
+        <h3 id="high-scores-title">High Scores</h3>
+        <table id="high-scores-table">
+          <thead>
+            <tr>
+              <th id="th-rank">Rank</th>
+              <th id="th-hints">Hints</th>
+              <th id="th-time">Time</th>
+              <th id="th-mistakes">Mistakes</th>
+              <th id="th-date">Date</th>
+            </tr>
+          </thead>
+          <tbody id="high-scores-body">
+            <!-- Scores injected here -->
+          </tbody>
+        </table>
+      </div>
+
       <button id="play-again-btn" class="primary">Play Again</button>
     </div>
   `;
@@ -209,6 +228,25 @@ const updateTexts = () => {
 
     const playAgainBtn = document.getElementById('play-again-btn');
     if (playAgainBtn) playAgainBtn.textContent = localization.getUIText('playAgain');
+
+    // High Score Table Headers
+    const highScoresTitle = document.getElementById('high-scores-title');
+    if (highScoresTitle) highScoresTitle.textContent = localization.getUIText('highScores');
+
+    const thRank = document.getElementById('th-rank');
+    if (thRank) thRank.textContent = localization.getUIText('rank');
+
+    const thTime = document.getElementById('th-time');
+    if (thTime) thTime.textContent = localization.getUIText('time');
+
+    const thMistakes = document.getElementById('th-mistakes');
+    if (thMistakes) thMistakes.textContent = localization.getUIText('mistakes');
+
+    const thHints = document.getElementById('th-hints');
+    if (thHints) thHints.textContent = localization.getUIText('hints');
+
+    const thDate = document.getElementById('th-date');
+    if (thDate) thDate.textContent = localization.getUIText('date');
 };
 
 // --- Event Listeners ---
@@ -404,7 +442,17 @@ const showView = (viewId: string) => {
 
 // --- Game Event Handlers ---
 
+interface HighScore {
+    time: number;
+    date: number | string;
+    mistakes: number;
+    hintsUsed: number;
+}
+
+let currentGameState: GameState = 'MENU';
+
 game.onStateChange((state: GameState) => {
+    currentGameState = state;
     if (state === 'MENU') {
         showView('menu-view');
     }
@@ -416,6 +464,7 @@ game.onStateChange((state: GameState) => {
     }
     if (state === 'RESULT') {
         showView('result-view');
+        saveHighScore();
         displayResult();
     }
 });
@@ -431,6 +480,56 @@ game.onMistake(() => {
 game.onTimeUpdate(() => {
     updateGameInfo();
 });
+
+const saveHighScore = () => {
+    // Only save if the player won
+    if (!game.isWin()) return;
+
+    const difficulty = game.getDifficulty();
+    const time = game.getElapsedTime();
+    const mistakes = game.getMistakes();
+    const hintsUsed = game.getHintsUsed();
+    const date = Date.now();
+
+    const newScore: HighScore = { time, mistakes, hintsUsed, date };
+    const key = `sudoku_highscores_${difficulty}`;
+
+    try {
+        const existing = localStorage.getItem(key);
+        let scores: HighScore[] = existing ? JSON.parse(existing) : [];
+
+        scores.push(newScore);
+
+        // Sort: Fewer hints first, then faster time, then fewer mistakes
+        scores.sort((a, b) => {
+            if (a.hintsUsed !== b.hintsUsed) {
+                return a.hintsUsed - b.hintsUsed;
+            }
+            if (a.time !== b.time) {
+                return a.time - b.time;
+            }
+            return a.mistakes - b.mistakes;
+        });
+
+        // Keep top 5
+        scores = scores.slice(0, 5);
+
+        localStorage.setItem(key, JSON.stringify(scores));
+    } catch (e) {
+        console.error('Failed to save high score:', e);
+    }
+};
+
+const getHighScores = (): HighScore[] => {
+    const difficulty = game.getDifficulty();
+    const key = `sudoku_highscores_${difficulty}`;
+    try {
+        const existing = localStorage.getItem(key);
+        return existing ? JSON.parse(existing) : [];
+    } catch (e) {
+        return [];
+    }
+};
 
 const displayResult = () => {
     const resultTitle = document.getElementById('result-title');
@@ -452,11 +551,8 @@ const displayResult = () => {
             : localization.getUIText('tooManyMistakes');
     }
 
-    const time = game.getElapsedTime();
-    const minutes = Math.floor(time / 60000);
-    const seconds = Math.floor((time % 60000) / 1000);
     if (finalTime) {
-        finalTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        finalTime.textContent = game.formatTime(game.getElapsedTime());
     }
 
     if (finalMistakes) {
@@ -467,11 +563,62 @@ const displayResult = () => {
     if (finalHints) {
         finalHints.textContent = game.getHintsUsed().toString();
     }
+
+    // Render High Scores
+    const scores = getHighScores();
+    const tbody = document.getElementById('high-scores-body');
+    const container = document.querySelector('.high-scores-container');
+
+    // Only show high scores if player won
+    if (isWin) {
+        if (container) container.classList.remove('hidden');
+        if (tbody) {
+            tbody.innerHTML = '';
+            scores.forEach((s, index) => {
+                const tr = document.createElement('tr');
+
+                // Highlight current run if it matches
+                const currentTime = game.getElapsedTime();
+                const currentMistakes = game.getMistakes();
+                const currentHints = game.getHintsUsed();
+
+                if (s.time === currentTime &&
+                    s.mistakes === currentMistakes &&
+                    s.hintsUsed === currentHints &&
+                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                    tr.classList.add('current-run');
+                }
+
+                let dateStr = '';
+                if (typeof s.date === 'number') {
+                    const lang = localization.language;
+                    const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
+                    dateStr = new Date(s.date).toLocaleDateString(locale);
+                } else {
+                    dateStr = s.date as string;
+                }
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${s.hintsUsed}</td>
+                    <td>${game.formatTime(s.time)}</td>
+                    <td>${s.mistakes}</td>
+                    <td>${dateStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } else {
+        if (container) container.classList.add('hidden');
+    }
 };
 
 // Subscribe to language changes
 localization.subscribe(() => {
     updateTexts();
+    if (currentGameState === 'RESULT') {
+        displayResult();
+    }
 });
 
 // --- Initialize ---

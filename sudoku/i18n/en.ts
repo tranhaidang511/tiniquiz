@@ -26,6 +26,9 @@ export default {
         tooManyMistakes: "You made too many mistakes.",
         completedIn: "Completed in",
         totalTime: "Total Time",
-        tryAgain: "Try Again"
+        tryAgain: "Try Again",
+        highScores: "High Scores",
+        rank: "Rank",
+        date: "Date"
     }
 };
