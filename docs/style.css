@@ -9,6 +9,7 @@
     --accent-geo: #38bdf8;
     --accent-gomoku: #f59e0b;
     --accent-sudoku: #a78bfa;
+    --accent-minesweeper: #ef4444;
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 30px rgba(138, 180, 248, 0.3);
@@ -176,6 +177,10 @@ h1 {
 
 .game-card.sudoku {
     --card-accent: var(--accent-sudoku);
+}
+
+.game-card.minesweeper {
+    --card-accent: var(--accent-minesweeper);
 }
 
 .game-card:hover {

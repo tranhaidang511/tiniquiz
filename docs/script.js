@@ -17,6 +17,11 @@ const translations = {
         'sudoku-feature1': '5 difficulty levels',
         'sudoku-feature2': 'Hints & notes system',
         'sudoku-button': 'Play Sudoku',
+        'minesweeper-title': 'Minesweeper',
+        'minesweeper-desc': 'Classic puzzle game. Clear the board without hitting any mines! Use logic to flag dangerous cells.',
+        'minesweeper-feature1': '5 difficulty levels',
+        'minesweeper-feature2': 'High score tracking',
+        'minesweeper-button': 'Play Minesweeper',
         'footer-made': 'Made with ❤️ by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     },
@@ -38,6 +43,11 @@ const translations = {
         'sudoku-feature1': '5つの難易度',
         'sudoku-feature2': 'ヒント・メモ機能',
         'sudoku-button': '数独をプレイ',
+        'minesweeper-title': 'マインスイーパー',
+        'minesweeper-desc': 'クラシックなパズルゲーム。地雷を踏まずにボードをクリアしよう！論理を使って危険なセルにフラグを立てます。',
+        'minesweeper-feature1': '5つの難易度',
+        'minesweeper-feature2': 'ハイスコア記録',
+        'minesweeper-button': 'マインスイーパーをプレイ',
         'footer-made': 'Made with ❤️ by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     },
@@ -59,6 +69,11 @@ const translations = {
         'sudoku-feature1': '5 cấp độ khó',
         'sudoku-feature2': 'Hệ thống gợi ý & ghi chú',
         'sudoku-button': 'Chơi Sudoku',
+        'minesweeper-title': 'Dò Mìn',
+        'minesweeper-desc': 'Trò chơi giải đố kinh điển. Dọn sạch bàn cờ mà không chạm vào mìn! Sử dụng tư duy logic để cắm cờ các ô nguy hiểm.',
+        'minesweeper-feature1': '5 cấp độ khó',
+        'minesweeper-feature2': 'Bảng xếp hạng điểm cao',
+        'minesweeper-button': 'Chơi Dò Mìn',
         'footer-made': 'Made with ❤️ by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     }
