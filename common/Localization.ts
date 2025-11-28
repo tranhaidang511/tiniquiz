@@ -1,22 +1,12 @@
-import en from './en';
-import ja from './ja';
-import vi from './vi';
-
 export type Language = 'en' | 'ja' | 'vi';
 
-type LocaleData = typeof en;
-
-const locales: Record<Language, LocaleData> = {
-    en,
-    ja,
-    vi
-};
-
-export class Localization {
-    private currentLang: Language = 'en';
+export class Localization<T = any> {
+    protected currentLang: Language = 'en';
     private listeners: ((lang: Language) => void)[] = [];
+    protected locales: Record<Language, T>;
 
-    constructor(initialLang: Language = 'en') {
+    constructor(locales: Record<Language, T>, initialLang: Language = 'en') {
+        this.locales = locales;
         this.currentLang = initialLang;
     }
 
@@ -40,12 +30,15 @@ export class Localization {
         this.listeners.forEach(listener => listener(this.currentLang));
     }
 
-    getUIText(key: string): string {
+    getUIText(key: string, params?: Record<string, string>): string {
         // @ts-ignore
-        return locales[this.currentLang].ui[key] || key;
+        const ui = this.locales[this.currentLang]?.ui;
+        let text = ui ? (ui[key] || key) : key;
+        if (params) {
+            Object.entries(params).forEach(([k, v]) => {
+                text = text.replace(`{${k}}`, v);
+            });
+        }
+        return text;
     }
 }
-
-// Initialize with saved language or default to 'en'
-const savedLang = localStorage.getItem('language') as Language | null;
-export const localization = new Localization(savedLang || 'en');

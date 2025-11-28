@@ -1,6 +1,34 @@
 import { countries } from './data';
 import type { Country } from './data';
-import { localization } from './i18n/Localization';
+import { Localization } from '../common/Localization';
+import type { Language } from '../common/Localization';
+import en from './i18n/en';
+import ja from './i18n/ja';
+import vi from './i18n/vi';
+
+class GeogameLocalization extends Localization {
+  getCountryName(code: string): string {
+    // @ts-ignore
+    const data = this.locales[this.currentLang].countries[code];
+    return data ? data.name : code;
+  }
+
+  getCapital(code: string): string {
+    // @ts-ignore
+    const data = this.locales[this.currentLang].countries[code];
+    return data ? data.capital : "Unknown";
+  }
+
+  getRegionName(key: string): string {
+    // @ts-ignore
+    const regionName = this.locales[this.currentLang].regions[key];
+    return regionName || key;
+  }
+}
+
+// Initialize Localization
+const savedLang = localStorage.getItem('language') as Language | null;
+export const localization = new GeogameLocalization({ en, ja, vi }, savedLang || 'en');
 
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type GameMode = 'CAPITALS' | 'FLAGS';

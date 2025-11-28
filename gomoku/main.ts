@@ -1,12 +1,19 @@
 import './style.css';
 import { game } from './Game';
 import type { GameState, Stone } from './Game';
-import { localization } from './i18n/Localization';
-import type { Language } from './i18n/Localization';
+import { Localization } from '../common/Localization';
+import type { Language } from '../common/Localization';
+import en from './i18n/en';
+import ja from './i18n/ja';
+import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
 
 // Initialize Consent Banner
 new Consent();
+
+// Initialize Localization
+const savedLang = localStorage.getItem('language') as Language | null;
+const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 
 // --- UI Templates ---
 

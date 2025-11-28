@@ -1,8 +1,8 @@
 import './style.css';
 import { game } from './Game';
 import type { GameState, Question } from './Game';
-import { localization } from './i18n/Localization';
-import type { Language } from './i18n/Localization';
+import { localization } from './Game';
+import type { Language } from '../common/Localization';
 import type { Country } from './data';
 import { Consent } from '../common/Consent';
 
