@@ -32,6 +32,8 @@
     "gomoku",
     "gomoku/vite.config.ts",
     "sudoku",
-    "sudoku/vite.config.ts"
+    "sudoku/vite.config.ts",
+    "minesweeper",
+    "minesweeper/vite.config.ts"
   ]
 }

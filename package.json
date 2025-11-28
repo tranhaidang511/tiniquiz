@@ -12,7 +12,10 @@
     "preview:gomoku": "vite preview --config gomoku/vite.config.ts",
     "dev:sudoku": "vite --config sudoku/vite.config.ts",
     "build:sudoku": "tsc && vite build --config sudoku/vite.config.ts",
-    "preview:sudoku": "vite preview --config sudoku/vite.config.ts"
+    "preview:sudoku": "vite preview --config sudoku/vite.config.ts",
+    "dev:minesweeper": "vite --config minesweeper/vite.config.ts",
+    "build:minesweeper": "tsc && vite build --config minesweeper/vite.config.ts",
+    "preview:minesweeper": "vite preview --config minesweeper/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
