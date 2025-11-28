@@ -4,12 +4,10 @@ import type { GameState, Question } from './Game';
 import { localization } from './i18n/Localization';
 import type { Language } from './i18n/Localization';
 import type { Country } from './data';
-import { Consent } from './Consent';
+import { Consent } from '../common/Consent';
 
 // Initialize Consent Banner
 new Consent();
-
-const app = document.querySelector<HTMLDivElement>('#app')!;
 
 // --- UI Templates ---
 

@@ -34,6 +34,7 @@
     "sudoku",
     "sudoku/vite.config.ts",
     "minesweeper",
-    "minesweeper/vite.config.ts"
+    "minesweeper/vite.config.ts",
+    "common/Consent.ts"
   ]
 }

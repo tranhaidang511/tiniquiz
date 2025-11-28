@@ -1,14 +1,12 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Difficulty, Cell } from './Game';
+import type { GameState, Difficulty } from './Game';
 import { localization } from './i18n/Localization';
 import type { Language } from './i18n/Localization';
-import { Consent } from './Consent';
+import { Consent } from '../common/Consent';
 
 // Initialize Consent Banner
 new Consent();
-
-const app = document.querySelector<HTMLDivElement>('#app')!;
 
 // --- UI Templates ---
 
@@ -196,7 +194,6 @@ const renderBoard = () => {
 
 const updateBoard = () => {
     const board = game.getBoard();
-    const state = game.getState();
 
     board.forEach(row => {
         row.forEach(cell => {
