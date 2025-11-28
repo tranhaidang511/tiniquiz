@@ -27,6 +27,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
+    "common/Consent.ts",
     "geogame",
     "geogame/vite.config.ts",
     "gomoku",
@@ -35,6 +36,7 @@
     "sudoku/vite.config.ts",
     "minesweeper",
     "minesweeper/vite.config.ts",
-    "common/Consent.ts"
+    "sliding",
+    "sliding/vite.config.ts"
   ]
 }
