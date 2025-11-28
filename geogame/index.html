@@ -51,7 +51,106 @@
   </noscript>
   <!-- End Google Tag Manager (noscript) -->
 
-  <div id="app"></div>
+  <div id="app">
+    <div class="header-controls">
+      <button id="home-btn" class="icon-btn" aria-label="Back to Home">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </button>
+      <h1>GeoGame</h1>
+    </div>
+
+    <!-- Language Switcher -->
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="ja">JA</button>
+      <button class="lang-btn" data-lang="vi">VI</button>
+    </div>
+
+    <div id="menu-view" class="card animate-fade-in">
+      <h1 id="menu-title">GeoGame</h1>
+      <div class="controls">
+        <label id="label-mode">Game Mode</label>
+        <div class="mode-selector">
+          <button id="mode-capitals" class="mode-btn active" data-mode="CAPITALS">Capitals</button>
+          <button id="mode-flags" class="mode-btn" data-mode="FLAGS">Flags</button>
+        </div>
+
+        <label id="label-filter">Filter by Region</label>
+        <select id="region-filter">
+          <option value="allWorld" id="option-all-world">All World</option>
+          <optgroup label="Continents" id="continent-options"></optgroup>
+          <optgroup label="Regions" id="region-options"></optgroup>
+        </select>
+        </label>
+
+        <label>
+          <span id="label-count">Number of Questions</span>
+          <input type="number" id="count-filter" value="5" min="1" max="200">
+        </label>
+
+        <button id="start-btn" class="primary">Start Game</button>
+      </div>
+    </div>
+
+    <!-- Game View -->
+    <div id="game-view" class="card hidden animate-fade-in">
+      <button id="new-game-btn" class="primary">New Game</button>
+
+      <div class="game-header">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="game-timer">
+          <span id="game-time-label">Time</span>: <span id="game-timer">00:00</span>
+        </div>
+      </div>
+
+      <div id="flag-container" class="hidden">
+        <img id="flag-image" src="" alt="Flag" />
+      </div>
+
+      <h3 id="question-text" class="question-text"></h3>
+
+      <div class="choices-grid" id="choices-container">
+        <!-- Buttons injected here -->
+      </div>
+    </div>
+
+    <!-- Result View -->
+    <div id="result-view" class="card hidden animate-fade-in">
+      <h2 id="result-title">Game Over!</h2>
+      <div class="score-display">
+        <span id="final-score">0</span> / <span id="total-questions">0</span>
+      </div>
+      <div class="time-display">
+        <span id="time-label">Total Time</span>: <span id="elapsed-time">00:00</span>
+      </div>
+
+      <!-- High Scores Table -->
+      <div class="high-scores-container">
+        <h3 id="high-scores-title">High Scores</h3>
+        <table id="high-scores-table">
+          <thead>
+            <tr>
+              <th id="th-rank">Rank</th>
+              <th id="th-score">Score</th>
+              <th id="th-time">Time</th>
+              <th id="th-date">Date</th>
+            </tr>
+          </thead>
+          <tbody id="high-scores-body">
+            <!-- Scores injected here -->
+          </tbody>
+        </table>
+      </div>
+
+      <button id="restart-btn" class="primary">Play Again</button>
+    </div>
+  </div>
   <script type="module" src="/main.ts"></script>
 </body>
 
