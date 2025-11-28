@@ -14,6 +14,7 @@ export default {
         playAgain: "Chơi Lại",
         highScores: "Điểm Cao",
         rank: "Hạng",
-        date: "Ngày"
+        date: "Ngày",
+        reference: "Mục Tiêu:"
     }
 };

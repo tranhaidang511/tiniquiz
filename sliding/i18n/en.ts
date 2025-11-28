@@ -14,6 +14,7 @@ export default {
         playAgain: "Play Again",
         highScores: "High Scores",
         rank: "Rank",
-        date: "Date"
+        date: "Date",
+        reference: "Goal:"
     }
 };

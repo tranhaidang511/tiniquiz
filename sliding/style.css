@@ -244,6 +244,77 @@ button.primary:hover {
     color: var(--accent-primary);
 }
 
+/* Reference Board */
+.reference-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 0.5rem;
+}
+
+.reference-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.reference-board {
+    display: grid;
+    gap: 2px;
+    background: var(--bg-primary);
+    padding: 2px;
+    border-radius: 0.25rem;
+    box-shadow: var(--shadow-md);
+}
+
+/* Reference board sizing based on board size */
+.reference-board[data-size="2"] {
+    width: 80px;
+    height: 80px;
+}
+
+.reference-board[data-size="3"] {
+    width: 90px;
+    height: 90px;
+}
+
+.reference-board[data-size="4"] {
+    width: 100px;
+    height: 100px;
+}
+
+.reference-board[data-size="5"] {
+    width: 110px;
+    height: 110px;
+}
+
+.reference-board[data-size="6"] {
+    width: 120px;
+    height: 120px;
+}
+
+.reference-board[data-size="7"] {
+    width: 130px;
+    height: 130px;
+}
+
+.reference-board .tile {
+    font-size: 0.65rem;
+    cursor: default;
+    box-shadow: var(--shadow-sm);
+}
+
+.reference-board .tile:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+}
+
 /* Puzzle Board */
 #board-container {
     width: 100%;

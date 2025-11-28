@@ -107,6 +107,9 @@ const updateTexts = () => {
 
     const thDate = document.getElementById('th-date');
     if (thDate) thDate.textContent = localization.getUIText('date');
+
+    const referenceLabel = document.getElementById('reference-label');
+    if (referenceLabel) referenceLabel.textContent = localization.getUIText('reference');
 };
 
 // --- Event Listeners ---
@@ -159,6 +162,32 @@ const setupEventListeners = () => {
 };
 
 // --- Board Rendering ---
+
+const renderReferenceBoard = () => {
+    const referenceBoardElement = document.getElementById('reference-board');
+    if (!referenceBoardElement) return;
+
+    referenceBoardElement.innerHTML = '';
+    const size = game.getBoardSize();
+    const totalTiles = size * size;
+
+    // Set grid template
+    referenceBoardElement.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    referenceBoardElement.dataset.size = size.toString();
+
+    // Create solved board: [1, 2, 3, ..., size*size-1, null]
+    for (let i = 1; i < totalTiles; i++) {
+        const tileDiv = document.createElement('div');
+        tileDiv.className = 'tile';
+        tileDiv.textContent = i.toString();
+        referenceBoardElement.appendChild(tileDiv);
+    }
+
+    // Add empty tile
+    const emptyTile = document.createElement('div');
+    emptyTile.className = 'tile empty';
+    referenceBoardElement.appendChild(emptyTile);
+};
 
 const renderBoard = () => {
     const boardElement = document.getElementById('puzzle-board');
@@ -249,6 +278,7 @@ game.onStateChange((state: GameState) => {
     }
     if (state === 'PLAYING') {
         showView('game-view');
+        renderReferenceBoard();
         renderBoard();
         updateGameInfo();
 

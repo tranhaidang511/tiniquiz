@@ -14,6 +14,7 @@ export default {
         playAgain: "もう一度プレイ",
         highScores: "ハイスコア",
         rank: "順位",
-        date: "日付"
+        date: "日付",
+        reference: "目標:"
     }
 };
