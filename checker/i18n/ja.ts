@@ -21,5 +21,7 @@ export default {
         selectPiece: "駒を選択してください",
         mustCapture: "取る必要があります！",
         invalidMove: "無効な移動",
+        boardSize: "盤面サイズ",
+        forceJump: "強制ジャンプ（必須捕獲）",
     }
 };

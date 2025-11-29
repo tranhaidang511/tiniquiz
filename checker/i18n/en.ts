@@ -21,5 +21,7 @@ export default {
         selectPiece: "Select a piece to move",
         mustCapture: "You must capture!",
         invalidMove: "Invalid move",
+        boardSize: "Board Size",
+        forceJump: "Force Jump (Mandatory Captures)",
     }
 };

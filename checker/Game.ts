@@ -1,6 +1,7 @@
 export type Player = 'RED' | 'BLACK';
 export type PieceType = 'REGULAR' | 'KING';
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
+export type BoardSize = 8 | 10 | 12;
 
 export interface Piece {
     player: Player;
@@ -21,6 +22,8 @@ export interface Position {
 }
 
 class CheckersGame {
+    private boardSize: BoardSize = 8;
+    private forceJump: boolean = true;
     private board: (Piece | null)[][] = [];
     private currentPlayer: Player = 'RED';
     private gameState: GameState = 'MENU';
@@ -42,11 +45,15 @@ class CheckersGame {
     }
 
     private initializeBoard() {
-        this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+        this.board = Array(this.boardSize).fill(null).map(() => Array(this.boardSize).fill(null));
 
-        // Place black pieces (top 3 rows)
-        for (let row = 0; row < 3; row++) {
-            for (let col = 0; col < 8; col++) {
+        // Determine number of rows based on board size
+        // 8x8: 3 rows, 10x10: 4 rows, 12x12: 5 rows
+        const pieceRows = this.boardSize === 8 ? 3 : this.boardSize === 10 ? 4 : 5;
+
+        // Place black pieces (top rows)
+        for (let row = 0; row < pieceRows; row++) {
+            for (let col = 0; col < this.boardSize; col++) {
                 if ((row + col) % 2 === 1) {
                     this.board[row][col] = {
                         player: 'BLACK',
@@ -58,9 +65,9 @@ class CheckersGame {
             }
         }
 
-        // Place red pieces (bottom 3 rows)
-        for (let row = 5; row < 8; row++) {
-            for (let col = 0; col < 8; col++) {
+        // Place red pieces (bottom rows)
+        for (let row = this.boardSize - pieceRows; row < this.boardSize; row++) {
+            for (let col = 0; col < this.boardSize; col++) {
                 if ((row + col) % 2 === 1) {
                     this.board[row][col] = {
                         player: 'RED',
@@ -71,6 +78,18 @@ class CheckersGame {
                 }
             }
         }
+    }
+
+    setBoardSize(size: BoardSize) {
+        this.boardSize = size;
+    }
+
+    setForceJump(enabled: boolean) {
+        this.forceJump = enabled;
+    }
+
+    getBoardSize(): BoardSize {
+        return this.boardSize;
     }
 
     start() {
@@ -196,36 +215,32 @@ class CheckersGame {
         if (!piece || piece.type === 'KING') return;
 
         if ((piece.player === 'RED' && row === 0) ||
-            (piece.player === 'BLACK' && row === 7)) {
+            (piece.player === 'BLACK' && row === this.boardSize - 1)) {
             piece.type = 'KING';
         }
     }
 
     private calculateValidMoves(piece: Piece): Move[] {
-        console.log('calculateValidMoves for', piece.player, 'at', piece.row, piece.col);
-
         const captureMoves = this.getCaptureMoves(piece);
-        console.log('Capture moves:', captureMoves.length);
 
         if (captureMoves.length > 0) {
             return captureMoves;
         }
 
-        const allPieces = this.getAllPieces(this.currentPlayer);
-        console.log('All pieces for', this.currentPlayer, ':', allPieces.length);
+        // Only enforce mandatory capture if forceJump is enabled
+        if (this.forceJump) {
+            const allPieces = this.getAllPieces(this.currentPlayer);
 
-        for (const p of allPieces) {
-            if (p.row === piece.row && p.col === piece.col) continue;
-            const otherCaptures = this.getCaptureMoves(p);
-            if (otherCaptures.length > 0) {
-                console.log('Another piece at', p.row, p.col, 'can capture! Blocking this piece');
-                return [];
+            for (const p of allPieces) {
+                if (p.row === piece.row && p.col === piece.col) continue;
+                const otherCaptures = this.getCaptureMoves(p);
+                if (otherCaptures.length > 0) {
+                    return [];
+                }
             }
         }
 
-        const regularMoves = this.getRegularMoves(piece);
-        console.log('Regular moves:', regularMoves);
-        return regularMoves;
+        return this.getRegularMoves(piece);
     }
 
     private getCaptureMoves(piece: Piece): Move[] {
@@ -255,7 +270,7 @@ class CheckersGame {
         const landRow = piece.row + 2 * dRow;
         const landCol = piece.col + 2 * dCol;
 
-        if (landRow < 0 || landRow > 7 || landCol < 0 || landCol > 7) {
+        if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
             return;
         }
 
@@ -306,7 +321,7 @@ class CheckersGame {
         const landRow = piece.row + 2 * dRow;
         const landCol = piece.col + 2 * dCol;
 
-        if (landRow < 0 || landRow > 7 || landCol < 0 || landCol > 7) {
+        if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
             return;
         }
 
@@ -351,7 +366,6 @@ class CheckersGame {
     }
 
     private getRegularMoves(piece: Piece): Move[] {
-        console.log('getRegularMoves for', piece.player, 'piece at', piece.row, piece.col);
         const moves: Move[] = [];
         const directions = piece.type === 'KING'
             ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
@@ -359,31 +373,20 @@ class CheckersGame {
                 ? [[-1, -1], [-1, 1]]
                 : [[1, -1], [1, 1]];
 
-        console.log('Directions:', directions);
-
         for (const [dRow, dCol] of directions) {
             const newRow = piece.row + dRow;
             const newCol = piece.col + dCol;
 
-            console.log(`Checking (${newRow}, ${newCol})`);
-
-            if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
-                const cellContent = this.board[newRow][newCol];
-                console.log(`Cell at (${newRow}, ${newCol}) is:`, cellContent);
-
-                if (cellContent === null) {
-                    console.log(`Adding move to (${newRow}, ${newCol})`);
+            if (newRow >= 0 && newRow < this.boardSize && newCol >= 0 && newCol < this.boardSize) {
+                if (this.board[newRow][newCol] === null) {
                     moves.push({
                         from: { row: piece.row, col: piece.col },
                         to: { row: newRow, col: newCol }
                     });
                 }
-            } else {
-                console.log(`(${newRow}, ${newCol}) is out of bounds`);
             }
         }
 
-        console.log('Total regular moves found:', moves.length);
         return moves;
     }
 
@@ -421,8 +424,8 @@ class CheckersGame {
 
     private getAllPieces(player: Player): Piece[] {
         const pieces: Piece[] = [];
-        for (let row = 0; row < 8; row++) {
-            for (let col = 0; col < 8; col++) {
+        for (let row = 0; row < this.boardSize; row++) {
+            for (let col = 0; col < this.boardSize; col++) {
                 const piece = this.board[row][col];
                 if (piece && piece.player === player) {
                     pieces.push(piece);

@@ -73,6 +73,31 @@
         <!-- Menu View -->
         <div id="menu-view" class="card animate-fade-in">
             <h2 id="menu-title">Game Setup</h2>
+            <div class="setup-group">
+                <h3 id="label-board-size">Board Size</h3>
+                <div class="radio-group">
+                    <label class="radio-label">
+                        <input type="radio" name="board-size" value="8" checked>
+                        <span>8x8</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="board-size" value="10">
+                        <span>10x10</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="board-size" value="12">
+                        <span>12x12</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setup-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="force-jump" checked>
+                    <span id="label-force-jump">Force Jump (Mandatory Captures)</span>
+                </label>
+            </div>
+
             <button id="start-btn" class="primary">Start Game</button>
         </div>
 

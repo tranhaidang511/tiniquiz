@@ -21,5 +21,7 @@ export default {
         selectPiece: "Chọn quân cờ để di chuyển",
         mustCapture: "Bạn phải ăn quân!",
         invalidMove: "Nước đi không hợp lệ",
+        boardSize: "Kích thước bàn cờ",
+        forceJump: "Bắt buộc ăn quân",
     }
 };

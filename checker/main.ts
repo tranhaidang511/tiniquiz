@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Player, Piece, Move } from './Game';
+import type { GameState, Player, Piece, Move, BoardSize } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import en from './i18n/en';
@@ -73,6 +73,12 @@ const updateTexts = () => {
     const thDate = document.getElementById('th-date');
     if (thDate) thDate.textContent = localization.getUIText('date');
 
+    const labelBoardSize = document.getElementById('label-board-size');
+    if (labelBoardSize) labelBoardSize.textContent = localization.getUIText('boardSize');
+
+    const labelForceJump = document.getElementById('label-force-jump');
+    if (labelForceJump) labelForceJump.textContent = localization.getUIText('forceJump');
+
     updateGameInfo();
 };
 
@@ -97,6 +103,16 @@ const setupEventListeners = () => {
 
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
+        // Get board size
+        const sizeInput = document.querySelector('input[name="board-size"]:checked') as HTMLInputElement;
+        const size = parseInt(sizeInput?.value || '8') as BoardSize;
+
+        // Get force jump setting
+        const forceJumpInput = document.getElementById('force-jump') as HTMLInputElement;
+        const forceJump = forceJumpInput?.checked ?? true;
+
+        game.setBoardSize(size);
+        game.setForceJump(forceJump);
         game.start();
     });
 
@@ -119,11 +135,13 @@ const renderBoard = () => {
 
     svg.innerHTML = '';
 
-    const squareSize = 75;
+    const boardSize = game.getBoardSize();
+    const totalSize = 600; // SVG viewBox size
+    const squareSize = totalSize / boardSize;
 
     // Draw checkerboard
-    for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
             const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
             rect.setAttribute('x', (col * squareSize).toString());
             rect.setAttribute('y', (row * squareSize).toString());
@@ -142,11 +160,11 @@ const renderBoard = () => {
 
     // Draw pieces
     const board = game.getBoard();
-    for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
             const piece = board[row][col];
             if (piece) {
-                drawPiece(svg, piece);
+                drawPiece(svg, piece, squareSize);
             }
         }
     }
@@ -158,9 +176,8 @@ const renderBoard = () => {
     svg.onclick = handleBoardClick;
 };
 
-const drawPiece = (svg: SVGSVGElement, piece: Piece) => {
-    const squareSize = 75;
-    const pieceRadius = 28;
+const drawPiece = (svg: SVGSVGElement, piece: Piece, squareSize: number) => {
+    const pieceRadius = squareSize * 0.37; // Scale radius relative to square size
     const cx = piece.col * squareSize + squareSize / 2;
     const cy = piece.row * squareSize + squareSize / 2;
 
@@ -222,9 +239,9 @@ const drawPiece = (svg: SVGSVGElement, piece: Piece) => {
     if (piece.type === 'KING') {
         const crown = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         crown.setAttribute('x', cx.toString());
-        crown.setAttribute('y', (cy + 6).toString());
+        crown.setAttribute('y', (cy + (squareSize * 0.08)).toString());
         crown.setAttribute('text-anchor', 'middle');
-        crown.setAttribute('font-size', '24');
+        crown.setAttribute('font-size', (squareSize * 0.32).toString());
         crown.setAttribute('fill', '#fbbf24');
         crown.textContent = '♔';
         group.appendChild(crown);
@@ -239,9 +256,6 @@ const highlightMoves = () => {
 
     const selectedPiece = game.getSelectedPiece();
     const validMoves = game.getValidMoves();
-
-    console.log('highlightMoves called - selectedPiece:', selectedPiece);
-    console.log('validMoves:', validMoves);
 
     // Reset highlights
     svg.querySelectorAll('.board-square').forEach(sq => {
@@ -276,7 +290,9 @@ const highlightMoves = () => {
         square?.classList.add('valid-move');
 
         // Draw move indicator
-        const squareSize = 75;
+        const boardSize = game.getBoardSize();
+        const totalSize = 600;
+        const squareSize = totalSize / boardSize;
         const cx = move.to.col * squareSize + squareSize / 2;
         const cy = move.to.row * squareSize + squareSize / 2;
 
@@ -284,7 +300,7 @@ const highlightMoves = () => {
         indicator.classList.add('move-indicator');
         indicator.setAttribute('cx', cx.toString());
         indicator.setAttribute('cy', cy.toString());
-        indicator.setAttribute('r', '12');
+        indicator.setAttribute('r', (squareSize * 0.16).toString());
         indicator.setAttribute('fill', move.captures && move.captures.length > 0 ? '#ef4444' : '#81b64c');
         indicator.setAttribute('opacity', '0.8');
         indicator.style.pointerEvents = 'none';
@@ -303,39 +319,30 @@ const handleBoardClick = (e: MouseEvent) => {
         const row = parseInt(pieceGroup.dataset.row || '-1');
         const col = parseInt(pieceGroup.dataset.col || '-1');
         if (row !== -1 && col !== -1) {
-            console.log('Clicked on piece:', row, col);
             handlePieceClick(row, col);
         }
     } else if (square) {
         const row = parseInt(square.dataset.row || '-1');
         const col = parseInt(square.dataset.col || '-1');
         if (row !== -1 && col !== -1) {
-            console.log('Clicked on square:', row, col);
             handleSquareClick(row, col);
         }
     }
 };
 
 const handleSquareClick = (row: number, col: number) => {
-    console.log('Square clicked:', row, col);
     const board = game.getBoard();
     const piece = board[row][col];
 
     if (piece) {
-        console.log('Piece found, calling handlePieceClick');
         handlePieceClick(row, col);
     } else {
-        console.log('Empty square, trying to move');
-        const moved = game.makeMove(row, col);
-        console.log('Move result:', moved);
+        game.makeMove(row, col);
     }
 };
 
 const handlePieceClick = (row: number, col: number) => {
-    console.log('handlePieceClick:', row, col);
-    const selected = game.selectPiece(row, col);
-    console.log('Selection result:', selected);
-    console.log('Valid moves:', game.getValidMoves());
+    game.selectPiece(row, col);
 };
 
 const updateGameInfo = () => {
