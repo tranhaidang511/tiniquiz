@@ -21,7 +21,10 @@
     "preview:sliding": "vite preview --config sliding/vite.config.ts",
     "dev:checkers": "vite --config checkers/vite.config.ts",
     "build:checkers": "tsc && vite build --config checkers/vite.config.ts",
-    "preview:checkers": "vite preview --config checkers/vite.config.ts"
+    "preview:checkers": "vite preview --config checkers/vite.config.ts",
+    "dev:othello": "vite --config othello/vite.config.ts",
+    "build:othello": "tsc && vite build --config othello/vite.config.ts",
+    "preview:othello": "vite preview --config othello/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

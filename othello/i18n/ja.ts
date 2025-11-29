@@ -1,0 +1,30 @@
+export default {
+    ui: {
+        gameTitle: "オセロ",
+        gameSetup: "ゲーム設定",
+        startGame: "ゲーム開始",
+        newGame: "新規ゲーム",
+        blackTurn: "黒の番",
+        whiteTurn: "白の番",
+        blackWins: "黒の勝利！",
+        whiteWins: "白の勝利！",
+        draw: "引き分け！",
+        gameOver: "ゲーム終了",
+        totalMoves: "合計手数",
+        playAgain: "もう一度プレイ",
+        time: "時間",
+        moves: "手数",
+        blackScore: "黒",
+        whiteScore: "白",
+        highScores: "ハイスコア",
+        rank: "順位",
+        date: "日付",
+        gameMode: "ゲームモード",
+        twoPlayers: "二人対戦",
+        vsAI: "AI対戦",
+        difficulty: "難易度",
+        easy: "簡単",
+        medium: "普通",
+        hard: "難しい"
+    }
+};

@@ -1,0 +1,30 @@
+export default {
+    ui: {
+        gameTitle: "Othello",
+        gameSetup: "Game Setup",
+        startGame: "Start Game",
+        newGame: "New Game",
+        blackTurn: "Black's Turn",
+        whiteTurn: "White's Turn",
+        blackWins: "Black Wins!",
+        whiteWins: "White Wins!",
+        draw: "It's a Draw!",
+        gameOver: "Game Over",
+        totalMoves: "Total Moves",
+        playAgain: "Play Again",
+        time: "Time",
+        moves: "Moves",
+        blackScore: "Black",
+        whiteScore: "White",
+        highScores: "High Scores",
+        rank: "Rank",
+        date: "Date",
+        gameMode: "Game Mode",
+        twoPlayers: "2 Players",
+        vsAI: "vs AI",
+        difficulty: "Difficulty",
+        easy: "Easy",
+        medium: "Medium",
+        hard: "Hard"
+    }
+};

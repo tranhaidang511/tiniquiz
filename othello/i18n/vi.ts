@@ -1,0 +1,30 @@
+export default {
+    ui: {
+        gameTitle: "Cờ Othello",
+        gameSetup: "Thiết lập trò chơi",
+        startGame: "Bắt đầu",
+        newGame: "Ván mới",
+        blackTurn: "Lượt đen",
+        whiteTurn: "Lượt trắng",
+        blackWins: "Đen thắng!",
+        whiteWins: "Trắng thắng!",
+        draw: "Hòa!",
+        gameOver: "Kết thúc",
+        totalMoves: "Tổng số nước",
+        playAgain: "Chơi lại",
+        time: "Thời gian",
+        moves: "Số nước",
+        blackScore: "Đen",
+        whiteScore: "Trắng",
+        highScores: "Điểm cao",
+        rank: "Hạng",
+        date: "Ngày",
+        gameMode: "Chế độ chơi",
+        twoPlayers: "2 Người chơi",
+        vsAI: "Đấu với AI",
+        difficulty: "Độ khó",
+        easy: "Dễ",
+        medium: "Trung bình",
+        hard: "Khó"
+    }
+};
