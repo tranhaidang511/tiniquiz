@@ -4,7 +4,7 @@ export default {
         gameSetup: "Thiết Lập Trò Chơi",
         gameMode: "Chế Độ Chơi",
         twoPlayers: "2 Người Chơi",
-        vsAI: "vs Máy",
+        vsAI: "Đấu Với AI",
         comingSoon: "Sắp Ra Mắt",
         boardSize: "Kích Thước Bàn",
         startGame: "Bắt Đầu",

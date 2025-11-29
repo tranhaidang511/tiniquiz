@@ -24,7 +24,7 @@ export default {
         boardSize: "Kích thước bàn cờ",
         forceJump: "Bắt buộc ăn quân",
         gameMode: "Chế Độ Chơi",
-        twoPlayers: "Hai Người Chơi",
+        twoPlayers: "2 Người Chơi",
         vsAI: "Đấu Với AI",
     }
 };

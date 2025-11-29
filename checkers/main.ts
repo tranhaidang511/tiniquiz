@@ -25,6 +25,68 @@ const renderApp = () => {
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
     });
+
+    // Load saved setup
+    loadSetup();
+};
+
+// --- Setup Persistence ---
+
+const saveSetup = () => {
+    const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+    const sizeInput = document.querySelector('input[name="board-size"]:checked') as HTMLInputElement;
+    const forceJumpInput = document.getElementById('force-jump') as HTMLInputElement;
+
+    if (modeBtn && sizeInput && forceJumpInput) {
+        const setup = {
+            mode: modeBtn.dataset.mode,
+            size: sizeInput.value,
+            forceJump: forceJumpInput.checked
+        };
+        localStorage.setItem('checkersSetup', JSON.stringify(setup));
+    }
+};
+
+const loadSetup = () => {
+    try {
+        const saved = localStorage.getItem('checkersSetup');
+        if (saved) {
+            const { mode, size, forceJump } = JSON.parse(saved);
+
+            // Restore Mode
+            if (mode) {
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    const btnMode = (btn as HTMLElement).dataset.mode;
+                    if (btnMode === mode) {
+                        btn.classList.add('active');
+                        game.setGameMode(mode as GameMode);
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Restore Size
+            if (size) {
+                const radio = document.querySelector(`input[name="board-size"][value="${size}"]`) as HTMLInputElement;
+                if (radio) {
+                    radio.checked = true;
+                    game.setBoardSize(parseInt(size) as BoardSize);
+                }
+            }
+
+            // Restore Force Jump
+            if (forceJump !== undefined) {
+                const checkbox = document.getElementById('force-jump') as HTMLInputElement;
+                if (checkbox) {
+                    checkbox.checked = forceJump;
+                    game.setForceJump(forceJump);
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load Checkers setup:', e);
+    }
 };
 
 // --- Text Updates ---
@@ -125,6 +187,8 @@ const setupEventListeners = () => {
 
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
+        saveSetup();
+
         // Get board size
         const sizeInput = document.querySelector('input[name="board-size"]:checked') as HTMLInputElement;
         const size = parseInt(sizeInput?.value || '8') as BoardSize;
