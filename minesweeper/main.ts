@@ -192,6 +192,51 @@ const renderBoard = () => {
                 updateBoard();
             });
 
+            // Long tap handler for mobile
+            let longPressTimer: number | null = null;
+            let isLongPress = false;
+            let startX = 0;
+            let startY = 0;
+
+            cellDiv.addEventListener('touchstart', (e) => {
+                if (e.touches.length !== 1) return;
+
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                isLongPress = false;
+
+                longPressTimer = window.setTimeout(() => {
+                    isLongPress = true;
+                    if (navigator.vibrate) navigator.vibrate(50);
+                    game.toggleFlag(cell.row, cell.col);
+                    updateBoard();
+                }, 500);
+            }, { passive: true });
+
+            cellDiv.addEventListener('touchmove', (e) => {
+                if (!longPressTimer) return;
+
+                const x = e.touches[0].clientX;
+                const y = e.touches[0].clientY;
+
+                // Cancel if moved more than 10px
+                if (Math.abs(x - startX) > 10 || Math.abs(y - startY) > 10) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+            }, { passive: true });
+
+            cellDiv.addEventListener('touchend', (e) => {
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+
+                if (isLongPress) {
+                    if (e.cancelable) e.preventDefault(); // Prevent click event
+                }
+            });
+
             boardElement.appendChild(cellDiv);
         });
     });
