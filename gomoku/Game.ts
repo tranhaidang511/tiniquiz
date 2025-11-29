@@ -97,12 +97,12 @@ export class Game {
         const stone: Stone = { row, col, player: this.currentPlayer };
         this.board[row][col] = this.currentPlayer;
         this.moves.push(stone);
-        this.emitMove(stone);
 
         // Check for win
         if (this.checkWin(row, col)) {
             this.winner = this.currentPlayer;
             this.endTime = Date.now();
+            this.emitMove(stone); // Emit before ending game
             this.setState('RESULT');
             return true;
         }
@@ -110,12 +110,14 @@ export class Game {
         // Check for draw (board full)
         if (this.moves.length === this.boardSize * this.boardSize) {
             this.endTime = Date.now();
+            this.emitMove(stone); // Emit before ending game
             this.setState('RESULT');
             return true;
         }
 
-        // Switch player
+        // Switch player BEFORE emitting move so turn indicator updates correctly
         this.currentPlayer = this.currentPlayer === 'BLACK' ? 'WHITE' : 'BLACK';
+        this.emitMove(stone); // Emit after turn switch
 
         // If VS_AI mode and now it's AI's turn, trigger AI move
         if (this.mode === 'VS_AI' && this.currentPlayer === 'WHITE') {
@@ -138,12 +140,12 @@ export class Game {
                 const stone: Stone = { row: aiMove.row, col: aiMove.col, player: 'WHITE' };
                 this.board[aiMove.row][aiMove.col] = 'WHITE';
                 this.moves.push(stone);
-                this.emitMove(stone);
 
                 // Check for win
                 if (this.checkWin(aiMove.row, aiMove.col)) {
                     this.winner = 'WHITE';
                     this.endTime = Date.now();
+                    this.emitMove(stone); // Emit before ending
                     this.setState('RESULT');
                     this.isAIThinking = false;
                     this.emitAIThinking(false);
@@ -153,14 +155,16 @@ export class Game {
                 // Check for draw
                 if (this.moves.length === this.boardSize * this.boardSize) {
                     this.endTime = Date.now();
+                    this.emitMove(stone); // Emit before ending
                     this.setState('RESULT');
                     this.isAIThinking = false;
                     this.emitAIThinking(false);
                     return;
                 }
 
-                // Switch back to player
+                // Switch back to player BEFORE emitting
                 this.currentPlayer = 'BLACK';
+                this.emitMove(stone); // Emit after turn switch
             }
 
             this.isAIThinking = false;

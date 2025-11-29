@@ -223,6 +223,11 @@ class CheckersGame {
         this.validMoves = [];
         this.switchPlayer();
         this.checkWinCondition();
+
+        // Notify move AFTER switching player for correct turn display
+        if (move) {
+            this.notifyMove(move);
+        }
         this.notifyBoardUpdate();
 
         // Trigger AI move if applicable
@@ -294,6 +299,13 @@ class CheckersGame {
     private finishAITurn() {
         this.switchPlayer();
         this.checkWinCondition();
+
+        // Notify last move AFTER switching for correct turn display
+        if (this.moveHistory.length > 0) {
+            const lastMove = this.moveHistory[this.moveHistory.length - 1];
+            this.notifyMove(lastMove);
+        }
+
         this.notifyBoardUpdate();
         this.isAIThinking = false;
         this.notifyAIThinking(false);
@@ -317,7 +329,7 @@ class CheckersGame {
             piece.row = move.to.row;
             piece.col = move.to.col;
             this.moveHistory.push(move);
-            this.notifyMove(move);
+            // Move notifyMove to after switchPlayer for correct turn display
         } else {
             // For simulation, we need to clone the piece effectively or handle it differently
             // Since we are modifying the board array directly, we just move the reference
