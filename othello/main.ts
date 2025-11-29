@@ -8,6 +8,13 @@ import ja from './i18n/ja';
 import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
 
+
+interface HighScore {
+    moves: number;
+    time: number;
+    date: number | string;
+}
+
 // Initialize Consent Banner
 new Consent();
 
@@ -156,6 +163,18 @@ const updateTexts = () => {
 
     const restartBtn = document.getElementById('restart-btn');
     if (restartBtn) restartBtn.textContent = localization.getUIText('playAgain');
+
+    const labelHighScores = document.getElementById('label-high-scores');
+    if (labelHighScores) labelHighScores.textContent = localization.getUIText('highScores');
+
+    const labelRank = document.getElementById('label-rank');
+    if (labelRank) labelRank.textContent = localization.getUIText('rank');
+
+    const labelMoves = document.getElementById('label-moves');
+    if (labelMoves) labelMoves.textContent = localization.getUIText('moves');
+
+    const labelDate = document.getElementById('label-date');
+    if (labelDate) labelDate.textContent = localization.getUIText('date');
 
     updateGameInfo();
 };
@@ -532,6 +551,102 @@ const displayResult = () => {
         if (winnerDisplay) {
             winnerDisplay.innerHTML = `<span>${localization.getUIText('draw')}</span>`;
         }
+    }
+
+    // Save and Render High Scores
+    if (winner === 'BLACK' && game.getGameMode() === 'VS_AI') {
+        saveHighScore();
+    }
+
+    const scores = getHighScores();
+    const tbody = document.getElementById('high-scores-body');
+    const container = document.querySelector('.high-scores-container');
+
+    if (game.getGameMode() === 'VS_AI') {
+        if (container) container.classList.remove('hidden');
+        if (tbody) {
+            tbody.innerHTML = '';
+            scores.forEach((s, index) => {
+                const tr = document.createElement('tr');
+
+                // Highlight current run if it matches
+                const currentMoves = game.getMoves().length;
+                const currentTime = game.getElapsedTime();
+
+                if (winner === 'BLACK' &&
+                    s.moves === currentMoves &&
+                    s.time === currentTime &&
+                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                    tr.classList.add('current-run');
+                }
+
+                let dateStr = '';
+                if (typeof s.date === 'number') {
+                    const lang = localization.language;
+                    const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
+                    dateStr = new Date(s.date).toLocaleDateString(locale);
+                } else {
+                    dateStr = s.date as string;
+                }
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${s.moves}</td>
+                    <td>${game.formatTime(s.time)}</td>
+                    <td>${dateStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } else {
+        if (container) container.classList.add('hidden');
+    }
+};
+
+const saveHighScore = () => {
+    const difficulty = game.getDifficulty();
+    const key = `othello_highscores_${difficulty}`;
+
+    const newScore: HighScore = {
+        moves: game.getMoves().length,
+        time: game.getElapsedTime(),
+        date: Date.now()
+    };
+
+    try {
+        const existing = localStorage.getItem(key);
+        let scores: HighScore[] = existing ? JSON.parse(existing) : [];
+
+        scores.push(newScore);
+
+        // Fewer moves, then faster time.
+
+        scores.sort((a, b) => {
+            if (a.moves !== b.moves) {
+                return a.moves - b.moves;
+            }
+            return a.time - b.time;
+        });
+
+        // Keep top 5
+        scores = scores.slice(0, 5);
+
+        localStorage.setItem(key, JSON.stringify(scores));
+    } catch (e) {
+        console.error('Failed to save high score:', e);
+    }
+};
+
+const getHighScores = (): HighScore[] => {
+    if (game.getGameMode() !== 'VS_AI') return [];
+
+    const difficulty = game.getDifficulty();
+    const key = `othello_highscores_${difficulty}`;
+    try {
+        const existing = localStorage.getItem(key);
+        return existing ? JSON.parse(existing) : [];
+    } catch (e) {
+        return [];
     }
 };
 

@@ -35,7 +35,7 @@ class OthelloGame {
     private boardUpdateListeners: (() => void)[] = [];
 
     constructor() {
-        this.ai = new OthelloAI(this);
+        this.ai = new OthelloAI();
         this.initializeBoard();
     }
 

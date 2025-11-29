@@ -1,7 +1,6 @@
 import type { Player, Position, Difficulty } from './Game';
 
 export class OthelloAI {
-    private game: any;
     private maxDepth: number = 4;
 
     // Position weight matrix - corners and edges are valuable
@@ -16,8 +15,7 @@ export class OthelloAI {
         [100, -20, 10, 5, 5, 10, -20, 100]
     ];
 
-    constructor(gameInstance: any) {
-        this.game = gameInstance;
+    constructor() {
     }
 
     setDifficulty(difficulty: Difficulty) {
