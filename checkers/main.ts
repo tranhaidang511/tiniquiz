@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Piece, BoardSize } from './Game';
+import type { GameState, Piece, BoardSize, GameMode } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import en from './i18n/en';
@@ -35,6 +35,15 @@ const updateTexts = () => {
 
     const menuTitle = document.getElementById('menu-title');
     if (menuTitle) menuTitle.textContent = localization.getUIText('gameSetup');
+
+    const labelMode = document.getElementById('label-mode');
+    if (labelMode) labelMode.textContent = localization.getUIText('gameMode');
+
+    const modeTwoPlayer = document.getElementById('mode-two-player');
+    if (modeTwoPlayer) modeTwoPlayer.textContent = localization.getUIText('twoPlayers');
+
+    const modeVsAI = document.getElementById('mode-vs-ai');
+    if (modeVsAI) modeVsAI.textContent = localization.getUIText('vsAI');
 
     const startBtn = document.getElementById('start-btn');
     if (startBtn) startBtn.textContent = localization.getUIText('startGame');
@@ -98,6 +107,19 @@ const setupEventListeners = () => {
 
             document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
             (e.target as HTMLElement).classList.add('active');
+        });
+    });
+
+    // Game Mode Selection
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const mode = target.dataset.mode as GameMode;
+
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+
+            game.setGameMode(mode);
         });
     });
 
@@ -434,16 +456,41 @@ game.onBoardUpdate(() => {
     renderBoard();
 });
 
+game.onAIThinking((thinking: boolean) => {
+    const board = document.getElementById('board');
+    if (board) {
+        if (thinking) {
+            board.style.cursor = 'wait';
+            board.style.opacity = '0.8';
+        } else {
+            board.style.cursor = 'pointer';
+            board.style.opacity = '1';
+        }
+    }
+});
+
 const saveHighScore = () => {
     const winner = game.getWinner();
     if (!winner) return;
 
+    // Only save high scores for VS_AI mode when Player (RED) wins
+    if (game.getGameMode() === 'VS_AI') {
+        if (winner !== 'RED') return;
+    } else {
+        // In Two Player mode, maybe we don't save high scores?
+        // Or we save for both? Gomoku only saves for VS_AI.
+        // Let's follow Gomoku pattern: Only save for VS_AI (Player wins).
+        return;
+    }
+
     const moves = game.getMoves().length;
     const time = game.getElapsedTime();
     const date = Date.now();
+    const boardSize = game.getBoardSize();
+    const forceJump = game.getForceJump();
 
     const newScore: HighScore = { moves, time, date };
-    const key = `checker_highscores_${winner.toLowerCase()}`;
+    const key = `checkers_highscores_${boardSize}_${forceJump}`;
 
     try {
         const existing = localStorage.getItem(key);
@@ -469,10 +516,12 @@ const saveHighScore = () => {
 };
 
 const getHighScores = (): HighScore[] => {
-    const winner = game.getWinner();
-    if (!winner) return [];
+    // Only show scores for VS AI
+    if (game.getGameMode() !== 'VS_AI') return [];
 
-    const key = `checker_highscores_${winner.toLowerCase()}`;
+    const boardSize = game.getBoardSize();
+    const forceJump = game.getForceJump();
+    const key = `checkers_highscores_${boardSize}_${forceJump}`;
     try {
         const existing = localStorage.getItem(key);
         return existing ? JSON.parse(existing) : [];
@@ -518,39 +567,46 @@ const displayResult = () => {
     // Render High Scores
     const scores = getHighScores();
     const tbody = document.getElementById('high-scores-body');
+    const container = document.querySelector('.high-scores-container');
 
-    if (tbody) {
-        tbody.innerHTML = '';
-        scores.forEach((s, index) => {
-            const tr = document.createElement('tr');
+    if (game.getGameMode() === 'VS_AI') {
+        if (container) container.classList.remove('hidden');
+        if (tbody) {
+            tbody.innerHTML = '';
+            scores.forEach((s, index) => {
+                const tr = document.createElement('tr');
 
-            // Highlight current run if it matches
-            const currentMoves = game.getMoves().length;
-            const currentTime = game.getElapsedTime();
+                // Highlight current run if it matches
+                const currentMoves = game.getMoves().length;
+                const currentTime = game.getElapsedTime();
 
-            if (s.moves === currentMoves &&
-                s.time === currentTime &&
-                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
-                tr.classList.add('current-run');
-            }
+                if (winner === 'RED' &&
+                    s.moves === currentMoves &&
+                    s.time === currentTime &&
+                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                    tr.classList.add('current-run');
+                }
 
-            let dateStr = '';
-            if (typeof s.date === 'number') {
-                const lang = localization.language;
-                const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
-                dateStr = new Date(s.date).toLocaleDateString(locale);
-            } else {
-                dateStr = s.date as string;
-            }
+                let dateStr = '';
+                if (typeof s.date === 'number') {
+                    const lang = localization.language;
+                    const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
+                    dateStr = new Date(s.date).toLocaleDateString(locale);
+                } else {
+                    dateStr = s.date as string;
+                }
 
-            tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${s.moves}</td>
-                <td>${game.formatTime(s.time)}</td>
-                <td>${dateStr}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${s.moves}</td>
+                    <td>${game.formatTime(s.time)}</td>
+                    <td>${dateStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } else {
+        if (container) container.classList.add('hidden');
     }
 };
 

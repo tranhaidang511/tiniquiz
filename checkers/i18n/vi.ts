@@ -23,5 +23,8 @@ export default {
         invalidMove: "Nước đi không hợp lệ",
         boardSize: "Kích thước bàn cờ",
         forceJump: "Bắt buộc ăn quân",
+        gameMode: "Chế Độ Chơi",
+        twoPlayers: "Hai Người Chơi",
+        vsAI: "Đấu Với AI",
     }
 };

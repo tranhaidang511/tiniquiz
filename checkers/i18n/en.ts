@@ -23,5 +23,8 @@ export default {
         invalidMove: "Invalid move",
         boardSize: "Board Size",
         forceJump: "Force Jump (Mandatory Captures)",
+        gameMode: "Game Mode",
+        twoPlayers: "Two Players",
+        vsAI: "VS AI",
     }
 };

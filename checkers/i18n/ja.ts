@@ -23,5 +23,8 @@ export default {
         invalidMove: "無効な移動",
         boardSize: "盤面サイズ",
         forceJump: "強制ジャンプ（必須捕獲）",
+        gameMode: "ゲームモード",
+        twoPlayers: "二人対戦",
+        vsAI: "AI対戦",
     }
 };
