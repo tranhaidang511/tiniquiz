@@ -33,6 +33,7 @@
     "sudoku",
     "minesweeper",
     "sliding",
-    "checkers"
+    "checkers",
+    "mancala"
   ]
 }

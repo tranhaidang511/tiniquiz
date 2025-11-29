@@ -21,7 +21,10 @@
     "preview:sliding": "vite preview --config sliding/vite.config.ts",
     "dev:checkers": "vite --config checkers/vite.config.ts",
     "build:checkers": "tsc && vite build --config checkers/vite.config.ts",
-    "preview:checkers": "vite preview --config checkers/vite.config.ts"
+    "preview:checkers": "vite preview --config checkers/vite.config.ts",
+    "dev:mancala": "vite --config mancala/vite.config.ts",
+    "build:mancala": "tsc && vite build --config mancala/vite.config.ts",
+    "preview:mancala": "vite preview --config mancala/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
