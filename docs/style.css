@@ -11,6 +11,7 @@
     --accent-sudoku: #a78bfa;
     --accent-minesweeper: #ef4444;
     --accent-sliding: #10b981;
+    --accent-checkers: #fb923c;
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 30px rgba(138, 180, 248, 0.3);
@@ -186,6 +187,10 @@ h1 {
 
 .game-card.sliding {
     --card-accent: var(--accent-sliding);
+}
+
+.game-card.checkers {
+    --card-accent: var(--accent-checkers);
 }
 
 .game-card:hover {
