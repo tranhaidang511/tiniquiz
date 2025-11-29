@@ -1,0 +1,25 @@
+export default {
+    ui: {
+        gameTitle: "Checkers",
+        gameSetup: "Game Setup",
+        startGame: "Start Game",
+        newGame: "New Game",
+        redTurn: "Red's Turn",
+        blackTurn: "Black's Turn",
+        redWins: "Red Wins!",
+        blackWins: "Black Wins!",
+        redPlayerWins: "Red Player Wins!",
+        blackPlayerWins: "Black Player Wins!",
+        gameOver: "Game Over",
+        totalMoves: "Total Moves",
+        playAgain: "Play Again",
+        time: "Time",
+        moves: "Moves",
+        highScores: "High Scores",
+        rank: "Rank",
+        date: "Date",
+        selectPiece: "Select a piece to move",
+        mustCapture: "You must capture!",
+        invalidMove: "Invalid move",
+    }
+};

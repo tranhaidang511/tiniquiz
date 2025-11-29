@@ -1,0 +1,25 @@
+export default {
+    ui: {
+        gameTitle: "Cờ Đam",
+        gameSetup: "Thiết Lập Trò Chơi",
+        startGame: "Bắt Đầu",
+        newGame: "Ván Mới",
+        redTurn: "Lượt Đỏ",
+        blackTurn: "Lượt Đen",
+        redWins: "Đỏ Thắng!",
+        blackWins: "Đen Thắng!",
+        redPlayerWins: "Người Chơi Đỏ Thắng!",
+        blackPlayerWins: "Người Chơi Đen Thắng!",
+        gameOver: "Trò Chơi Kết Thúc",
+        totalMoves: "Tổng Số Nước",
+        playAgain: "Chơi Lại",
+        time: "Thời Gian",
+        moves: "Số Nước",
+        highScores: "Điểm Cao",
+        rank: "Hạng",
+        date: "Ngày",
+        selectPiece: "Chọn quân cờ để di chuyển",
+        mustCapture: "Bạn phải ăn quân!",
+        invalidMove: "Nước đi không hợp lệ",
+    }
+};

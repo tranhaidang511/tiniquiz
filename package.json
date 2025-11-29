@@ -18,7 +18,10 @@
     "preview:minesweeper": "vite preview --config minesweeper/vite.config.ts",
     "dev:sliding": "vite --config sliding/vite.config.ts",
     "build:sliding": "tsc && vite build --config sliding/vite.config.ts",
-    "preview:sliding": "vite preview --config sliding/vite.config.ts"
+    "preview:sliding": "vite preview --config sliding/vite.config.ts",
+    "dev:checker": "vite --config checker/vite.config.ts",
+    "build:checker": "tsc && vite build --config checker/vite.config.ts",
+    "preview:checker": "vite preview --config checker/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

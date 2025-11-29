@@ -1,0 +1,25 @@
+export default {
+    ui: {
+        gameTitle: "チェッカー",
+        gameSetup: "ゲーム設定",
+        startGame: "ゲーム開始",
+        newGame: "新しいゲーム",
+        redTurn: "赤のターン",
+        blackTurn: "黒のターン",
+        redWins: "赤の勝利！",
+        blackWins: "黒の勝利！",
+        redPlayerWins: "赤プレイヤーの勝利！",
+        blackPlayerWins: "黒プレイヤーの勝利！",
+        gameOver: "ゲーム終了",
+        totalMoves: "合計手数",
+        playAgain: "もう一度プレイ",
+        time: "時間",
+        moves: "手数",
+        highScores: "ハイスコア",
+        rank: "順位",
+        date: "日付",
+        selectPiece: "駒を選択してください",
+        mustCapture: "取る必要があります！",
+        invalidMove: "無効な移動",
+    }
+};
