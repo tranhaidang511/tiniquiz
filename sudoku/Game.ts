@@ -16,6 +16,7 @@ export class Game {
     private mistakes: number = 0;
     private maxMistakes: number = 3;
     private hintsUsed: number = 0;
+    private maxHints: number = 10;
     private startTime: number = 0;
     private elapsedTime: number = 0;
     private selectedCell: { row: number; col: number } | null = null;
@@ -279,6 +280,7 @@ export class Game {
 
     getHint() {
         if (this.state !== 'PLAYING' || !this.selectedCell) return;
+        if (this.hintsUsed >= this.maxHints) return; // Check hint limit
 
         const { row, col } = this.selectedCell;
         const cell = this.board[row][col];
@@ -380,6 +382,10 @@ export class Game {
 
     getHintsUsed(): number {
         return this.hintsUsed;
+    }
+
+    getMaxHints(): number {
+        return this.maxHints;
     }
 
     getElapsedTime(): number {

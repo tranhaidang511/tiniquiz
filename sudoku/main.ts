@@ -308,9 +308,22 @@ const updateGameInfo = () => {
     }
 
     const hintsUsed = game.getHintsUsed();
+    const maxHints = game.getMaxHints();
     const hintsDisplay = document.getElementById('hints-display');
     if (hintsDisplay) {
-        hintsDisplay.textContent = hintsUsed.toString();
+        hintsDisplay.textContent = `${hintsUsed}/${maxHints}`;
+    }
+
+    // Disable hint button if limit reached
+    const hintBtn = document.getElementById('hint-btn');
+    if (hintBtn) {
+        if (hintsUsed >= maxHints) {
+            hintBtn.classList.add('disabled');
+            hintBtn.setAttribute('disabled', 'true');
+        } else {
+            hintBtn.classList.remove('disabled');
+            hintBtn.removeAttribute('disabled');
+        }
     }
 };
 
