@@ -19,9 +19,9 @@
     "dev:sliding": "vite --config sliding/vite.config.ts",
     "build:sliding": "tsc && vite build --config sliding/vite.config.ts",
     "preview:sliding": "vite preview --config sliding/vite.config.ts",
-    "dev:checker": "vite --config checker/vite.config.ts",
-    "build:checker": "tsc && vite build --config checker/vite.config.ts",
-    "preview:checker": "vite preview --config checker/vite.config.ts"
+    "dev:checkers": "vite --config checkers/vite.config.ts",
+    "build:checkers": "tsc && vite build --config checkers/vite.config.ts",
+    "preview:checkers": "vite preview --config checkers/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

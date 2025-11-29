@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Player, Piece, Move, BoardSize } from './Game';
+import type { GameState, Piece, BoardSize } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import en from './i18n/en';
@@ -425,7 +425,7 @@ game.onStateChange((state: GameState) => {
     }
 });
 
-game.onMove((move: Move) => {
+game.onMove(() => {
     renderBoard();
     updateGameInfo();
 });

@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 
 export default defineConfig({
-    root: 'checker',
-    base: '/checker/',
+    root: 'checkers',
+    base: '/checkers/',
     plugins: [viteSingleFile()],
     build: {
         outDir: './dist',
