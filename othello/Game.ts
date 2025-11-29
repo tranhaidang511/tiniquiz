@@ -144,7 +144,25 @@ class OthelloGame {
         this.notifyMove(move);
         this.notifyBoardUpdate();
 
+        // Trigger AI move if applicable
+        this.makeAIMove();
+
         return true;
+    }
+
+    makeAIMove(): void {
+        if (this.gameState !== 'PLAYING') return;
+        if (this.gameMode !== 'VS_AI') return;
+        if (this.currentPlayer !== 'WHITE') return; // AI is always WHITE
+
+        const aiMove = this.ai.getBestMove(this.board, 'WHITE');
+
+        if (aiMove) {
+            // Add slight delay for better UX
+            setTimeout(() => {
+                this.makeMove(aiMove.row, aiMove.col);
+            }, 500);
+        }
     }
 
     private getFlippedDiscs(row: number, col: number, player: Player): Position[] {

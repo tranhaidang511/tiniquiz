@@ -1,6 +1,6 @@
 export default {
     ui: {
-        gameTitle: "Cờ Othello",
+        gameTitle: "Cờ lật",
         gameSetup: "Thiết lập trò chơi",
         startGame: "Bắt đầu",
         newGame: "Ván mới",

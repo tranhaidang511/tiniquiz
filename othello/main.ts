@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Move, GameMode } from './Game';
+import type { GameState, Move, GameMode, Difficulty } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import en from './i18n/en';
@@ -17,6 +17,18 @@ const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 
 // --- UI Templates ---
 
+const toggleDifficultySelector = () => {
+    const mode = game.getGameMode();
+    const difficultySection = document.querySelector('.difficulty-section');
+    if (difficultySection) {
+        if (mode === 'VS_AI') {
+            difficultySection.classList.remove('hidden');
+        } else {
+            difficultySection.classList.add('hidden');
+        }
+    }
+};
+
 const renderApp = () => {
     setupEventListeners();
     updateTexts();
@@ -28,16 +40,19 @@ const renderApp = () => {
 
     // Load saved setup
     loadSetup();
+    toggleDifficultySelector();
 };
 
 // --- Setup Persistence ---
 
 const saveSetup = () => {
-    const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+    const modeBtn = document.querySelector('.mode-btn[data-mode].active') as HTMLElement;
+    const diffBtn = document.querySelector('.mode-btn[data-difficulty].active') as HTMLElement;
 
     if (modeBtn) {
         const setup = {
-            mode: modeBtn.dataset.mode
+            mode: modeBtn.dataset.mode,
+            difficulty: diffBtn ? diffBtn.dataset.difficulty : 'MEDIUM'
         };
         localStorage.setItem('othello_setup', JSON.stringify(setup));
     }
@@ -47,11 +62,11 @@ const loadSetup = () => {
     try {
         const saved = localStorage.getItem('othello_setup');
         if (saved) {
-            const { mode } = JSON.parse(saved);
+            const { mode, difficulty } = JSON.parse(saved);
 
             // Restore Mode
             if (mode) {
-                document.querySelectorAll('.mode-btn').forEach(btn => {
+                document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
                     const btnMode = (btn as HTMLElement).dataset.mode;
                     if (btnMode === mode) {
                         btn.classList.add('active');
@@ -61,6 +76,21 @@ const loadSetup = () => {
                     }
                 });
             }
+
+            // Restore Difficulty
+            if (difficulty) {
+                document.querySelectorAll('.mode-btn[data-difficulty]').forEach(btn => {
+                    const btnDiff = (btn as HTMLElement).dataset.difficulty;
+                    if (btnDiff === difficulty) {
+                        btn.classList.add('active');
+                        game.setDifficulty(difficulty as Difficulty);
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            toggleDifficultySelector();
         }
     } catch (e) {
         console.error('Failed to load Othello setup:', e);
@@ -84,6 +114,18 @@ const updateTexts = () => {
 
     const modeVsAI = document.getElementById('mode-vs-ai');
     if (modeVsAI) modeVsAI.textContent = localization.getUIText('vsAI');
+
+    const labelDifficulty = document.getElementById('label-difficulty');
+    if (labelDifficulty) labelDifficulty.textContent = localization.getUIText('difficulty');
+
+    const diffEasy = document.getElementById('difficulty-easy');
+    if (diffEasy) diffEasy.textContent = localization.getUIText('easy');
+
+    const diffMedium = document.getElementById('difficulty-medium');
+    if (diffMedium) diffMedium.textContent = localization.getUIText('medium');
+
+    const diffHard = document.getElementById('difficulty-hard');
+    if (diffHard) diffHard.textContent = localization.getUIText('hard');
 
     const startBtn = document.getElementById('start-btn');
     if (startBtn) startBtn.textContent = localization.getUIText('startGame');
@@ -137,16 +179,30 @@ const setupEventListeners = () => {
         });
     });
 
-    // Game Mode Selection (AI disabled for now)
-    document.querySelectorAll('.mode-btn:not(.disabled)').forEach(btn => {
+    // Game Mode Selection
+    document.querySelectorAll('.mode-btn[data-mode]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const target = e.target as HTMLElement;
             const mode = target.dataset.mode as GameMode;
 
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.mode-btn[data-mode]').forEach(b => b.classList.remove('active'));
             target.classList.add('active');
 
             game.setGameMode(mode);
+            toggleDifficultySelector();
+        });
+    });
+
+    // Difficulty Selection
+    document.querySelectorAll('.mode-btn[data-difficulty]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const difficulty = target.dataset.difficulty as Difficulty;
+
+            document.querySelectorAll('.mode-btn[data-difficulty]').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+
+            game.setDifficulty(difficulty);
         });
     });
 

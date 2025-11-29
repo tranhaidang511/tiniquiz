@@ -45,106 +45,162 @@
 
 <body>
     <!-- Google Tag Manager (noscript) -->
-    <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-56G5F5W4" height="0" width="0"
-            style="display:none;visibility:hidden"></iframe>
-    </noscript>
-    <!-- End Google Tag Manager (noscript) -->
+    <!doctype html>
+    <html lang="en">
 
-    <div id="app">
-        <div class="header-controls">
-            <button id="home-btn" class="icon-btn" aria-label="Back to Home">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-            </button>
-            <h1 id="game-title">Othello</h1>
-        </div>
+    <head>
+        <!-- Google Consent Mode -->
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            gtag('consent', 'default', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied'
+            });
+        </script>
+        <!-- End Google Consent Mode -->
 
-        <!-- Language Switcher -->
-        <div class="lang-switcher">
-            <button class="lang-btn active" data-lang="en">EN</button>
-            <button class="lang-btn" data-lang="ja">JA</button>
-            <button class="lang-btn" data-lang="vi">VI</button>
-        </div>
+        <!-- Google Tag Manager -->
+        <script>
+            (function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', 'GTM-56G5F5W4');
+        </script>
+        <!-- End Google Tag Manager -->
 
-        <!-- Menu View -->
-        <div id="menu-view" class="card animate-fade-in">
-            <h2 id="menu-title">Game Setup</h2>
-            <div class="setup-group">
-                <h3 id="label-mode">Game Mode</h3>
-                <div class="radio-group">
-                    <button class="mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2 Players</button>
-                    <button class="mode-btn disabled" data-mode="VS_AI" id="mode-vs-ai">vs AI</button>
-                </div>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Othello</title>
+        <link rel="stylesheet" href="./style.css">
+
+        <meta name="description" content="Othello - Classic strategy board game!" />
+        <meta name="keywords" content="othello, reversi, board game, strategy, two player" />
+        <meta name="author" content="Tran Hai Dang" />
+
+        <!-- Open Graph / Facebook -->
+        <meta property="og:title" content="Othello" />
+        <meta property="og:description" content="Classic Othello strategy board game!" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://tiniquiz.com/othello/" />
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Othello" />
+        <meta name="twitter:description" content="Classic Othello strategy board game!" />
+    </head>
+
+    <body>
+        <!-- Google Tag Manager (noscript) -->
+        <noscript>
+            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-56G5F5W4" height="0" width="0"
+                style="display:none;visibility:hidden"></iframe>
+        </noscript>
+        <!-- End Google Tag Manager (noscript) -->
+
+        <div id="app">
+            <div class="header-controls">
+                <button id="home-btn" class="icon-btn" aria-label="Back to Home">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </button>
+                <h1 id="game-title">Othello</h1>
             </div>
 
-            <button id="start-btn" class="primary">Start Game</button>
-        </div>
+            <!-- Language Switcher -->
+            <div class="lang-switcher">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="ja">JA</button>
+                <button class="lang-btn" data-lang="vi">VI</button>
+            </div>
 
-        <!-- Game View -->
-        <div id="game-view" class="card hidden animate-fade-in">
-            <button id="new-game-btn" class="primary">New Game</button>
-
-            <div class="game-header">
-                <div class="turn-indicator-container">
-                    <div class="turn-indicator black"></div>
-                    <div class="turn-text" id="turn-text">Black's Turn</div>
-                </div>
-                <div class="score-display">
-                    <div class="score">
-                        <span id="label-black-score">Black</span>: <span id="black-score">2</span>
+            <!-- Menu View -->
+            <div id="menu-view" class="card animate-fade-in">
+                <h2 id="menu-title">Game Setup</h2>
+                <div class="setup-group">
+                    <h3 id="label-mode">Game Mode</h3>
+                    <div class="radio-group">
+                        <button class="mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2 Players</button>
+                        <button class="mode-btn" data-mode="VS_AI" id="mode-vs-ai">vs AI</button>
                     </div>
-                    <div class="score">
-                        <span id="label-white-score">White</span>: <span id="white-score">2</span>
+                </div>
+
+                <div class="setup-group difficulty-section hidden">
+                    <h3 id="label-difficulty">Difficulty</h3>
+                    <div class="radio-group">
+                        <button class="mode-btn" data-difficulty="EASY" id="difficulty-easy">Easy</button>
+                        <button class="mode-btn active" data-difficulty="MEDIUM" id="difficulty-medium">Medium</button>
+                        <button class="mode-btn" data-difficulty="HARD" id="difficulty-hard">Hard</button>
                     </div>
                 </div>
-                <div class="stat">
-                    <div class="stat-label" id="label-time">Time</div>
-                    <div class="stat-value" id="game-timer">0:00</div>
+
+                <button id="start-btn" class="primary">Start Game</button>
+            </div>
+
+            <!-- Game View -->
+            <div id="game-view" class="card hidden animate-fade-in">
+                <button id="new-game-btn" class="primary">New Game</button>
+
+                <div class="game-header">
+                    <div class="turn-indicator-container">
+                        <div class="turn-indicator black"></div>
+                        <div class="turn-text" id="turn-text">Black's Turn</div>
+                    </div>
+                    <div class="score-display">
+                        <div class="score">
+                            <span id="label-black-score">Black</span>: <span id="black-score">2</span>
+                        </div>
+                        <div class="score">
+                            <span id="label-white-score">White</span>: <span id="white-score">2</span>
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label" id="label-time">Time</div>
+                        <div class="stat-value" id="game-timer">0:00</div>
+                    </div>
+                </div>
+
+                <div id="board-container">
+                    <svg id="board" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Board will be rendered here -->
+                    </svg>
                 </div>
             </div>
 
-            <div id="board-container">
-                <svg id="board" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Board will be rendered here -->
-                </svg>
+            <!-- Result View -->
+            <div id="result-view" class="card hidden animate-fade-in">
+                <h2 id="result-title">Game Over</h2>
+
+                <div id="winner-display" class="winner-display">
+                    <!-- Winner info will be rendered here -->
+                </div>
+
+                <div class="result-stats">
+                    <div class="stat">
+                        <div class="stat-label" id="label-total-time">Time</div>
+                        <div class="stat-value" id="total-time">0:00</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label" id="label-total-moves">Total Moves</div>
+                        <div class="stat-value" id="total-moves">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label" id="label-final-black">Black</div>
+                        <div class="stat-value" id="final-black">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label" id="label-final-white">White</div>
+                        <div class="stat-value" id="final-white">0</div>
+                    </div>
+                </div>
+
+                <button id="restart-btn" class="primary">Play Again</button>
             </div>
         </div>
+        <script type="module" src="/main.ts"></script>
+    </body>
 
-        <!-- Result View -->
-        <div id="result-view" class="card hidden animate-fade-in">
-            <h2 id="result-title">Game Over</h2>
-
-            <div id="winner-display" class="winner-display">
-                <!-- Winner info will be rendered here -->
-            </div>
-
-            <div class="result-stats">
-                <div class="stat">
-                    <div class="stat-label" id="label-total-time">Time</div>
-                    <div class="stat-value" id="total-time">0:00</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label" id="label-total-moves">Total Moves</div>
-                    <div class="stat-value" id="total-moves">0</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label" id="label-final-black">Black</div>
-                    <div class="stat-value" id="final-black">0</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label" id="label-final-white">White</div>
-                    <div class="stat-value" id="final-white">0</div>
-                </div>
-            </div>
-
-            <button id="restart-btn" class="primary">Play Again</button>
-        </div>
-    </div>
-    <script type="module" src="/main.ts"></script>
-</body>
-
-</html>
+    </html>
