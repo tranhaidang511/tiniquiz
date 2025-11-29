@@ -199,6 +199,32 @@ const setupEventListeners = () => {
 
 // --- Board Rendering ---
 
+// Helper function to render visual stones
+const renderStones = (count: number): string => {
+    if (count === 0) return '';
+
+    // For small counts, show individual stones
+    if (count <= 16) {
+        const stones = [];
+        for (let i = 0; i < count; i++) {
+            stones.push('<div class="stone"></div>');
+        }
+        return `<div class="stones-container small">${stones.join('')}</div>`;
+    }
+
+    // For larger counts, show sample stones + number badge
+    const sampleStones = [];
+    for (let i = 0; i < 16; i++) {
+        sampleStones.push('<div class="stone"></div>');
+    }
+    return `
+        <div class="stones-container large">
+            ${sampleStones.join('')}
+            <div class="stone-badge">${count}</div>
+        </div>
+    `;
+};
+
 const renderBoard = () => {
     const boardContainer = document.getElementById('board-container');
     if (!boardContainer) return;
@@ -214,7 +240,7 @@ const renderBoard = () => {
     // Player 2 Store (left)
     const p2Store = document.createElement('div');
     p2Store.className = 'store player2-store';
-    p2Store.innerHTML = `<div class="stone-count">${board[pitCount * 2 + 1]}</div>`;
+    p2Store.innerHTML = renderStones(board[pitCount * 2 + 1]);
     boardDiv.appendChild(p2Store);
 
     // Pits area
@@ -244,7 +270,7 @@ const renderBoard = () => {
     // Player 1 Store (right)
     const p1Store = document.createElement('div');
     p1Store.className = 'store player1-store';
-    p1Store.innerHTML = `<div class="stone-count">${board[pitCount]}</div>`;
+    p1Store.innerHTML = renderStones(board[pitCount]);
     boardDiv.appendChild(p1Store);
 
     boardContainer.appendChild(boardDiv);
@@ -256,10 +282,7 @@ const createPit = (stones: number, index: number, owner: Player): HTMLElement =>
     pit.dataset.index = index.toString();
     pit.dataset.owner = owner;
 
-    const stoneCount = document.createElement('div');
-    stoneCount.className = 'stone-count';
-    stoneCount.textContent = stones.toString();
-    pit.appendChild(stoneCount);
+    pit.innerHTML = renderStones(stones);
 
     // Add click handler
     pit.addEventListener('click', () => {
@@ -285,143 +308,143 @@ const updateGameInfo = () => {
     const turnIndicator = document.querySelector('.turn-indicator');
     const turnText = document.getElementById('turn-text');
     const moveNumber = document.getElementById('move-number');
-    const gameTimer = document.getElementById('game-timer');
+        const gameTimer = document.getElementById('game-timer');
 
-    const currentPlayer = game.getCurrentPlayer();
-    const moves = game.getMoves();
+        const currentPlayer = game.getCurrentPlayer();
+        const moves = game.getMoves();
 
-    if (turnIndicator) {
-        turnIndicator.className = `turn-indicator ${currentPlayer.toLowerCase()}`;
-    }
+        if (turnIndicator) {
+            turnIndicator.className = `turn-indicator ${currentPlayer.toLowerCase()}`;
+        }
 
-    if (turnText) {
-        turnText.textContent = currentPlayer === 'PLAYER1'
-            ? localization.getUIText('player1Turn')
-            : localization.getUIText('player2Turn');
-    }
+        if (turnText) {
+            turnText.textContent = currentPlayer === 'PLAYER1'
+                ? localization.getUIText('player1Turn')
+                : localization.getUIText('player2Turn');
+        }
 
-    if (moveNumber) {
-        moveNumber.textContent = moves.length.toString();
-    }
+        if (moveNumber) {
+            moveNumber.textContent = moves.length.toString();
+        }
 
-    if (gameTimer) {
-        gameTimer.textContent = game.formatTime(game.getElapsedTime());
-    }
-};
+        if (gameTimer) {
+            gameTimer.textContent = game.formatTime(game.getElapsedTime());
+        }
+    };
 
-// --- View Management ---
+    // --- View Management ---
 
-const showView = (viewId: string) => {
-    ['menu-view', 'game-view', 'result-view'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            if (id === viewId) el.classList.remove('hidden');
-            else el.classList.add('hidden');
+    const showView = (viewId: string) => {
+        ['menu-view', 'game-view', 'result-view'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                if (id === viewId) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            }
+        });
+    };
+
+    // --- Game Event Handlers ---
+
+    let currentGameState: GameState = 'MENU';
+    let timerInterval: number | null = null;
+
+    game.onStateChange((state: GameState) => {
+        currentGameState = state;
+        if (state === 'MENU') {
+            showView('menu-view');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        if (state === 'PLAYING') {
+            showView('game-view');
+            renderBoard();
+            updateGameInfo();
+
+            // Start timer
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = window.setInterval(() => {
+                updateGameInfo();
+            }, 1000);
+        }
+        if (state === 'RESULT') {
+            showView('result-view');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            displayResult();
         }
     });
-};
 
-// --- Game Event Handlers ---
-
-let currentGameState: GameState = 'MENU';
-let timerInterval: number | null = null;
-
-game.onStateChange((state: GameState) => {
-    currentGameState = state;
-    if (state === 'MENU') {
-        showView('menu-view');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-    }
-    if (state === 'PLAYING') {
-        showView('game-view');
+    game.onMove((move: Move) => {
         renderBoard();
         updateGameInfo();
+    });
 
-        // Start timer
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = window.setInterval(() => {
-            updateGameInfo();
-        }, 1000);
-    }
-    if (state === 'RESULT') {
-        showView('result-view');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        displayResult();
-    }
-});
+    game.onBoardUpdate(() => {
+        renderBoard();
+    });
 
-game.onMove((move: Move) => {
-    renderBoard();
-    updateGameInfo();
-});
+    const displayResult = () => {
+        const winner = game.getWinner();
+        const winnerDisplay = document.getElementById('winner-display');
+        const player1Score = document.getElementById('player1-score');
+        const player2Score = document.getElementById('player2-score');
+        const totalMoves = document.getElementById('total-moves');
+        const totalTime = document.getElementById('total-time');
+        const resultTitle = document.getElementById('result-title');
 
-game.onBoardUpdate(() => {
-    renderBoard();
-});
-
-const displayResult = () => {
-    const winner = game.getWinner();
-    const winnerDisplay = document.getElementById('winner-display');
-    const player1Score = document.getElementById('player1-score');
-    const player2Score = document.getElementById('player2-score');
-    const totalMoves = document.getElementById('total-moves');
-    const totalTime = document.getElementById('total-time');
-    const resultTitle = document.getElementById('result-title');
-
-    if (player1Score) {
-        player1Score.textContent = game.getPlayerScore('PLAYER1').toString();
-    }
-
-    if (player2Score) {
-        player2Score.textContent = game.getPlayerScore('PLAYER2').toString();
-    }
-
-    if (totalMoves) {
-        totalMoves.textContent = game.getMoves().length.toString();
-    }
-
-    if (totalTime) {
-        totalTime.textContent = game.formatTime(game.getElapsedTime());
-    }
-
-    if (winner) {
-        if (resultTitle) {
-            resultTitle.textContent = winner === 'PLAYER1'
-                ? localization.getUIText('player1Wins')
-                : localization.getUIText('player2Wins');
+        if (player1Score) {
+            player1Score.textContent = game.getPlayerScore('PLAYER1').toString();
         }
 
-        if (winnerDisplay) {
-            const playerWinsText = winner === 'PLAYER1'
-                ? localization.getUIText('player1Wins')
-                : localization.getUIText('player2Wins');
+        if (player2Score) {
+            player2Score.textContent = game.getPlayerScore('PLAYER2').toString();
+        }
 
-            winnerDisplay.innerHTML = `
+        if (totalMoves) {
+            totalMoves.textContent = game.getMoves().length.toString();
+        }
+
+        if (totalTime) {
+            totalTime.textContent = game.formatTime(game.getElapsedTime());
+        }
+
+        if (winner) {
+            if (resultTitle) {
+                resultTitle.textContent = winner === 'PLAYER1'
+                    ? localization.getUIText('player1Wins')
+                    : localization.getUIText('player2Wins');
+            }
+
+            if (winnerDisplay) {
+                const playerWinsText = winner === 'PLAYER1'
+                    ? localization.getUIText('player1Wins')
+                    : localization.getUIText('player2Wins');
+
+                winnerDisplay.innerHTML = `
                 <div class="winner-icon ${winner.toLowerCase()}">🏆</div>
                 <span>${playerWinsText}</span>
             `;
+            }
+        } else {
+            if (resultTitle) resultTitle.textContent = localization.getUIText('draw');
+            if (winnerDisplay) {
+                winnerDisplay.innerHTML = `<span>${localization.getUIText('draw')}</span>`;
+            }
         }
-    } else {
-        if (resultTitle) resultTitle.textContent = localization.getUIText('draw');
-        if (winnerDisplay) {
-            winnerDisplay.innerHTML = `<span>${localization.getUIText('draw')}</span>`;
+    };
+
+    // Subscribe to language changes
+    localization.subscribe(() => {
+        updateTexts();
+        if (currentGameState === 'RESULT') {
+            displayResult();
         }
-    }
-};
+    });
 
-// Subscribe to language changes
-localization.subscribe(() => {
-    updateTexts();
-    if (currentGameState === 'RESULT') {
-        displayResult();
-    }
-});
-
-// --- Initialize ---
-renderApp();
+    // --- Initialize ---
+    renderApp();
