@@ -663,7 +663,9 @@ button.primary:hover {
 }
 
 /* Mode Buttons */
-.mode-btn {
+/* Mode and Difficulty Buttons */
+.mode-btn,
+.difficulty-btn {
     flex: 1;
     padding: 0.75rem;
     background: var(--bg-secondary);
@@ -677,12 +679,14 @@ button.primary:hover {
     font-size: 1rem;
 }
 
-.mode-btn:hover {
+.mode-btn:hover,
+.difficulty-btn:hover {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-primary);
 }
 
-.mode-btn.active {
+.mode-btn.active,
+.difficulty-btn.active {
     background: var(--accent-primary);
     color: white;
     box-shadow: var(--shadow-sm);

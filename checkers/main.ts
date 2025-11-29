@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Piece, BoardSize, GameMode } from './Game';
+import type { GameState, Piece, BoardSize, GameMode, Difficulty } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import en from './i18n/en';
@@ -41,7 +41,8 @@ const saveSetup = () => {
         const setup = {
             mode: modeBtn.dataset.mode,
             size: sizeInput.value,
-            forceJump: forceJumpInput.checked
+            forceJump: forceJumpInput.checked,
+            difficulty: (document.querySelector('.difficulty-btn.active') as HTMLElement)?.dataset.difficulty || 'MEDIUM'
         };
         localStorage.setItem('checkersSetup', JSON.stringify(setup));
     }
@@ -51,7 +52,7 @@ const loadSetup = () => {
     try {
         const saved = localStorage.getItem('checkersSetup');
         if (saved) {
-            const { mode, size, forceJump } = JSON.parse(saved);
+            const { mode, size, forceJump, difficulty } = JSON.parse(saved);
 
             // Restore Mode
             if (mode) {
@@ -82,6 +83,18 @@ const loadSetup = () => {
                     checkbox.checked = forceJump;
                     game.setForceJump(forceJump);
                 }
+            }
+
+            // Restore Difficulty
+            if (difficulty) {
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    const btnDiff = (btn as HTMLElement).dataset.difficulty;
+                    if (btnDiff === difficulty) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
             }
         }
     } catch (e) {
@@ -150,6 +163,18 @@ const updateTexts = () => {
     const labelForceJump = document.getElementById('label-force-jump');
     if (labelForceJump) labelForceJump.textContent = localization.getUIText('forceJump');
 
+    const labelDifficulty = document.getElementById('label-difficulty');
+    if (labelDifficulty) labelDifficulty.textContent = localization.getUIText('difficulty');
+
+    const diffEasy = document.getElementById('diff-easy');
+    if (diffEasy) diffEasy.textContent = localization.getUIText('easy');
+
+    const diffMedium = document.getElementById('diff-medium');
+    if (diffMedium) diffMedium.textContent = localization.getUIText('medium');
+
+    const diffHard = document.getElementById('diff-hard');
+    if (diffHard) diffHard.textContent = localization.getUIText('hard');
+
     updateGameInfo();
 };
 
@@ -182,6 +207,16 @@ const setupEventListeners = () => {
             target.classList.add('active');
 
             game.setGameMode(mode);
+            toggleDifficultySelector(mode);
+        });
+    });
+
+    // Difficulty Selection
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
         });
     });
 
@@ -199,6 +234,12 @@ const setupEventListeners = () => {
 
         game.setBoardSize(size);
         game.setForceJump(forceJump);
+
+        // Get difficulty
+        const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
+        const difficulty = (diffBtn?.dataset.difficulty || 'MEDIUM') as Difficulty;
+        game.setDifficulty(difficulty);
+
         game.start();
     });
 
@@ -552,9 +593,10 @@ const saveHighScore = () => {
     const date = Date.now();
     const boardSize = game.getBoardSize();
     const forceJump = game.getForceJump();
+    const difficulty = game.getDifficulty();
 
     const newScore: HighScore = { moves, time, date };
-    const key = `checkers_highscores_${boardSize}_${forceJump}`;
+    const key = `checkers_highscores_${difficulty}_${boardSize}_${forceJump}`;
 
     try {
         const existing = localStorage.getItem(key);
@@ -585,7 +627,8 @@ const getHighScores = (): HighScore[] => {
 
     const boardSize = game.getBoardSize();
     const forceJump = game.getForceJump();
-    const key = `checkers_highscores_${boardSize}_${forceJump}`;
+    const difficulty = game.getDifficulty();
+    const key = `checkers_highscores_${difficulty}_${boardSize}_${forceJump}`;
     try {
         const existing = localStorage.getItem(key);
         return existing ? JSON.parse(existing) : [];
@@ -682,5 +725,23 @@ localization.subscribe(() => {
     }
 });
 
+// --- Helper Functions ---
+
+const toggleDifficultySelector = (mode: GameMode) => {
+    const section = document.getElementById('difficulty-section');
+    if (section) {
+        if (mode === 'VS_AI') {
+            section.classList.remove('hidden');
+        } else {
+            section.classList.add('hidden');
+        }
+    }
+};
+
 // --- Initialize ---
 renderApp();
+// Initial toggle check
+const initialModeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+if (initialModeBtn) {
+    toggleDifficultySelector(initialModeBtn.dataset.mode as GameMode);
+}

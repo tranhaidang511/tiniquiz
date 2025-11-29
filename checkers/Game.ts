@@ -5,6 +5,7 @@ export type PieceType = 'REGULAR' | 'KING';
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type BoardSize = 8 | 10 | 12;
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface Piece {
     player: Player;
@@ -27,6 +28,7 @@ export interface Position {
 class CheckersGame {
     private boardSize: BoardSize = 8;
     private forceJump: boolean = true;
+    private difficulty: Difficulty = 'MEDIUM';
     private board: (Piece | null)[][] = [];
     private currentPlayer: Player = 'RED';
     private gameState: GameState = 'MENU';
@@ -100,6 +102,11 @@ class CheckersGame {
         this.gameMode = mode;
     }
 
+    setDifficulty(difficulty: Difficulty) {
+        this.difficulty = difficulty;
+        this.ai.setDifficulty(difficulty);
+    }
+
     getForceJump(): boolean {
         return this.forceJump;
     }
@@ -110,6 +117,10 @@ class CheckersGame {
 
     getGameMode(): GameMode {
         return this.gameMode;
+    }
+
+    getDifficulty(): Difficulty {
+        return this.difficulty;
     }
 
     start() {
