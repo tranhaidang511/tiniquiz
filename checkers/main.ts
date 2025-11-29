@@ -44,13 +44,13 @@ const saveSetup = () => {
             forceJump: forceJumpInput.checked,
             difficulty: (document.querySelector('.difficulty-btn.active') as HTMLElement)?.dataset.difficulty || 'MEDIUM'
         };
-        localStorage.setItem('checkersSetup', JSON.stringify(setup));
+        localStorage.setItem('checkers_setup', JSON.stringify(setup));
     }
 };
 
 const loadSetup = () => {
     try {
-        const saved = localStorage.getItem('checkersSetup');
+        const saved = localStorage.getItem('checkers_setup');
         if (saved) {
             const { mode, size, forceJump, difficulty } = JSON.parse(saved);
 

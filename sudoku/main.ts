@@ -36,13 +36,13 @@ const saveSetup = () => {
     const activeDiffBtn = document.querySelector('.diff-btn.active') as HTMLElement;
     if (activeDiffBtn) {
         const difficulty = activeDiffBtn.dataset.diff as Difficulty;
-        localStorage.setItem('sudokuSetup', JSON.stringify({ difficulty }));
+        localStorage.setItem('sudoku_setup', JSON.stringify({ difficulty }));
     }
 };
 
 const loadSetup = () => {
     try {
-        const saved = localStorage.getItem('sudokuSetup');
+        const saved = localStorage.getItem('sudoku_setup');
         if (saved) {
             const { difficulty } = JSON.parse(saved);
             // Set active difficulty button

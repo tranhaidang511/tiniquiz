@@ -36,13 +36,13 @@ const saveSetup = () => {
     const activeSizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
     if (activeSizeBtn) {
         const size = parseInt(activeSizeBtn.dataset.size || '3') as BoardSize;
-        localStorage.setItem('slidingpuzzleSetup', JSON.stringify({ size }));
+        localStorage.setItem('sliding_setup', JSON.stringify({ size }));
     }
 };
 
 const loadSetup = () => {
     try {
-        const saved = localStorage.getItem('slidingpuzzleSetup');
+        const saved = localStorage.getItem('sliding_setup');
         if (saved) {
             const { size } = JSON.parse(saved);
             document.querySelectorAll('.size-btn').forEach(btn => {
@@ -321,7 +321,7 @@ const saveHighScore = () => {
     const date = Date.now();
 
     const newScore: HighScore = { moves, time, date };
-    const key = `slidingpuzzle_highscores_${size}x${size}`;
+    const key = `sliding_highscores_${size}x${size}`;
 
     try {
         const existing = localStorage.getItem(key);
@@ -348,7 +348,7 @@ const saveHighScore = () => {
 
 const getHighScores = (): HighScore[] => {
     const size = game.getBoardSize();
-    const key = `slidingpuzzle_highscores_${size}x${size}`;
+    const key = `sliding_highscores_${size}x${size}`;
     try {
         const existing = localStorage.getItem(key);
         return existing ? JSON.parse(existing) : [];

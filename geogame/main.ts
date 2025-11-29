@@ -38,13 +38,13 @@ const saveSetup = () => {
       region: regionFilter.value,
       count: countFilter.value
     };
-    localStorage.setItem('geogameSetup', JSON.stringify(setup));
+    localStorage.setItem('geogame_setup', JSON.stringify(setup));
   }
 };
 
 const loadSetup = () => {
   try {
-    const saved = localStorage.getItem('geogameSetup');
+    const saved = localStorage.getItem('geogame_setup');
     if (saved) {
       const { mode, region, count } = JSON.parse(saved);
 
