@@ -37,7 +37,11 @@ const translations = {
         'othello-feature1': '2-Player & vs AI modes',
         'othello-feature2': '3 difficulty levels',
         'othello-button': 'Play Othello',
-        'footer-made': 'Made by Tran Hai Dang',
+        'mancala-title': 'Mancala',
+        'mancala-desc': 'Ancient strategy board game. Capture stones by moving them around the board. Empty your opponent\'s side to win!',
+        'mancala-feature1': '2-Player & vs AI modes',
+        'mancala-feature2': 'Multiple number of pits and stones',
+        'mancala-button': 'Play Mancala',        'footer-made': 'Made by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     },
     ja: {
@@ -78,6 +82,11 @@ const translations = {
         'othello-feature1': '2プレイヤー・AI対戦',
         'othello-feature2': '3つの難易度',
         'othello-button': 'オセロをプレイ',
+        'mancala-title': 'マンカラ',
+        'mancala-desc': '古代の戦略ボードゲーム。石を移動させて相手の石を集めよう。相手側を空にすれば勝ち！',
+        'mancala-feature1': '2プレイヤー・AI対戦',
+        'mancala-feature2': '複数のピット数と石数',
+        'mancala-button': 'マンカラをプレイ',
         'footer-made': 'Made by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     },
@@ -119,6 +128,11 @@ const translations = {
         'othello-feature1': '2 Người chơi & Đấu với AI',
         'othello-feature2': '3 cấp độ khó',
         'othello-button': 'Chơi Cờ lật',
+        'mancala-title': 'Mancala',
+        'mancala-desc': 'Trò chơi cờ chiến lược cổ xưa. Thu thập đá bằng cách di chuyển chúng quanh bàn cờ. Làm rỗng phía đối thủ để thắng!',
+        'mancala-feature1': '2 Người chơi & Đấu với AI',
+        'mancala-feature2': 'Nhiều kích thước bàn cờ và số lượng đá',
+        'mancala-button': 'Chơi Mancala',
         'footer-made': 'Made by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     }
