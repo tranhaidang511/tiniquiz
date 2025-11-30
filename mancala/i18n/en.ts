@@ -10,6 +10,7 @@ export default {
         medium: "Medium",
         hard: "Hard",
         pitCount: "Pits Per Side",
+        initialStones: "Stones Per Pit",
         startGame: "Start Game",
         newGame: "New Game",
         player1Turn: "Player 1's Turn",

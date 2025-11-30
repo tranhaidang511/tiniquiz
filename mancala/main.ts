@@ -40,13 +40,17 @@ const renderApp = () => {
 // --- Setup Persistence ---
 
 const saveSetup = () => {
-    const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+    const modeBtn = document.querySelector('.mode-btn.active:not([data-difficulty])') as HTMLElement;
+    const difficultyBtn = document.querySelector('.mode-btn.active[data-difficulty]') as HTMLElement;
     const pitBtn = document.querySelector('.pit-btn.active') as HTMLElement;
+    const stonesBtn = document.querySelector('.stones-btn.active') as HTMLElement;
 
-    if (modeBtn && pitBtn) {
+    if (modeBtn && pitBtn && stonesBtn) {
         const setup = {
             mode: modeBtn.dataset.mode,
-            pits: pitBtn.dataset.pits
+            difficulty: difficultyBtn ? difficultyBtn.dataset.difficulty : 'MEDIUM',
+            pits: pitBtn.dataset.pits,
+            stones: stonesBtn.dataset.stones
         };
         localStorage.setItem('mancala_setup', JSON.stringify(setup));
     }
@@ -56,7 +60,7 @@ const loadSetup = () => {
     try {
         const saved = localStorage.getItem('mancala_setup');
         if (saved) {
-            const { mode, pits } = JSON.parse(saved);
+            const { mode, difficulty, pits, stones } = JSON.parse(saved);
 
             // Restore Mode
             if (mode) {
@@ -65,6 +69,16 @@ const loadSetup = () => {
                     if (btnMode === mode) {
                         btn.classList.add('active');
                         game.setGameMode(mode);
+
+                        // Show/hide difficulty selector
+                        const difficultySection = document.querySelector('.difficulty-section');
+                        if (difficultySection) {
+                            if (mode === 'VS_AI') {
+                                difficultySection.classList.remove('hidden');
+                            } else {
+                                difficultySection.classList.add('hidden');
+                            }
+                        }
                     } else {
                         btn.classList.remove('active');
                     }
@@ -78,6 +92,33 @@ const loadSetup = () => {
                     if (btnPits === pits) {
                         btn.classList.add('active');
                         game.setPitCount(parseInt(pits) as PitCount);
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Restore Difficulty
+            if (difficulty) {
+                document.querySelectorAll('.mode-btn[data-difficulty]').forEach(btn => {
+                    const btnDifficulty = (btn as HTMLElement).dataset.difficulty;
+                    if (btnDifficulty === difficulty) {
+                        btn.classList.add('active');
+                        game.setDifficulty(difficulty as Difficulty);
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+
+            // Restore Stones
+            if (stones) {
+                document.querySelectorAll('.stones-btn').forEach(btn => {
+                    const btnStones = (btn as HTMLElement).dataset.stones;
+                    if (btnStones === stones) {
+                        btn.classList.add('active');
+                        game.setInitialStones(parseInt(stones));
                     } else {
                         btn.classList.remove('active');
                     }
@@ -123,6 +164,9 @@ const updateTexts = () => {
 
     const labelPitCount = document.getElementById('label-pit-count');
     if (labelPitCount) labelPitCount.textContent = localization.getUIText('pitCount');
+
+    const labelInitialStones = document.getElementById('label-initial-stones');
+    if (labelInitialStones) labelInitialStones.textContent = localization.getUIText('initialStones');
 
     const startBtn = document.getElementById('start-btn');
     if (startBtn) startBtn.textContent = localization.getUIText('startGame');
@@ -251,6 +295,19 @@ const setupEventListeners = () => {
             target.classList.add('active');
 
             game.setPitCount(pits);
+        });
+    });
+
+    // Stones selection
+    document.querySelectorAll('.stones-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLButtonElement;
+            const stones = parseInt(target.dataset.stones || '4');
+
+            document.querySelectorAll('.stones-btn').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+
+            game.setInitialStones(stones);
         });
     });
 
@@ -545,9 +602,10 @@ const saveHighScore = () => {
     const date = Date.now();
     const pitCount = game.getPitCount();
     const difficulty = game.getDifficulty();
+    const initialStones = game.getInitialStones();
 
     const newScore: HighScore = { score, moves, time, date };
-    const key = `mancala_highscores_${difficulty}_${pitCount}`;
+    const key = `mancala_highscores_${difficulty}_${pitCount}_${initialStones}`;
 
     try {
         const existing = localStorage.getItem(key);
@@ -580,7 +638,8 @@ const getHighScores = (): HighScore[] => {
 
     const pitCount = game.getPitCount();
     const difficulty = game.getDifficulty();
-    const key = `mancala_highscores_${difficulty}_${pitCount}`;
+    const initialStones = game.getInitialStones();
+    const key = `mancala_highscores_${difficulty}_${pitCount}_${initialStones}`;
     try {
         const existing = localStorage.getItem(key);
         return existing ? JSON.parse(existing) : [];

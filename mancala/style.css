@@ -160,13 +160,15 @@ h1 {
 }
 
 .mode-selector,
-.pit-selector {
+.pit-selector,
+.stones-selector {
     display: flex;
     gap: 1rem;
 }
 
 .mode-btn,
-.pit-btn {
+.pit-btn,
+.stones-btn {
     flex: 1;
     padding: 1rem;
     font-size: 1rem;
@@ -180,14 +182,16 @@ h1 {
 }
 
 .mode-btn:hover,
-.pit-btn:hover {
+.pit-btn:hover,
+.stones-btn:hover {
     border-color: var(--accent-primary);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
 
 .mode-btn.active,
-.pit-btn.active {
+.pit-btn.active,
+.stones-btn.active {
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     border-color: transparent;
     color: white;
@@ -393,6 +397,7 @@ button.primary:active {
 }
 
 @keyframes glow {
+
     0%,
     100% {
         box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5),

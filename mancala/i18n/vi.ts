@@ -10,6 +10,7 @@ export default {
         medium: "Trung bình",
         hard: "Khó",
         pitCount: "Số hố mỗi bên",
+        initialStones: "Số đá mỗi hố",
         startGame: "Bắt đầu",
         newGame: "Ván mới",
         player1Turn: "Lượt Người chơi 1",

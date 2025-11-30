@@ -15,6 +15,7 @@ export interface Move {
 
 class MancalaGame {
     private pitCount: PitCount = 6;
+    private initialStones: number = 4;
     private gameMode: GameMode = 'TWO_PLAYER';
     private difficulty: Difficulty = 'MEDIUM';
     private gameState: GameState = 'MENU';
@@ -44,10 +45,10 @@ class MancalaGame {
         const totalPits = this.pitCount * 2 + 2;
         this.board = new Array(totalPits).fill(0);
 
-        // Initialize pits with 4 stones each
+        // Initialize pits with stones
         for (let i = 0; i < this.pitCount; i++) {
-            this.board[i] = 4; // Player 1 pits
-            this.board[i + this.pitCount + 1] = 4; // Player 2 pits
+            this.board[i] = this.initialStones; // Player 1 pits
+            this.board[i + this.pitCount + 1] = this.initialStones; // Player 2 pits
         }
 
         // Stores start at 0
@@ -57,6 +58,14 @@ class MancalaGame {
 
     setPitCount(count: PitCount) {
         this.pitCount = count;
+    }
+
+    setInitialStones(count: number) {
+        this.initialStones = count;
+    }
+
+    getInitialStones(): number {
+        return this.initialStones;
     }
 
     setGameMode(mode: GameMode) {
