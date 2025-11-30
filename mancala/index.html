@@ -111,51 +111,70 @@
             <button id="new-game-btn" class="primary">New Game</button>
             <div class="game-info">
                 <div class="current-turn">
-            <div class="turn-indicator player1"></div>
-            <span id="turn-text">Player 1's Turn</span>
-        </div>
-        <div class="move-count">
-            <span id="label-move">Move</span>: <span id="move-number">0</span>
-        </div>
-        <div class="game-timer">
-            <span id="label-time">Time</span>: <span id="game-timer">00:00</span>
-        </div>
-    </div>
-
-    <div id="board-container">
-        <!-- Board will be rendered here -->
-    </div>
-    </div>
-
-    <!-- Result View -->
-    <div id="result-view" class="card hidden animate-fade-in">
-        <h2 id="result-title">Game Over!</h2>
-
-        <div class="winner-display" id="winner-display">
-            <!-- Winner info will be injected here -->
-        </div>
-
-        <div class="game-stats">
-            <div class="stat">
-                <div class="stat-label" id="label-player1-score">Player 1 Score</div>
-                <div class="stat-value" id="player1-score">0</div>
+                    <div class="turn-indicator player1"></div>
+                    <span id="turn-text">Player 1's Turn</span>
+                </div>
+                <div class="move-count">
+                    <span id="label-move">Move</span>: <span id="move-number">0</span>
+                </div>
+                <div class="game-timer">
+                    <span id="label-time">Time</span>: <span id="game-timer">00:00</span>
+                </div>
             </div>
-            <div class="stat">
-                <div class="stat-label" id="label-player2-score">Player 2 Score</div>
-                <div class="stat-value" id="player2-score">0</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label" id="label-total-moves">Total Moves</div>
-                <div class="stat-value" id="total-moves">0</div>
-            </div>
-            <div class="stat">
-                <div class="stat-label" id="label-total-time">Total Time</div>
-                <div class="stat-value" id="total-time">00:00</div>
+
+            <div id="board-container">
+                <!-- Board will be rendered here -->
             </div>
         </div>
 
-        <button id="restart-btn" class="primary">Play Again</button>
-    </div>
+        <!-- Result View -->
+        <div id="result-view" class="card hidden animate-fade-in">
+            <h2 id="result-title">Game Over!</h2>
+
+            <div class="winner-display" id="winner-display">
+                <!-- Winner info will be injected here -->
+            </div>
+
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-label" id="label-player1-score">Player 1 Score</div>
+                    <div class="stat-value" id="player1-score">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-player2-score">Player 2 Score</div>
+                    <div class="stat-value" id="player2-score">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-total-moves">Total Moves</div>
+                    <div class="stat-value" id="total-moves">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-total-time">Total Time</div>
+                    <div class="stat-value" id="total-time">00:00</div>
+                </div>
+            </div>
+
+            <!-- High Scores Table -->
+            <div class="high-scores-container">
+                <h3 id="high-scores-title">High Scores</h3>
+                <table id="high-scores-table">
+                    <thead>
+                        <tr>
+                            <th id="th-rank">Rank</th>
+                            <th id="th-score">Score</th>
+                            <th id="th-moves">Moves</th>
+                            <th id="th-time">Time</th>
+                            <th id="th-date">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="high-scores-body">
+                        <!-- Scores injected here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <button id="restart-btn" class="primary">Play Again</button>
+        </div>
     </div>
     <script type="module" src="/main.ts"></script>
 </body>

@@ -8,6 +8,13 @@ import ja from './i18n/ja';
 import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
 
+interface HighScore {
+    score: number;
+    moves: number;
+    time: number;
+    date: number | string;
+}
+
 // Initialize Consent Banner
 new Consent();
 
@@ -132,16 +139,16 @@ const updateTexts = () => {
     const labelPlayer1Score = document.getElementById('label-player1-score');
     if (labelPlayer1Score) {
         const isAIMode = game.getGameMode() === 'VS_AI';
-        labelPlayer1Score.textContent = isAIMode 
-            ? localization.getUIText('yourScore') 
+        labelPlayer1Score.textContent = isAIMode
+            ? localization.getUIText('yourScore')
             : localization.getUIText('player1Score');
     }
 
     const labelPlayer2Score = document.getElementById('label-player2-score');
     if (labelPlayer2Score) {
         const isAIMode = game.getGameMode() === 'VS_AI';
-        labelPlayer2Score.textContent = isAIMode 
-            ? localization.getUIText('aiScore') 
+        labelPlayer2Score.textContent = isAIMode
+            ? localization.getUIText('aiScore')
             : localization.getUIText('player2Score');
     }
 
@@ -153,6 +160,28 @@ const updateTexts = () => {
 
     const restartBtn = document.getElementById('restart-btn');
     if (restartBtn) restartBtn.textContent = localization.getUIText('playAgain');
+
+    const labelForceJump = document.getElementById('label-force-jump');
+    if (labelForceJump) labelForceJump.textContent = localization.getUIText('forceJump');
+
+    // High Score Table Headers
+    const highScoresTitle = document.getElementById('high-scores-title');
+    if (highScoresTitle) highScoresTitle.textContent = localization.getUIText('highScores');
+
+    const thRank = document.getElementById('th-rank');
+    if (thRank) thRank.textContent = localization.getUIText('rank');
+
+    const thScore = document.getElementById('th-score');
+    if (thScore) thScore.textContent = localization.getUIText('yourScore');
+
+    const thMoves = document.getElementById('th-moves');
+    if (thMoves) thMoves.textContent = localization.getUIText('moves');
+
+    const thTime = document.getElementById('th-time');
+    if (thTime) thTime.textContent = localization.getUIText('time');
+
+    const thDate = document.getElementById('th-date');
+    if (thDate) thDate.textContent = localization.getUIText('date');
 
     updateGameInfo();
 };
@@ -384,10 +413,10 @@ const createPit = (stones: number, index: number, owner: Player): HTMLElement =>
     // Highlight clickable pits
     // In VS_AI mode, only make PLAYER1 pits clickable
     const isAIMode = game.getGameMode() === 'VS_AI';
-    const shouldBeClickable = isAIMode 
+    const shouldBeClickable = isAIMode
         ? (owner === 'PLAYER1' && game.isValidMove(index))
         : game.isValidMove(index);
-    
+
     if (shouldBeClickable) {
         pit.classList.add('clickable');
     }
@@ -480,6 +509,11 @@ game.onStateChange((state: GameState) => {
             clearInterval(timerInterval);
             timerInterval = null;
         }
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        saveHighScore();
         displayResult();
     }
 });
@@ -498,6 +532,63 @@ game.onAIMove(() => {
     game.makeAIMove();
 });
 
+const saveHighScore = () => {
+    const winner = game.getWinner();
+    // Only save high scores for VS_AI mode when Player (PLAYER1) wins
+    if (game.getGameMode() !== 'VS_AI' || winner !== 'PLAYER1') {
+        return;
+    }
+
+    const score = game.getPlayerScore('PLAYER1');
+    const moves = game.getMoves().length;
+    const time = game.getElapsedTime();
+    const date = Date.now();
+    const pitCount = game.getPitCount();
+    const difficulty = game.getDifficulty();
+
+    const newScore: HighScore = { score, moves, time, date };
+    const key = `mancala_highscores_${difficulty}_${pitCount}`;
+
+    try {
+        const existing = localStorage.getItem(key);
+        let scores: HighScore[] = existing ? JSON.parse(existing) : [];
+
+        scores.push(newScore);
+
+        // Sort: Higher score first, then fewer moves, then faster time
+        scores.sort((a, b) => {
+            if (a.score !== b.score) {
+                return b.score - a.score; // Descending score
+            }
+            if (a.moves !== b.moves) {
+                return a.moves - b.moves; // Ascending moves
+            }
+            return a.time - b.time; // Ascending time
+        });
+
+        // Keep top 5
+        scores = scores.slice(0, 5);
+
+        localStorage.setItem(key, JSON.stringify(scores));
+    } catch (e) {
+        console.error('Failed to save high score:', e);
+    }
+};
+
+const getHighScores = (): HighScore[] => {
+    if (game.getGameMode() !== 'VS_AI') return [];
+
+    const pitCount = game.getPitCount();
+    const difficulty = game.getDifficulty();
+    const key = `mancala_highscores_${difficulty}_${pitCount}`;
+    try {
+        const existing = localStorage.getItem(key);
+        return existing ? JSON.parse(existing) : [];
+    } catch (e) {
+        return [];
+    }
+};
+
 const displayResult = () => {
     const winner = game.getWinner();
     const winnerDisplay = document.getElementById('winner-display');
@@ -511,15 +602,15 @@ const displayResult = () => {
     const isAIMode = game.getGameMode() === 'VS_AI';
     const labelPlayer1Score = document.getElementById('label-player1-score');
     if (labelPlayer1Score) {
-        labelPlayer1Score.textContent = isAIMode 
-            ? localization.getUIText('yourScore') 
+        labelPlayer1Score.textContent = isAIMode
+            ? localization.getUIText('yourScore')
             : localization.getUIText('player1Score');
     }
 
     const labelPlayer2Score = document.getElementById('label-player2-score');
     if (labelPlayer2Score) {
-        labelPlayer2Score.textContent = isAIMode 
-            ? localization.getUIText('aiScore') 
+        labelPlayer2Score.textContent = isAIMode
+            ? localization.getUIText('aiScore')
             : localization.getUIText('player2Score');
     }
 
@@ -573,6 +664,54 @@ const displayResult = () => {
         if (winnerDisplay) {
             winnerDisplay.innerHTML = `<span>${localization.getUIText('draw')}</span>`;
         }
+    }
+
+    // Render High Scores
+    const scores = getHighScores();
+    const tbody = document.getElementById('high-scores-body');
+    const container = document.querySelector('.high-scores-container');
+
+    if (game.getGameMode() === 'VS_AI') {
+        if (container) container.classList.remove('hidden');
+        if (tbody) {
+            tbody.innerHTML = '';
+            scores.forEach((s, index) => {
+                const tr = document.createElement('tr');
+
+                // Highlight current run if it matches
+                const currentScore = game.getPlayerScore('PLAYER1');
+                const currentMoves = game.getMoves().length;
+                const currentTime = game.getElapsedTime();
+
+                if (winner === 'PLAYER1' &&
+                    s.score === currentScore &&
+                    s.moves === currentMoves &&
+                    s.time === currentTime &&
+                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                    tr.classList.add('current-run');
+                }
+
+                let dateStr = '';
+                if (typeof s.date === 'number') {
+                    const lang = localization.language;
+                    const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
+                    dateStr = new Date(s.date).toLocaleDateString(locale);
+                } else {
+                    dateStr = s.date as string;
+                }
+
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${s.score}</td>
+                    <td>${s.moves}</td>
+                    <td>${game.formatTime(s.time)}</td>
+                    <td>${dateStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } else {
+        if (container) container.classList.add('hidden');
     }
 };
 
