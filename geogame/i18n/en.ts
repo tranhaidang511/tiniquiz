@@ -21,6 +21,7 @@ export default {
         modeProvinces: "State/Province Capitals",
         questionProvinceTemplate: "What is the capital of {province}?",
         filterByCountry: "Filter by Country",
+        allCountries: "All Available Countries",
         highScores: "High Scores",
         rank: "Rank",
         score: "Score",

@@ -21,6 +21,7 @@ export default {
         modeProvinces: "州都クイズ",
         questionProvinceTemplate: "{province}の州都はどこですか？",
         filterByCountry: "国でフィルター",
+        allCountries: "すべての対象国",
         highScores: "ハイスコア",
         rank: "順位",
         score: "スコア",

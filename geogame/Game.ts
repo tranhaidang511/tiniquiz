@@ -1,5 +1,5 @@
-import { countries } from './data';
-import type { Country } from './data';
+import { countries } from './data/countries';
+import type { Country } from './data/countries';
 import { provinces, provinceCountries } from './data/provinces';
 import type { Province } from './data/provinces';
 import { Localization } from '../common/Localization';

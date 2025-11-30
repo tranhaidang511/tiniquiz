@@ -21,6 +21,7 @@ export default {
         modeProvinces: "Thủ phủ bang/tỉnh",
         questionProvinceTemplate: "Thủ phủ của {province} là gì?",
         filterByCountry: "Lọc theo quốc gia",
+        allCountries: "Tất cả quốc gia có sẵn",
         highScores: "Bảng xếp hạng",
         rank: "Hạng",
         score: "Điểm",

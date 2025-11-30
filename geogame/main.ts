@@ -3,7 +3,7 @@ import { game } from './Game';
 import type { GameState, Question } from './Game';
 import { localization } from './Game';
 import type { Language } from '../common/Localization';
-import type { Country } from './data';
+import type { Country } from './data/countries';
 import type { Province } from './data/provinces';
 import { Consent } from '../common/Consent';
 
@@ -69,19 +69,6 @@ const loadSetup = () => {
           // Show country filter, hide region filter
           if (countryFilterContainer) countryFilterContainer.classList.remove('hidden');
           if (regionFilterContainer) regionFilterContainer.classList.add('hidden');
-
-          // Populate country filter dropdown
-          const countryFilter = document.getElementById('country-filter') as HTMLSelectElement;
-          if (countryFilter) {
-            countryFilter.innerHTML = '<option value="allCountries">All Countries</option>';
-            const countries = game.getProvinceCountries();
-            countries.forEach(code => {
-              const option = document.createElement('option');
-              option.value = code;
-              option.textContent = localization.getCountryName(code);
-              countryFilter.appendChild(option);
-            });
-          }
         } else {
           // Show region filter, hide country filter
           if (countryFilterContainer) countryFilterContainer.classList.add('hidden');
@@ -147,18 +134,8 @@ const setupEventListeners = () => {
         if (countryFilterContainer) countryFilterContainer.classList.remove('hidden');
         if (regionFilterContainer) regionFilterContainer.classList.add('hidden');
 
-        // Populate country filter dropdown
         const countryFilter = document.getElementById('country-filter') as HTMLSelectElement;
         if (countryFilter) {
-          countryFilter.innerHTML = '<option value="all">All Countries</option>';
-          const countries = game.getProvinceCountries();
-          countries.forEach(code => {
-            const option = document.createElement('option');
-            option.value = code;
-            option.textContent = localization.getCountryName(code);
-            countryFilter.appendChild(option);
-          });
-          // Set default to all
           game.setCountryFilter(null);
         }
       } else {
@@ -214,11 +191,16 @@ const setupEventListeners = () => {
 const populateFilters = () => {
   const continentGroup = document.getElementById('continent-options')!;
   const regionGroup = document.getElementById('region-options')!;
+  const countryFilterSelect = document.getElementById('country-filter') as HTMLSelectElement;
 
   // Clear existing options first (in case of language switch)
   continentGroup.innerHTML = '';
   regionGroup.innerHTML = '';
+  if (countryFilterSelect) {
+    countryFilterSelect.innerHTML = `<option value="allCountries">${localization.getUIText('allCountries')}</option>`;
+  }
 
+  // Populate continents
   game.getContinents().forEach(c => {
     const opt = document.createElement('option');
     opt.value = c;
@@ -226,12 +208,24 @@ const populateFilters = () => {
     continentGroup.appendChild(opt);
   });
 
+  // Populate regions
   game.getRegions().forEach(r => {
     const opt = document.createElement('option');
     opt.value = r;
     opt.textContent = localization.getRegionName(r);
     regionGroup.appendChild(opt);
   });
+
+  // Populate country filter for provinces mode
+  if (countryFilterSelect) {
+    const countries = game.getProvinceCountries();
+    countries.forEach(code => {
+      const option = document.createElement('option');
+      option.value = code;
+      option.textContent = localization.getCountryName(code);
+      countryFilterSelect.appendChild(option);
+    });
+  }
 };
 
 // --- Updates ---
