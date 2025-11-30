@@ -41,13 +41,13 @@ const saveSetup = () => {
             mode: modeBtn.dataset.mode,
             pits: pitBtn.dataset.pits
         };
-        localStorage.setItem('mancalaSetup', JSON.stringify(setup));
+        localStorage.setItem('mancala_setup', JSON.stringify(setup));
     }
 };
 
 const loadSetup = () => {
     try {
-        const saved = localStorage.getItem('mancalaSetup');
+        const saved = localStorage.getItem('mancala_setup');
         if (saved) {
             const { mode, pits } = JSON.parse(saved);
 
