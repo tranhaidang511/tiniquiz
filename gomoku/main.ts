@@ -41,13 +41,13 @@ const saveSetup = () => {
             mode: modeBtn.dataset.mode,
             size: sizeBtn.dataset.size
         };
-        localStorage.setItem('gomokuSetup', JSON.stringify(setup));
+        localStorage.setItem('gomoku_setup', JSON.stringify(setup));
     }
 };
 
 const loadSetup = () => {
     try {
-        const saved = localStorage.getItem('gomokuSetup');
+        const saved = localStorage.getItem('gomoku_setup');
         if (saved) {
             const { mode, size } = JSON.parse(saved);
 

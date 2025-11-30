@@ -5,6 +5,7 @@ export type PieceType = 'REGULAR' | 'KING';
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type BoardSize = 8 | 10 | 12;
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface Piece {
     player: Player;
@@ -27,6 +28,7 @@ export interface Position {
 class CheckersGame {
     private boardSize: BoardSize = 8;
     private forceJump: boolean = true;
+    private difficulty: Difficulty = 'MEDIUM';
     private board: (Piece | null)[][] = [];
     private currentPlayer: Player = 'RED';
     private gameState: GameState = 'MENU';
@@ -100,6 +102,11 @@ class CheckersGame {
         this.gameMode = mode;
     }
 
+    setDifficulty(difficulty: Difficulty) {
+        this.difficulty = difficulty;
+        this.ai.setDifficulty(difficulty);
+    }
+
     getForceJump(): boolean {
         return this.forceJump;
     }
@@ -110,6 +117,10 @@ class CheckersGame {
 
     getGameMode(): GameMode {
         return this.gameMode;
+    }
+
+    getDifficulty(): Difficulty {
+        return this.difficulty;
     }
 
     start() {
@@ -212,6 +223,11 @@ class CheckersGame {
         this.validMoves = [];
         this.switchPlayer();
         this.checkWinCondition();
+
+        // Notify move AFTER switching player for correct turn display
+        if (move) {
+            this.notifyMove(move);
+        }
         this.notifyBoardUpdate();
 
         // Trigger AI move if applicable
@@ -283,6 +299,13 @@ class CheckersGame {
     private finishAITurn() {
         this.switchPlayer();
         this.checkWinCondition();
+
+        // Notify last move AFTER switching for correct turn display
+        if (this.moveHistory.length > 0) {
+            const lastMove = this.moveHistory[this.moveHistory.length - 1];
+            this.notifyMove(lastMove);
+        }
+
         this.notifyBoardUpdate();
         this.isAIThinking = false;
         this.notifyAIThinking(false);
@@ -306,7 +329,7 @@ class CheckersGame {
             piece.row = move.to.row;
             piece.col = move.to.col;
             this.moveHistory.push(move);
-            this.notifyMove(move);
+            // Move notifyMove to after switchPlayer for correct turn display
         } else {
             // For simulation, we need to clone the piece effectively or handle it differently
             // Since we are modifying the board array directly, we just move the reference

@@ -24,7 +24,10 @@
     "preview:checkers": "vite preview --config checkers/vite.config.ts",
     "dev:mancala": "vite --config mancala/vite.config.ts",
     "build:mancala": "tsc && vite build --config mancala/vite.config.ts",
-    "preview:mancala": "vite preview --config mancala/vite.config.ts"
+    "preview:mancala": "vite preview --config mancala/vite.config.ts",
+    "dev:othello": "vite --config othello/vite.config.ts",
+    "build:othello": "tsc && vite build --config othello/vite.config.ts",
+    "preview:othello": "vite preview --config othello/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

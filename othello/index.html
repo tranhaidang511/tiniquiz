@@ -24,25 +24,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checkers</title>
+    <title>Othello</title>
     <link rel="stylesheet" href="./style.css">
 
-    <meta name="description" content="Checkers - Classic board game with strategic gameplay!" />
-    <meta name="keywords" content="checkers, draughts, board game, strategy, two player" />
+    <meta name="description" content="Othello - Classic strategy board game!" />
+    <meta name="keywords" content="othello, reversi, board game, strategy, two player" />
     <meta name="author" content="Tran Hai Dang" />
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:title" content="Checkers" />
-    <meta property="og:description" content="Classic checkers board game with strategic gameplay!" />
+    <meta property="og:title" content="Othello" />
+    <meta property="og:description" content="Classic Othello strategy board game!" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://tiniquiz.com/checkers/" />
-    <meta property="og:image" content="https://tiniquiz.com/checkers/favicon.svg" />
+    <meta property="og:url" content="https://tiniquiz.com/othello/" />
+    <meta property="og:image" content="https://tiniquiz.com/othello/favicon.svg" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Checkers" />
-    <meta name="twitter:description" content="Classic checkers board game with strategic gameplay!" />
-    <meta name="twitter:image" content="https://tiniquiz.com/checkers/favicon.svg" />
+    <meta name="twitter:title" content="Othello" />
+    <meta name="twitter:description" content="Classic Othello strategy board game!" />
+    <meta name="twitter:image" content="https://tiniquiz.com/othello/favicon.svg" />
 </head>
 
 <body>
@@ -62,7 +62,7 @@
                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </svg>
             </button>
-            <h1 id="game-title">Checkers</h1>
+            <h1 id="game-title">Othello</h1>
         </div>
 
         <!-- Language Switcher -->
@@ -83,38 +83,13 @@
                 </div>
             </div>
 
-            <div class="setup-group" id="difficulty-section">
+            <div class="setup-group difficulty-section hidden">
                 <h3 id="label-difficulty">Difficulty</h3>
                 <div class="radio-group">
-                    <button class="difficulty-btn" data-difficulty="EASY" id="diff-easy">Easy</button>
-                    <button class="difficulty-btn active" data-difficulty="MEDIUM" id="diff-medium">Medium</button>
-                    <button class="difficulty-btn" data-difficulty="HARD" id="diff-hard">Hard</button>
+                    <button class="mode-btn" data-difficulty="EASY" id="difficulty-easy">Easy</button>
+                    <button class="mode-btn active" data-difficulty="MEDIUM" id="difficulty-medium">Medium</button>
+                    <button class="mode-btn" data-difficulty="HARD" id="difficulty-hard">Hard</button>
                 </div>
-            </div>
-
-            <div class="setup-group">
-                <h3 id="label-board-size">Board Size</h3>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="board-size" value="8" checked>
-                        <span>8x8</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="board-size" value="10">
-                        <span>10x10</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="board-size" value="12">
-                        <span>12x12</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="setup-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="force-jump" checked>
-                    <span id="label-force-jump">Force Jump (Mandatory Captures)</span>
-                </label>
             </div>
 
             <button id="start-btn" class="primary">Start Game</button>
@@ -126,16 +101,20 @@
 
             <div class="game-header">
                 <div class="turn-indicator-container">
-                    <div class="turn-indicator red"></div>
-                    <div class="turn-text" id="turn-text">Red's Turn</div>
+                    <div class="turn-indicator black"></div>
+                    <div class="turn-text" id="turn-text">Black's Turn</div>
+                </div>
+                <div class="score-display">
+                    <div class="score">
+                        <span id="label-black-score">Black</span>: <span id="black-score">2</span>
+                    </div>
+                    <div class="score">
+                        <span id="label-white-score">White</span>: <span id="white-score">2</span>
+                    </div>
                 </div>
                 <div class="stat">
                     <div class="stat-label" id="label-time">Time</div>
                     <div class="stat-value" id="game-timer">0:00</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label" id="label-moves">Moves</div>
-                    <div class="stat-value" id="move-number">0</div>
                 </div>
             </div>
 
@@ -163,22 +142,29 @@
                     <div class="stat-label" id="label-total-moves">Total Moves</div>
                     <div class="stat-value" id="total-moves">0</div>
                 </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-final-black">Black</div>
+                    <div class="stat-value" id="final-black">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-final-white">White</div>
+                    <div class="stat-value" id="final-white">0</div>
+                </div>
             </div>
 
-            <!-- High Scores Table -->
-            <div class="high-scores-container">
-                <h3 id="high-scores-title">High Scores</h3>
-                <table id="high-scores-table">
+            <div class="high-scores-container hidden">
+                <h3 id="label-high-scores">High Scores</h3>
+                <table class="high-scores-table">
                     <thead>
                         <tr>
-                            <th id="th-rank">Rank</th>
-                            <th id="th-moves">Moves</th>
-                            <th id="th-time">Time</th>
-                            <th id="th-date">Date</th>
+                            <th id="label-rank">Rank</th>
+                            <th id="label-moves">Moves</th>
+                            <th id="label-time">Time</th>
+                            <th id="label-date">Date</th>
                         </tr>
                     </thead>
                     <tbody id="high-scores-body">
-                        <!-- Scores injected here -->
+                        <!-- High scores will be rendered here -->
                     </tbody>
                 </table>
             </div>

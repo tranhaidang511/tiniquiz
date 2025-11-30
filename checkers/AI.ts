@@ -1,4 +1,4 @@
-import type { Piece, Move, Player } from './Game';
+import type { Piece, Move, Player, Difficulty } from './Game';
 
 export class CheckersAI {
     private game: any; // Using any to avoid circular dependency issues during development, but ideally should be CheckersGame
@@ -6,6 +6,20 @@ export class CheckersAI {
 
     constructor(gameInstance: any) {
         this.game = gameInstance;
+    }
+
+    setDifficulty(difficulty: Difficulty) {
+        switch (difficulty) {
+            case 'EASY':
+                this.maxDepth = 2;
+                break;
+            case 'MEDIUM':
+                this.maxDepth = 4;
+                break;
+            case 'HARD':
+                this.maxDepth = 6;
+                break;
+        }
     }
 
     getBestMove(board: (Piece | null)[][], player: Player): Move | null {

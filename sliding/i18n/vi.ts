@@ -1,20 +1,20 @@
 export default {
     ui: {
-        gameTitle: "Xếp Hình",
-        gameSetup: "Thiết Lập Trò Chơi",
-        boardSize: "Kích Thước Bảng",
-        startGame: "Bắt Đầu",
-        newGame: "Ván Mới",
-        time: "Thời Gian",
-        moves: "Số Nước",
-        gameOver: "Hoàn Thành!",
+        gameTitle: "Xếp hình",
+        gameSetup: "Thiết lập trò chơi",
+        boardSize: "Kích thước bảng",
+        startGame: "Bắt đầu",
+        newGame: "Ván mới",
+        time: "Thời gian",
+        moves: "Số nước",
+        gameOver: "Hoàn thành!",
         congratulations: "Chúc mừng! Bạn đã hoàn thành trò chơi!",
-        totalTime: "Tổng Thời Gian",
-        totalMoves: "Tổng Số Nước",
-        playAgain: "Chơi Lại",
-        highScores: "Điểm Cao",
+        totalTime: "Tổng thời gian",
+        totalMoves: "Tổng số nước",
+        playAgain: "Chơi lại",
+        highScores: "Điểm cao",
         rank: "Hạng",
         date: "Ngày",
-        reference: "Mục Tiêu:"
+        reference: "Mục tiêu:"
     }
 };

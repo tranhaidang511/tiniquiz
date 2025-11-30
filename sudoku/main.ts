@@ -36,13 +36,13 @@ const saveSetup = () => {
     const activeDiffBtn = document.querySelector('.diff-btn.active') as HTMLElement;
     if (activeDiffBtn) {
         const difficulty = activeDiffBtn.dataset.diff as Difficulty;
-        localStorage.setItem('sudokuSetup', JSON.stringify({ difficulty }));
+        localStorage.setItem('sudoku_setup', JSON.stringify({ difficulty }));
     }
 };
 
 const loadSetup = () => {
     try {
-        const saved = localStorage.getItem('sudokuSetup');
+        const saved = localStorage.getItem('sudoku_setup');
         if (saved) {
             const { difficulty } = JSON.parse(saved);
             // Set active difficulty button
@@ -308,9 +308,22 @@ const updateGameInfo = () => {
     }
 
     const hintsUsed = game.getHintsUsed();
+    const maxHints = game.getMaxHints();
     const hintsDisplay = document.getElementById('hints-display');
     if (hintsDisplay) {
-        hintsDisplay.textContent = hintsUsed.toString();
+        hintsDisplay.textContent = `${hintsUsed}/${maxHints}`;
+    }
+
+    // Disable hint button if limit reached
+    const hintBtn = document.getElementById('hint-btn');
+    if (hintBtn) {
+        if (hintsUsed >= maxHints) {
+            hintBtn.classList.add('disabled');
+            hintBtn.setAttribute('disabled', 'true');
+        } else {
+            hintBtn.classList.remove('disabled');
+            hintBtn.removeAttribute('disabled');
+        }
     }
 };
 
