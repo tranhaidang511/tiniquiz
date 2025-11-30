@@ -32,7 +32,12 @@ const translations = {
         'checkers-feature1': '2-Player & vs AI modes',
         'checkers-feature2': 'Multiple board sizes',
         'checkers-button': 'Play Checkers',
-        'footer-made': 'Made with ❤️ by Tran Hai Dang',
+        'othello-title': 'Othello',
+        'othello-desc': 'Classic strategy board game. Flip your opponent\'s pieces to your color. Most pieces at the end wins!',
+        'othello-feature1': '2-Player & vs AI modes',
+        'othello-feature2': '3 difficulty levels',
+        'othello-button': 'Play Othello',
+        'footer-made': 'Made by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     },
     ja: {
@@ -68,7 +73,12 @@ const translations = {
         'checkers-feature1': '2プレイヤー・AI対戦',
         'checkers-feature2': '複数のボードサイズ',
         'checkers-button': 'チェッカーをプレイ',
-        'footer-made': 'Made with ❤️ by Tran Hai Dang',
+        'othello-title': 'オセロ',
+        'othello-desc': 'クラシックな戦略ボードゲーム。相手の石を自分の色に裏返そう。最後に石が多い方が勝ち！',
+        'othello-feature1': '2プレイヤー・AI対戦',
+        'othello-feature2': '3つの難易度',
+        'othello-button': 'オセロをプレイ',
+        'footer-made': 'Made by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     },
     vi: {
@@ -103,7 +113,13 @@ const translations = {
         'checkers-desc': 'Trò chơi cờ cổ điển. Nhảy qua quân cờ của đối thủ để bắt chúng. Phong vương để di chuyển mọi hướng!',
         'checkers-feature1': '2 Người chơi & Đấu với AI',
         'checkers-feature2': 'Nhiều kích thước bàn cờ',
-        'checkers-button': 'Chơi Cờ đam',        'footer-made': 'Made with ❤️ by Tran Hai Dang',
+        'checkers-button': 'Chơi Cờ đam',
+        'othello-title': 'Cờ lật',
+        'othello-desc': 'Trò chơi cờ chiến lược kinh điển. Lật quân cờ của đối thủ thành màu của bạn. Người có nhiều quân nhất sẽ thắng!',
+        'othello-feature1': '2 Người chơi & Đấu với AI',
+        'othello-feature2': '3 cấp độ khó',
+        'othello-button': 'Chơi Cờ lật',
+        'footer-made': 'Made by Tran Hai Dang',
         'footer-copyright': '© 2025 TiniQuiz. All rights reserved.'
     }
 };

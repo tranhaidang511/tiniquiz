@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Google Consent Mode -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+        });
+    </script>
+    <!-- End Google Consent Mode -->
+
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', 'GTM-56G5F5W4');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon-CS1pFCWs.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Othello</title>
+
+
+    <meta name="description" content="Othello - Classic strategy board game!" />
+    <meta name="keywords" content="othello, reversi, board game, strategy, two player" />
+    <meta name="author" content="Tran Hai Dang" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Othello" />
+    <meta property="og:description" content="Classic Othello strategy board game!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tiniquiz.com/othello/" />
+    <meta property="og:image" content="https://tiniquiz.com/othello/favicon-CS1pFCWs.svg.svg" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Othello" />
+    <meta name="twitter:description" content="Classic Othello strategy board game!" />
+    <meta name="twitter:image" content="https://tiniquiz.com/othello/favicon-CS1pFCWs.svg.svg" />
+  <script type="module" crossorigin>(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))n(e);new MutationObserver(e=>{for(const s of e)if(s.type==="childList")for(const o of s.addedNodes)o.tagName==="LINK"&&o.rel==="modulepreload"&&n(o)}).observe(document,{childList:!0,subtree:!0});function i(e){const s={};return e.integrity&&(s.integrity=e.integrity),e.referrerPolicy&&(s.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?s.credentials="include":e.crossOrigin==="anonymous"?s.credentials="omit":s.credentials="same-origin",s}function n(e){if(e.ep)return;e.ep=!0;const s=i(e);fetch(e.href,s)}})();class W{maxDepth=4;positionWeights=[[100,-20,10,5,5,10,-20,100],[-20,-50,-2,-2,-2,-2,-50,-20],[10,-2,11,2,2,11,-2,10],[5,-2,2,2,2,2,-2,5],[5,-2,2,2,2,2,-2,5],[10,-2,11,2,2,11,-2,10],[-20,-50,-2,-2,-2,-2,-50,-20],[100,-20,10,5,5,10,-20,100]];constructor(){}setDifficulty(t){switch(t){case"EASY":this.maxDepth=2;break;case"MEDIUM":this.maxDepth=4;break;case"HARD":this.maxDepth=6;break}}getBestMove(t,i){const n=this.getValidMoves(t,i);if(n.length===0)return null;let e=null,s=-1/0;for(const o of n){const h=this.simulateMove(t,o,i),g=this.minimax(h,this.maxDepth-1,-1/0,1/0,!1,i);g>s&&(s=g,e=o)}return e}minimax(t,i,n,e,s,o){const h=o==="BLACK"?"WHITE":"BLACK";if(i===0)return this.evaluateBoard(t,o);const g=s?o:h,f=this.getValidMoves(t,g);if(f.length===0)return this.getValidMoves(t,s?h:o).length===0?this.evaluateBoard(t,o)*1e3:this.minimax(t,i-1,n,e,!s,o);if(s){let a=-1/0;for(const u of f){const d=this.simulateMove(t,u,g),m=this.minimax(d,i-1,n,e,!1,o);if(a=Math.max(a,m),n=Math.max(n,m),e<=n)break}return a}else{let a=1/0;for(const u of f){const d=this.simulateMove(t,u,g),m=this.minimax(d,i-1,n,e,!0,o);if(a=Math.min(a,m),e=Math.min(e,m),e<=n)break}return a}}evaluateBoard(t,i){const n=i==="BLACK"?"WHITE":"BLACK";let e=0,s=0,o=0;for(let d=0;d<8;d++)for(let m=0;m<8;m++)t[d][m]===i?(s++,e+=this.positionWeights[d][m]):t[d][m]===n&&(o++,e-=this.positionWeights[d][m]);const g=s+o>48?10:5;e+=(s-o)*g;const f=this.getValidMoves(t,i).length,a=this.getValidMoves(t,n).length;e+=(f-a)*5;const u=[[0,0],[0,7],[7,0],[7,7]];for(const[d,m]of u)t[d][m]===i?e+=100:t[d][m]===n&&(e-=100);return e}getValidMoves(t,i){const n=[];for(let e=0;e<8;e++)for(let s=0;s<8;s++)t[e][s]===null&&this.getFlippedDiscs(t,e,s,i).length>0&&n.push({row:e,col:s});return n}getFlippedDiscs(t,i,n,e){const s=[],o=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]],h=e==="BLACK"?"WHITE":"BLACK";for(const[g,f]of o){const a=[];let u=i+g,d=n+f;for(;u>=0&&u<8&&d>=0&&d<8&&t[u][d]!==null;)if(t[u][d]===h)a.push({row:u,col:d}),u+=g,d+=f;else if(t[u][d]===e){s.push(...a);break}else break}return s}simulateMove(t,i,n){const e=t.map(o=>[...o]);e[i.row][i.col]=n;const s=this.getFlippedDiscs(e,i.row,i.col,n);for(const o of s)e[o.row][o.col]=n;return e}}class N{boardSize=8;board=[];currentPlayer="BLACK";gameState="MENU";gameMode="TWO_PLAYER";difficulty="MEDIUM";moveHistory=[];startTime=0;elapsedTime=0;timerInterval=null;winner=null;ai;stateChangeListeners=[];moveListeners=[];boardUpdateListeners=[];constructor(){this.ai=new W,this.initializeBoard()}initializeBoard(){this.board=Array(this.boardSize).fill(null).map(()=>Array(this.boardSize).fill(null));const t=this.boardSize/2;this.board[t-1][t-1]="WHITE",this.board[t-1][t]="BLACK",this.board[t][t-1]="BLACK",this.board[t][t]="WHITE"}setGameMode(t){this.gameMode=t}setDifficulty(t){this.difficulty=t,this.ai.setDifficulty(t)}getGameMode(){return this.gameMode}getDifficulty(){return this.difficulty}start(){this.initializeBoard(),this.currentPlayer="BLACK",this.moveHistory=[],this.startTime=Date.now(),this.elapsedTime=0,this.winner=null,this.gameState="PLAYING",this.notifyStateChange(),this.startTimer(),this.notifyBoardUpdate()}restart(){this.stopTimer(),this.gameState="MENU",this.notifyStateChange()}startTimer(){this.timerInterval&&clearInterval(this.timerInterval),this.timerInterval=window.setInterval(()=>{this.elapsedTime=Date.now()-this.startTime},1e3)}stopTimer(){this.timerInterval&&(clearInterval(this.timerInterval),this.timerInterval=null)}makeMove(t,i){if(this.gameState!=="PLAYING"||this.board[t][i]!==null)return!1;const n=this.getFlippedDiscs(t,i,this.currentPlayer);if(n.length===0)return!1;this.board[t][i]=this.currentPlayer,n.forEach(s=>{this.board[s.row][s.col]=this.currentPlayer});const e={position:{row:t,col:i},player:this.currentPlayer,flipped:n};return this.moveHistory.push(e),this.switchPlayer(),this.hasValidMoves(this.currentPlayer)||(this.switchPlayer(),this.hasValidMoves(this.currentPlayer)||this.endGame()),this.notifyMove(e),this.notifyBoardUpdate(),this.makeAIMove(),!0}makeAIMove(){if(this.gameState!=="PLAYING"||this.gameMode!=="VS_AI"||this.currentPlayer!=="WHITE")return;const t=this.ai.getBestMove(this.board,"WHITE");t&&setTimeout(()=>{this.makeMove(t.row,t.col)},500)}getFlippedDiscs(t,i,n){const e=[],s=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]],o=n==="BLACK"?"WHITE":"BLACK";for(const[h,g]of s){const f=[];let a=t+h,u=i+g;for(;a>=0&&a<this.boardSize&&u>=0&&u<this.boardSize&&this.board[a][u]!==null;)if(this.board[a][u]===o)f.push({row:a,col:u}),a+=h,u+=g;else if(this.board[a][u]===n){e.push(...f);break}else break}return e}getValidMoves(t){const i=[];for(let n=0;n<this.boardSize;n++)for(let e=0;e<this.boardSize;e++)this.board[n][e]===null&&this.getFlippedDiscs(n,e,t).length>0&&i.push({row:n,col:e});return i}hasValidMoves(t){return this.getValidMoves(t).length>0}switchPlayer(){this.currentPlayer=this.currentPlayer==="BLACK"?"WHITE":"BLACK"}endGame(){this.stopTimer();let t=0,i=0;for(let n=0;n<this.boardSize;n++)for(let e=0;e<this.boardSize;e++)this.board[n][e]==="BLACK"?t++:this.board[n][e]==="WHITE"&&i++;t>i?this.winner="BLACK":i>t&&(this.winner="WHITE"),this.gameState="RESULT",this.notifyStateChange()}getDiscCount(t){let i=0;for(let n=0;n<this.boardSize;n++)for(let e=0;e<this.boardSize;e++)this.board[n][e]===t&&i++;return i}getBoard(){return this.board}getCurrentPlayer(){return this.currentPlayer}getState(){return this.gameState}getMoves(){return this.moveHistory}getWinner(){return this.winner}getElapsedTime(){return this.elapsedTime}formatTime(t){const i=Math.floor(t/1e3),n=Math.floor(i/60),e=i%60;return`${n}:${e.toString().padStart(2,"0")}`}onStateChange(t){this.stateChangeListeners.push(t)}onMove(t){this.moveListeners.push(t)}onBoardUpdate(t){this.boardUpdateListeners.push(t)}notifyStateChange(){this.stateChangeListeners.forEach(t=>t(this.gameState))}notifyMove(t){this.moveListeners.forEach(i=>i(t))}notifyBoardUpdate(){this.boardUpdateListeners.forEach(t=>t())}}const c=new N;class G{currentLang="en";listeners=[];locales;constructor(t,i="en"){this.locales=t,this.currentLang=i}get language(){return this.currentLang}setLanguage(t){this.currentLang!==t&&(this.currentLang=t,localStorage.setItem("language",t),this.notifyListeners())}subscribe(t){this.listeners.push(t)}notifyListeners(){this.listeners.forEach(t=>t(this.currentLang))}getUIText(t,i){const n=this.locales[this.currentLang]?.ui;let e=n&&n[t]||t;return i&&Object.entries(i).forEach(([s,o])=>{e=e.replace(`{${s}}`,o)}),e}}const H={ui:{gameTitle:"Othello",gameSetup:"Game Setup",startGame:"Start Game",newGame:"New Game",blackTurn:"Black's Turn",whiteTurn:"White's Turn",blackWins:"Black Wins!",whiteWins:"White Wins!",draw:"It's a Draw!",gameOver:"Game Over",totalMoves:"Total Moves",playAgain:"Play Again",time:"Time",moves:"Moves",blackScore:"Black",whiteScore:"White",highScores:"High Scores",rank:"Rank",date:"Date",gameMode:"Game Mode",twoPlayers:"2 Players",vsAI:"vs AI",difficulty:"Difficulty",easy:"Easy",medium:"Medium",hard:"Hard"}},K={ui:{gameTitle:"オセロ",gameSetup:"ゲーム設定",startGame:"ゲーム開始",newGame:"新規ゲーム",blackTurn:"黒の番",whiteTurn:"白の番",blackWins:"黒の勝利！",whiteWins:"白の勝利！",draw:"引き分け！",gameOver:"ゲーム終了",totalMoves:"合計手数",playAgain:"もう一度プレイ",time:"時間",moves:"手数",blackScore:"黒",whiteScore:"白",highScores:"ハイスコア",rank:"順位",date:"日付",gameMode:"ゲームモード",twoPlayers:"二人対戦",vsAI:"AI対戦",difficulty:"難易度",easy:"簡単",medium:"普通",hard:"難しい"}},P={ui:{gameTitle:"Cờ lật",gameSetup:"Thiết lập trò chơi",startGame:"Bắt đầu",newGame:"Ván mới",blackTurn:"Lượt đen",whiteTurn:"Lượt trắng",blackWins:"Đen thắng!",whiteWins:"Trắng thắng!",draw:"Hòa!",gameOver:"Kết thúc",totalMoves:"Tổng số nước",playAgain:"Chơi lại",time:"Thời gian",moves:"Số nước",blackScore:"Đen",whiteScore:"Trắng",highScores:"Điểm cao",rank:"Hạng",date:"Ngày",gameMode:"Chế độ chơi",twoPlayers:"2 Người chơi",vsAI:"Đấu với AI",difficulty:"Độ khó",easy:"Dễ",medium:"Trung bình",hard:"Khó"}};class O{dialog;STORAGE_KEY="consentMode";constructor(){this.dialog=document.createElement("div"),this.dialog.className="consent-dialog",this.dialog.innerHTML=`
+            <div class="consent-content">
+                <h3>We value your privacy</h3>
+                <p>We use cookies to improve your experience, analyze traffic, and show relevant ads.</p>
+                <p>You can choose to accept or reject these cookies.</p>
+                <p>Essential cookies are always on because they are required for the site to work.</p>
+                <div class="consent-buttons">
+                    <button id="btn-reject" class="btn-reject">Reject All</button>
+                    <button id="btn-accept" class="btn-accept">Accept All</button>
+                </div>
+            </div>
+        `,document.body.appendChild(this.dialog),this.init()}init(){const t=localStorage.getItem(this.STORAGE_KEY);t?this.updateConsent(t==="granted"):this.showDialog(),this.dialog.querySelector("#btn-accept")?.addEventListener("click",()=>{this.setConsent(!0)}),this.dialog.querySelector("#btn-reject")?.addEventListener("click",()=>{this.setConsent(!1)})}showDialog(){this.dialog.style.display="flex"}hideDialog(){this.dialog.style.display="none"}setConsent(t){localStorage.setItem(this.STORAGE_KEY,t?"granted":"denied"),this.updateConsent(t),this.hideDialog()}updateConsent(t){const i=t?"granted":"denied";typeof window.gtag=="function"&&window.gtag("consent","update",{ad_storage:i,ad_user_data:i,ad_personalization:i,analytics_storage:i})}}new O;const V=localStorage.getItem("language"),l=new G({en:H,ja:K,vi:P},V||"en"),E=()=>{const r=c.getGameMode(),t=document.querySelector(".difficulty-section");t&&(r==="VS_AI"?t.classList.remove("hidden"):t.classList.add("hidden"))},_=()=>{$(),k(),document.querySelectorAll(".lang-btn").forEach(r=>{r.classList.toggle("active",r.dataset.lang===l.language)}),z(),E()},q=()=>{const r=document.querySelector(".mode-btn[data-mode].active"),t=document.querySelector(".mode-btn[data-difficulty].active");if(r){const i={mode:r.dataset.mode,difficulty:t?t.dataset.difficulty:"MEDIUM"};localStorage.setItem("othello_setup",JSON.stringify(i))}},z=()=>{try{const r=localStorage.getItem("othello_setup");if(r){const{mode:t,difficulty:i}=JSON.parse(r);t&&document.querySelectorAll(".mode-btn[data-mode]").forEach(n=>{n.dataset.mode===t?(n.classList.add("active"),c.setGameMode(t)):n.classList.remove("active")}),i&&document.querySelectorAll(".mode-btn[data-difficulty]").forEach(n=>{n.dataset.difficulty===i?(n.classList.add("active"),c.setDifficulty(i)):n.classList.remove("active")}),E()}}catch(r){console.error("Failed to load Othello setup:",r)}},k=()=>{const r=document.getElementById("game-title");r&&(r.textContent=l.getUIText("gameTitle"));const t=document.getElementById("menu-title");t&&(t.textContent=l.getUIText("gameSetup"));const i=document.getElementById("label-mode");i&&(i.textContent=l.getUIText("gameMode"));const n=document.getElementById("mode-two-player");n&&(n.textContent=l.getUIText("twoPlayers"));const e=document.getElementById("mode-vs-ai");e&&(e.textContent=l.getUIText("vsAI"));const s=document.getElementById("label-difficulty");s&&(s.textContent=l.getUIText("difficulty"));const o=document.getElementById("difficulty-easy");o&&(o.textContent=l.getUIText("easy"));const h=document.getElementById("difficulty-medium");h&&(h.textContent=l.getUIText("medium"));const g=document.getElementById("difficulty-hard");g&&(g.textContent=l.getUIText("hard"));const f=document.getElementById("start-btn");f&&(f.textContent=l.getUIText("startGame"));const a=document.getElementById("new-game-btn");a&&(a.textContent=l.getUIText("newGame"));const u=document.getElementById("label-time");u&&(u.textContent=l.getUIText("time"));const d=document.getElementById("label-black-score");d&&(d.textContent=l.getUIText("blackScore"));const m=document.getElementById("label-white-score");m&&(m.textContent=l.getUIText("whiteScore"));const w=document.getElementById("label-total-time");w&&(w.textContent=l.getUIText("time"));const p=document.getElementById("label-total-moves");p&&(p.textContent=l.getUIText("totalMoves"));const y=document.getElementById("label-final-black");y&&(y.textContent=l.getUIText("blackScore"));const v=document.getElementById("label-final-white");v&&(v.textContent=l.getUIText("whiteScore"));const C=document.getElementById("restart-btn");C&&(C.textContent=l.getUIText("playAgain"));const L=document.getElementById("label-high-scores");L&&(L.textContent=l.getUIText("highScores"));const B=document.getElementById("label-rank");B&&(B.textContent=l.getUIText("rank"));const M=document.getElementById("label-moves");M&&(M.textContent=l.getUIText("moves"));const x=document.getElementById("label-date");x&&(x.textContent=l.getUIText("date")),S()},$=()=>{document.getElementById("home-btn")?.addEventListener("click",()=>{window.location.href="/"}),document.querySelectorAll(".lang-btn").forEach(r=>{r.addEventListener("click",t=>{const i=t.target.dataset.lang;l.setLanguage(i),document.querySelectorAll(".lang-btn").forEach(n=>n.classList.remove("active")),t.target.classList.add("active")})}),document.querySelectorAll(".mode-btn[data-mode]").forEach(r=>{r.addEventListener("click",t=>{const i=t.target,n=i.dataset.mode;document.querySelectorAll(".mode-btn[data-mode]").forEach(e=>e.classList.remove("active")),i.classList.add("active"),c.setGameMode(n),E()})}),document.querySelectorAll(".mode-btn[data-difficulty]").forEach(r=>{r.addEventListener("click",t=>{const i=t.target,n=i.dataset.difficulty;document.querySelectorAll(".mode-btn[data-difficulty]").forEach(e=>e.classList.remove("active")),i.classList.add("active"),c.setDifficulty(n)})}),document.getElementById("start-btn")?.addEventListener("click",()=>{q(),c.start()}),document.getElementById("new-game-btn")?.addEventListener("click",()=>{c.restart()}),document.getElementById("restart-btn")?.addEventListener("click",()=>{c.restart()})},F=()=>{const r=document.getElementById("board");if(!r)return;r.innerHTML="";const t=8,i=600/t,n=document.createElementNS("http://www.w3.org/2000/svg","rect");n.setAttribute("width","600"),n.setAttribute("height","600"),n.setAttribute("fill","#0f766e"),r.appendChild(n);for(let e=0;e<=t;e++){const s=e*i,o=document.createElementNS("http://www.w3.org/2000/svg","line");o.setAttribute("x1","0"),o.setAttribute("y1",s.toString()),o.setAttribute("x2","600"),o.setAttribute("y2",s.toString()),o.setAttribute("stroke","#0d9488"),o.setAttribute("stroke-width","2"),r.appendChild(o);const h=document.createElementNS("http://www.w3.org/2000/svg","line");h.setAttribute("x1",s.toString()),h.setAttribute("y1","0"),h.setAttribute("x2",s.toString()),h.setAttribute("y2","600"),h.setAttribute("stroke","#0d9488"),h.setAttribute("stroke-width","2"),r.appendChild(h)}for(let e=0;e<t;e++)for(let s=0;s<t;s++){const o=document.createElementNS("http://www.w3.org/2000/svg","rect");o.setAttribute("x",(s*i).toString()),o.setAttribute("y",(e*i).toString()),o.setAttribute("width",i.toString()),o.setAttribute("height",i.toString()),o.setAttribute("fill","transparent"),o.classList.add("cell-clickable"),o.dataset.row=e.toString(),o.dataset.col=s.toString(),o.addEventListener("click",()=>{c.makeMove(e,s)}),r.appendChild(o)}A(),T()},A=()=>{const r=document.getElementById("board");if(!r)return;r.querySelectorAll(".disc").forEach(e=>e.remove());const t=c.getBoard(),i=600/8,n=i*.4;t.forEach((e,s)=>{e.forEach((o,h)=>{if(o!==null){const g=h*i+i/2,f=s*i+i/2,a=document.createElementNS("http://www.w3.org/2000/svg","g");a.classList.add("disc");const u=`grad-${o}-${s}-${h}`,d=document.createElementNS("http://www.w3.org/2000/svg","defs"),m=document.createElementNS("http://www.w3.org/2000/svg","radialGradient");if(m.setAttribute("id",u),o==="BLACK"){const y=document.createElementNS("http://www.w3.org/2000/svg","stop");y.setAttribute("offset","0%"),y.setAttribute("stop-color","#4a5568");const v=document.createElementNS("http://www.w3.org/2000/svg","stop");v.setAttribute("offset","100%"),v.setAttribute("stop-color","#1a202c"),m.appendChild(y),m.appendChild(v)}else{const y=document.createElementNS("http://www.w3.org/2000/svg","stop");y.setAttribute("offset","0%"),y.setAttribute("stop-color","#ffffff");const v=document.createElementNS("http://www.w3.org/2000/svg","stop");v.setAttribute("offset","100%"),v.setAttribute("stop-color","#e2e8f0"),m.appendChild(y),m.appendChild(v)}d.appendChild(m),r.appendChild(d);const w=document.createElementNS("http://www.w3.org/2000/svg","circle");w.setAttribute("cx",(g+2).toString()),w.setAttribute("cy",(f+2).toString()),w.setAttribute("r",n.toString()),w.setAttribute("fill","rgba(0, 0, 0, 0.3)"),a.appendChild(w);const p=document.createElementNS("http://www.w3.org/2000/svg","circle");p.setAttribute("cx",g.toString()),p.setAttribute("cy",f.toString()),p.setAttribute("r",n.toString()),p.setAttribute("fill",`url(#${u})`),p.setAttribute("stroke",o==="BLACK"?"#0d131a":"#cbd5e0"),p.setAttribute("stroke-width","2"),a.appendChild(p),r.appendChild(a)}})})},T=()=>{const r=document.getElementById("board");if(!r)return;r.querySelectorAll(".valid-move-indicator").forEach(n=>n.remove());const t=c.getValidMoves(c.getCurrentPlayer()),i=600/8;t.forEach(n=>{const e=n.col*i+i/2,s=n.row*i+i/2,o=document.createElementNS("http://www.w3.org/2000/svg","circle");o.classList.add("valid-move-indicator"),o.setAttribute("cx",e.toString()),o.setAttribute("cy",s.toString()),o.setAttribute("r",(i*.15).toString()),o.setAttribute("fill",c.getCurrentPlayer()==="BLACK"?"#4a5568":"#e2e8f0"),o.setAttribute("opacity","0.5"),o.style.pointerEvents="none",r.appendChild(o)})},S=()=>{const r=document.querySelector(".turn-indicator"),t=document.getElementById("turn-text"),i=c.getCurrentPlayer();r&&(r.className=`turn-indicator ${i.toLowerCase()}`),t&&(t.textContent=i==="BLACK"?l.getUIText("blackTurn"):l.getUIText("whiteTurn"));const n=document.getElementById("black-score"),e=document.getElementById("white-score");n&&(n.textContent=c.getDiscCount("BLACK").toString()),e&&(e.textContent=c.getDiscCount("WHITE").toString())},I=r=>{["menu-view","game-view","result-view"].forEach(t=>{const i=document.getElementById(t);i&&(t===r?i.classList.remove("hidden"):i.classList.add("hidden"))})};let b=null,U="MENU";c.onStateChange(r=>{U=r,r==="MENU"&&(I("menu-view"),b&&(clearInterval(b),b=null)),r==="PLAYING"&&(I("game-view"),F(),S(),b&&clearInterval(b),b=window.setInterval(()=>{const t=c.getElapsedTime(),i=c.formatTime(t),n=document.getElementById("game-timer");n&&(n.textContent=i)},1e3)),r==="RESULT"&&(I("result-view"),b&&(clearInterval(b),b=null),D())});c.onMove(r=>{A(),T(),S()});c.onBoardUpdate(()=>{A(),T(),S()});const D=()=>{const r=c.getWinner(),t=document.getElementById("winner-display"),i=document.getElementById("total-moves"),n=document.getElementById("total-time"),e=document.getElementById("result-title"),s=document.getElementById("final-black"),o=document.getElementById("final-white");if(i&&(i.textContent=c.getMoves().length.toString()),n&&(n.textContent=c.formatTime(c.getElapsedTime())),s&&(s.textContent=c.getDiscCount("BLACK").toString()),o&&(o.textContent=c.getDiscCount("WHITE").toString()),r){if(e&&(e.textContent=r==="BLACK"?l.getUIText("blackWins"):l.getUIText("whiteWins")),t){const a=r==="BLACK"?l.getUIText("blackWins"):l.getUIText("whiteWins");t.innerHTML=`
+                <div class="winner-disc ${r.toLowerCase()}"></div>
+                <span>${a}</span>
+            `}}else e&&(e.textContent=l.getUIText("draw")),t&&(t.innerHTML=`<span>${l.getUIText("draw")}</span>`);r==="BLACK"&&c.getGameMode()==="VS_AI"&&R();const h=Y(),g=document.getElementById("high-scores-body"),f=document.querySelector(".high-scores-container");c.getGameMode()==="VS_AI"?(f&&f.classList.remove("hidden"),g&&(g.innerHTML="",h.forEach((a,u)=>{const d=document.createElement("tr"),m=c.getMoves().length,w=c.getElapsedTime();r==="BLACK"&&a.moves===m&&a.time===w&&typeof a.date=="number"&&Date.now()-a.date<1e3&&d.classList.add("current-run");let p="";if(typeof a.date=="number"){const v=l.language==="vi"?"vi-VN":"en-US";p=new Date(a.date).toLocaleDateString(v)}else p=a.date;d.innerHTML=`
+                    <td>${u+1}</td>
+                    <td>${a.moves}</td>
+                    <td>${c.formatTime(a.time)}</td>
+                    <td>${p}</td>
+                `,g.appendChild(d)}))):f&&f.classList.add("hidden")},R=()=>{const t=`othello_highscores_${c.getDifficulty()}`,i={moves:c.getMoves().length,time:c.getElapsedTime(),date:Date.now()};try{const n=localStorage.getItem(t);let e=n?JSON.parse(n):[];e.push(i),e.sort((s,o)=>s.moves!==o.moves?s.moves-o.moves:s.time-o.time),e=e.slice(0,5),localStorage.setItem(t,JSON.stringify(e))}catch(n){console.error("Failed to save high score:",n)}},Y=()=>{if(c.getGameMode()!=="VS_AI")return[];const t=`othello_highscores_${c.getDifficulty()}`;try{const i=localStorage.getItem(t);return i?JSON.parse(i):[]}catch{return[]}};l.subscribe(()=>{k(),U==="RESULT"&&D()});_();</script>
+  <style rel="stylesheet" crossorigin>@import"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap";:root{--bg-primary: #0f1419;--bg-secondary: #1a1f29;--bg-card: #1e2633;--text-primary: #e8eaed;--text-secondary: #9aa0a6;--accent-primary: #8ab4f8;--accent-othello: #0f766e;--accent-othello-hover: #0d9488;--board-green: #0f766e;--board-green-dark: #0d9488;--shadow-sm: 0 2px 4px rgba(0, 0, 0, .3);--shadow-md: 0 4px 6px rgba(0, 0, 0, .4);--shadow-lg: 0 10px 25px rgba(0, 0, 0, .5);--shadow-glow: 0 0 20px rgba(138, 180, 248, .3)}*{margin:0;padding:0;box-sizing:border-box}body{font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background:linear-gradient(135deg,var(--bg-primary) 0%,var(--bg-secondary) 100%);color:var(--text-primary);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}#app{width:100%;max-width:700px;margin:0 auto}h1{text-align:center;font-size:3rem;font-weight:800;margin-bottom:0;background:linear-gradient(135deg,var(--accent-othello),var(--accent-primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.header-controls{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:2rem;position:relative}.icon-btn{background:transparent;border:none;color:var(--text-secondary);cursor:pointer;padding:.5rem;border-radius:50%;transition:all .2s ease;display:flex;align-items:center;justify-content:center;width:64px;height:64px;position:absolute;left:0}.icon-btn:hover{background:var(--bg-secondary);color:var(--accent-primary);transform:translateY(-2px)}.lang-switcher{display:flex;justify-content:center;gap:.5rem;margin-bottom:2rem}.lang-btn{padding:.5rem 1rem;font-size:.875rem;font-weight:600;border:2px solid rgba(138,180,248,.3);background:var(--bg-secondary);color:var(--text-secondary);border-radius:.375rem;cursor:pointer;transition:all .2s ease;min-width:3rem}.lang-btn:hover{border-color:var(--accent-primary)}.lang-btn.active{background:var(--accent-primary);border-color:var(--accent-primary);color:#fff}.card{background:var(--bg-card);border-radius:1rem;padding:2rem;box-shadow:var(--shadow-lg)}.card h2{font-size:1.5rem;font-weight:700;text-align:center;margin-bottom:1.5rem;color:var(--text-primary)}.setup-group{margin-bottom:1.5rem}.setup-group h3{font-size:.875rem;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}.radio-group{display:flex;gap:.75rem;flex-wrap:wrap}.mode-btn{flex:1;min-width:120px;padding:.75rem;font-size:1rem;font-weight:600;border:2px solid rgba(138,180,248,.3);background:var(--bg-secondary);color:var(--text-secondary);border-radius:.5rem;cursor:pointer;transition:all .2s ease}.mode-btn:hover:not(.disabled){border-color:var(--accent-primary);color:var(--text-primary)}.mode-btn.active{background:var(--accent-primary);border-color:var(--accent-primary);color:#fff}.mode-btn.disabled{opacity:.4;cursor:not-allowed}.primary{width:100%;padding:.875rem 1.5rem;font-size:1rem;font-weight:600;background:linear-gradient(135deg,var(--accent-othello),var(--accent-primary));color:#fff;border:none;border-radius:.5rem;cursor:pointer;transition:all .2s ease;box-shadow:var(--shadow-md)}.primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}.primary:active{transform:translateY(0)}.game-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;padding:1rem;background:var(--bg-secondary);border-radius:.5rem}.turn-indicator-container{display:flex;align-items:center;gap:.75rem}.turn-indicator{width:24px;height:24px;border-radius:50%;border:2px solid var(--text-secondary);transition:all .3s ease}.turn-indicator.black{background:linear-gradient(135deg,#4a5568,#1a202c)}.turn-indicator.white{background:linear-gradient(135deg,#fff,#e2e8f0)}.turn-text{font-weight:600;font-size:1rem;color:var(--text-primary)}.score-display{display:flex;gap:1.5rem;align-items:center}.score{font-size:1rem;font-weight:600;color:var(--text-primary)}.stat{display:flex;flex-direction:column;align-items:center;gap:.25rem}.stat-label{font-size:.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;font-weight:600}.stat-value{font-size:1.25rem;font-weight:700;color:var(--text-primary)}#board-container{width:100%;max-width:600px;margin:0 auto;border-radius:.5rem;overflow:hidden;box-shadow:var(--shadow-lg)}#board{width:100%;height:auto;display:block;background:var(--board-green)}.cell-clickable{cursor:pointer;transition:opacity .2s ease}.cell-clickable:hover{opacity:.8}.disc{transition:all .3s ease}.valid-move-indicator{transition:opacity .3s ease}.winner-display{display:flex;align-items:center;justify-content:center;gap:1rem;font-size:1.75rem;font-weight:700;margin:2rem 0;color:var(--text-primary)}.winner-disc{width:60px;height:60px;border-radius:50%;border:3px solid var(--text-secondary)}.winner-disc.black{background:linear-gradient(135deg,#4a5568,#1a202c)}.winner-disc.white{background:linear-gradient(135deg,#fff,#e2e8f0)}.result-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin:2rem 0;padding:1.5rem;background:var(--bg-secondary);border-radius:.5rem}.high-scores-container{margin:2rem 0;width:100%}.high-scores-container h3{text-align:center;color:var(--text-secondary);font-size:1rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}.high-scores-table{width:100%;border-collapse:collapse;background:var(--bg-secondary);border-radius:.5rem;overflow:hidden}.high-scores-table th,.high-scores-table td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.05)}.high-scores-table th{background:#0003;color:var(--text-secondary);font-weight:600;text-transform:uppercase;font-size:.75rem}.high-scores-table td{color:var(--text-primary);font-size:.9rem}.high-scores-table tr:last-child td{border-bottom:none}.high-scores-table tr.current-run{background:#0f766e26;border-left:3px solid var(--accent-othello)}.high-scores-table tr.current-run td{color:var(--accent-othello);font-weight:600}.animate-fade-in{animation:fadeIn .3s ease-in}@keyframes fadeIn{0%{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.hidden{display:none!important}@media(max-width:768px){h1{font-size:2.5rem}.game-header{flex-direction:column;align-items:flex-start}.result-stats{grid-template-columns:1fr}.card{padding:1.5rem}}.consent-dialog{position:fixed;inset:0;background:#000000bf;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:10000;display:none;align-items:center;justify-content:center;padding:1rem;animation:fadeIn .3s ease}.consent-content{background:var(--bg-secondary);border-radius:1rem;padding:2rem;max-width:500px;width:100%;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.1);animation:slideUp .3s ease}.consent-content h3{margin:0 0 1rem;font-size:1.5rem;color:var(--text-primary)}.consent-content p{margin:0 0 1.5rem;color:var(--text-secondary);line-height:1.6}.consent-buttons{display:flex;gap:.75rem;flex-wrap:wrap}.btn-accept,.btn-reject{flex:1;min-width:120px;padding:.875rem 1.5rem;border-radius:.5rem;font-weight:600;font-size:1rem;cursor:pointer;transition:all .2s ease;border:none}.btn-accept{background:var(--accent-primary);color:#fff}.btn-accept:hover{background:var(--accent-secondary);transform:translateY(-2px);box-shadow:var(--shadow-md)}.btn-reject{background:transparent;border:2px solid var(--text-secondary);color:var(--text-secondary)}.btn-reject:hover{border-color:var(--text-primary);color:var(--text-primary);background:#ffffff0d}@keyframes slideUp{0%{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@media(max-width:640px){.consent-content{padding:1.5rem}.consent-buttons{flex-direction:column}.btn-accept,.btn-reject{width:100%}}</style>
+</head>
+
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-56G5F5W4" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div id="app">
+        <div class="header-controls">
+            <button id="home-btn" class="icon-btn" aria-label="Back to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </button>
+            <h1 id="game-title">Othello</h1>
+        </div>
+
+        <!-- Language Switcher -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="ja">JA</button>
+            <button class="lang-btn" data-lang="vi">VI</button>
+        </div>
+
+        <!-- Menu View -->
+        <div id="menu-view" class="card animate-fade-in">
+            <h2 id="menu-title">Game Setup</h2>
+            <div class="setup-group">
+                <h3 id="label-mode">Game Mode</h3>
+                <div class="radio-group">
+                    <button class="mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2 Players</button>
+                    <button class="mode-btn" data-mode="VS_AI" id="mode-vs-ai">vs AI</button>
+                </div>
+            </div>
+
+            <div class="setup-group difficulty-section hidden">
+                <h3 id="label-difficulty">Difficulty</h3>
+                <div class="radio-group">
+                    <button class="mode-btn" data-difficulty="EASY" id="difficulty-easy">Easy</button>
+                    <button class="mode-btn active" data-difficulty="MEDIUM" id="difficulty-medium">Medium</button>
+                    <button class="mode-btn" data-difficulty="HARD" id="difficulty-hard">Hard</button>
+                </div>
+            </div>
+
+            <button id="start-btn" class="primary">Start Game</button>
+        </div>
+
+        <!-- Game View -->
+        <div id="game-view" class="card hidden animate-fade-in">
+            <button id="new-game-btn" class="primary">New Game</button>
+
+            <div class="game-header">
+                <div class="turn-indicator-container">
+                    <div class="turn-indicator black"></div>
+                    <div class="turn-text" id="turn-text">Black's Turn</div>
+                </div>
+                <div class="score-display">
+                    <div class="score">
+                        <span id="label-black-score">Black</span>: <span id="black-score">2</span>
+                    </div>
+                    <div class="score">
+                        <span id="label-white-score">White</span>: <span id="white-score">2</span>
+                    </div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-time">Time</div>
+                    <div class="stat-value" id="game-timer">0:00</div>
+                </div>
+            </div>
+
+            <div id="board-container">
+                <svg id="board" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Board will be rendered here -->
+                </svg>
+            </div>
+        </div>
+
+        <!-- Result View -->
+        <div id="result-view" class="card hidden animate-fade-in">
+            <h2 id="result-title">Game Over</h2>
+
+            <div id="winner-display" class="winner-display">
+                <!-- Winner info will be rendered here -->
+            </div>
+
+            <div class="result-stats">
+                <div class="stat">
+                    <div class="stat-label" id="label-total-time">Time</div>
+                    <div class="stat-value" id="total-time">0:00</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-total-moves">Total Moves</div>
+                    <div class="stat-value" id="total-moves">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-final-black">Black</div>
+                    <div class="stat-value" id="final-black">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-final-white">White</div>
+                    <div class="stat-value" id="final-white">0</div>
+                </div>
+            </div>
+
+            <div class="high-scores-container hidden">
+                <h3 id="label-high-scores">High Scores</h3>
+                <table class="high-scores-table">
+                    <thead>
+                        <tr>
+                            <th id="label-rank">Rank</th>
+                            <th id="label-moves">Moves</th>
+                            <th id="label-time">Time</th>
+                            <th id="label-date">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="high-scores-body">
+                        <!-- High scores will be rendered here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <button id="restart-btn" class="primary">Play Again</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
