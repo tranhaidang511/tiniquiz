@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Player, PitCount, Move, Difficulty } from './Game';
+import type { GameState, Player, PitCount, Difficulty } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import en from './i18n/en';
