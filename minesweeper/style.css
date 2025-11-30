@@ -448,49 +448,33 @@ button.primary:hover {
         height: 30px;
         font-size: 0.8rem;
     }
-
-    .minesweeper-board[style*="grid-template-columns: repeat(15"] .cell {
-        width: 25px;
-        height: 25px;
-        font-size: 0.75rem;
-    }
-
-    .minesweeper-board[style*="grid-template-columns: repeat(20"] .cell {
-        width: 22px;
-        height: 22px;
-        font-size: 0.7rem;
-    }
-
-    .minesweeper-board[style*="grid-template-columns: repeat(25"] .cell {
-        width: 18px;
-        height: 18px;
-        font-size: 0.65rem;
-    }
 }
 
 @media (max-width: 480px) {
     .cell {
-        width: 25px;
-        height: 25px;
+        width: 20px;
+        height: 20px;
         font-size: 0.7rem;
     }
 
+    .minesweeper-board[style*="grid-template-columns: repeat(10"] .cell {
+        width: 25px;
+        height: 25px;
+    }
+    
     .minesweeper-board[style*="grid-template-columns: repeat(15"] .cell {
-        width: 20px;
-        height: 20px;
-        font-size: 0.65rem;
+        width: 15px;
+        height: 15px;
     }
 
     .minesweeper-board[style*="grid-template-columns: repeat(20"] .cell {
-        width: 18px;
-        height: 18px;
-        font-size: 0.65rem;
+        width: 12px;
+        height: 12px;
     }
 
     .minesweeper-board[style*="grid-template-columns: repeat(25"] .cell {
-        width: 15px;
-        height: 15px;
-        font-size: 0.6rem;
+        width: 10px;
+        height: 10px;
     }
 }
 
