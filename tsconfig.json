@@ -35,6 +35,7 @@
     "sliding",
     "checkers",
     "mancala",
-    "othello"
+    "othello",
+    "chess"
   ]
 }

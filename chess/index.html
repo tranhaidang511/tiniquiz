@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Google Consent Mode -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+        });
+    </script>
+    <!-- End Google Consent Mode -->
+
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', 'GTM-56G5F5W4');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chess</title>
+    <link rel="stylesheet" href="./style.css">
+
+    <meta name="description" content="Chess - Classic strategy board game for two players!" />
+    <meta name="keywords" content="chess, board game, strategy, two player, king, queen" />
+    <meta name="author" content="Tran Hai Dang" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Chess" />
+    <meta property="og:description" content="Classic chess strategy game for two players!" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tiniquiz.com/chess/" />
+    <meta property="og:image" content="https://tiniquiz.com/chess/favicon.svg" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Chess" />
+    <meta name="twitter:description" content="Classic chess strategy game for two players!" />
+    <meta name="twitter:image" content="https://tiniquiz.com/chess/favicon.svg" />
+</head>
+
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-56G5F5W4" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <div id="app">
+        <div class="header-controls">
+            <button id="home-btn" class="icon-btn" aria-label="Back to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </button>
+            <h1 id="game-title">Chess</h1>
+        </div>
+
+        <!-- Language Switcher -->
+        <div class="lang-switcher">
+            <button class="lang-btn active" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="ja">JA</button>
+            <button class="lang-btn" data-lang="vi">VI</button>
+        </div>
+
+        <!-- Menu View -->
+        <div id="menu-view" class="card animate-fade-in">
+            <h2 id="menu-title">Game Setup</h2>
+            <button id="start-btn" class="primary">Start Game</button>
+        </div>
+
+        <!-- Game View -->
+        <div id="game-view" class="card hidden animate-fade-in">
+            <button id="new-game-btn" class="primary">New Game</button>
+
+            <div class="game-header">
+                <div class="turn-indicator-container">
+                    <div class="turn-indicator white"></div>
+                    <div class="turn-text" id="turn-text">White's Turn</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-time">Time</div>
+                    <div class="stat-value" id="game-timer">0:00</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-moves">Moves</div>
+                    <div class="stat-value" id="move-number">0</div>
+                </div>
+            </div>
+
+            <div id="board-container">
+                <svg id="board" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Board will be rendered here -->
+                </svg>
+            </div>
+        </div>
+
+        <!-- Result View -->
+        <div id="result-view" class="card hidden animate-fade-in">
+            <h2 id="result-title">Game Over</h2>
+
+            <div id="winner-display" class="winner-display">
+                <!-- Winner info will be rendered here -->
+            </div>
+
+            <div class="result-stats">
+                <div class="stat">
+                    <div class="stat-label" id="label-total-time">Time</div>
+                    <div class="stat-value" id="total-time">0:00</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label" id="label-total-moves">Total Moves</div>
+                    <div class="stat-value" id="total-moves">0</div>
+                </div>
+            </div>
+
+            <button id="restart-btn" class="primary">Play Again</button>
+        </div>
+    </div>
+
+    <!-- Promotion Modal -->
+    <div id="promotion-modal" class="promotion-modal hidden">
+        <div class="promotion-content">
+            <h3 id="promotion-title">Choose Promotion</h3>
+            <div class="promotion-pieces">
+                <button class="promotion-piece" data-piece="QUEEN">
+                    <svg viewBox="0 0 100 100" width="60" height="60">
+                        <path class="piece-icon" fill="currentColor" d="M50 30l-3 8-8-3-3 8-8-3v12l-4 15h56l-4-15v-12l-8 3-3-8-8 3-3-8M30 60h40l-3 6H33z"/>
+                    </svg>
+                    <span>Queen</span>
+                </button>
+                <button class="promotion-piece" data-piece="ROOK">
+                    <svg viewBox="0 0 100 100" width="60" height="60">
+                        <path class="piece-icon" fill="currentColor" d="M35 30h6v6h6v-6h6v6h6v-6h6v25h8v10H28v-10h8V30z"/>
+                    </svg>
+                    <span>Rook</span>
+                </button>
+                <button class="promotion-piece" data-piece="BISHOP">
+                    <svg viewBox="0 0 100 100" width="60" height="60">
+                        <path class="piece-icon" fill="currentColor" d="M50 25a6 6 0 110 12 6 6 0 010-12M46 40l-8 22h24l-8-22M34 60h32l-4 8H38z"/>
+                    </svg>
+                    <span>Bishop</span>
+                </button>
+                <button class="promotion-piece" data-piece="KNIGHT">
+                    <svg viewBox="0 0 100 100" width="60" height="60">
+                        <path class="piece-icon" fill="currentColor" d="M50 28q-8-4-12 4-4 8 0 16l-4 4q-4 4 0 12l-4 16h40l-4-16q4-8 0-12l-4-4q4-8 0-16-4-8-12-4"/>
+                    </svg>
+                    <span>Knight</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/main.ts"></script>
+</body>
+</html>
