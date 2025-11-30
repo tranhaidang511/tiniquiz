@@ -4,6 +4,7 @@ import type { GameState, Question } from './Game';
 import { localization } from './Game';
 import type { Language } from '../common/Localization';
 import type { Country } from './data';
+import type { Province } from './data/provinces';
 import { Consent } from '../common/Consent';
 
 // Initialize Consent Banner
@@ -59,6 +60,33 @@ const loadSetup = () => {
             btn.classList.remove('active');
           }
         });
+
+        // Show/hide appropriate filters based on saved mode
+        const countryFilterContainer = document.getElementById('country-filter-container');
+        const regionFilterContainer = document.getElementById('region-filter-container');
+
+        if (mode === 'PROVINCES') {
+          // Show country filter, hide region filter
+          if (countryFilterContainer) countryFilterContainer.classList.remove('hidden');
+          if (regionFilterContainer) regionFilterContainer.classList.add('hidden');
+
+          // Populate country filter dropdown
+          const countryFilter = document.getElementById('country-filter') as HTMLSelectElement;
+          if (countryFilter) {
+            countryFilter.innerHTML = '<option value="allCountries">All Countries</option>';
+            const countries = game.getProvinceCountries();
+            countries.forEach(code => {
+              const option = document.createElement('option');
+              option.value = code;
+              option.textContent = localization.getCountryName(code);
+              countryFilter.appendChild(option);
+            });
+          }
+        } else {
+          // Show region filter, hide country filter
+          if (countryFilterContainer) countryFilterContainer.classList.add('hidden');
+          if (regionFilterContainer) regionFilterContainer.classList.remove('hidden');
+        }
       }
 
       // Restore Region
@@ -109,7 +137,43 @@ const setupEventListeners = () => {
       target.classList.add('active');
 
       game.setGameMode(mode);
+
+      // Show/hide appropriate filters based on mode
+      const countryFilterContainer = document.getElementById('country-filter-container');
+      const regionFilterContainer = document.getElementById('region-filter-container');
+
+      if (mode === 'PROVINCES') {
+        // Show country filter, hide region filter
+        if (countryFilterContainer) countryFilterContainer.classList.remove('hidden');
+        if (regionFilterContainer) regionFilterContainer.classList.add('hidden');
+
+        // Populate country filter dropdown
+        const countryFilter = document.getElementById('country-filter') as HTMLSelectElement;
+        if (countryFilter) {
+          countryFilter.innerHTML = '<option value="all">All Countries</option>';
+          const countries = game.getProvinceCountries();
+          countries.forEach(code => {
+            const option = document.createElement('option');
+            option.value = code;
+            option.textContent = localization.getCountryName(code);
+            countryFilter.appendChild(option);
+          });
+          // Set default to all
+          game.setCountryFilter(null);
+        }
+      } else {
+        // Show region filter, hide country filter
+        if (countryFilterContainer) countryFilterContainer.classList.add('hidden');
+        if (regionFilterContainer) regionFilterContainer.classList.remove('hidden');
+      }
     });
+  });
+
+  // Country Filter for Provinces Mode
+  document.getElementById('country-filter')?.addEventListener('change', (e) => {
+    const select = e.target as HTMLSelectElement;
+    const country = select.value === 'allCountries' ? null : select.value;
+    game.setCountryFilter(country);
   });
 
   // Start
@@ -194,6 +258,12 @@ const updateTexts = () => {
 
   const modeFlags = document.getElementById('mode-flags');
   if (modeFlags) modeFlags.textContent = localization.getUIText('modeFlags');
+
+  const modeProvinces = document.getElementById('mode-provinces');
+  if (modeProvinces) modeProvinces.textContent = localization.getUIText('modeProvinces');
+
+  const labelCountryFilter = document.getElementById('label-country-filter');
+  if (labelCountryFilter) labelCountryFilter.textContent = localization.getUIText('filterByCountry');
 
   // Filter Options
   const optionAllWorld = document.getElementById('option-all-world');
@@ -301,8 +371,13 @@ game.onQuestionChange((q: Question, index: number, total: number) => {
     if (flagContainer) flagContainer.classList.remove('hidden');
     if (flagImage) flagImage.src = q.flagUrl;
     if (qText) qText.textContent = localization.getUIText('guessTheFlag');
+  } else if (q.isProvince) {
+    // Province Mode
+    if (flagContainer) flagContainer.classList.add('hidden');
+    const provinceName = localization.getProvinceName(q.target.code);
+    if (qText) qText.textContent = localization.getUIText('questionProvinceTemplate', { province: provinceName });
   } else {
-    // Capital Mode (or Flag mode without flagUrl)
+    // Capital Mode
     if (flagContainer) flagContainer.classList.add('hidden');
     if (qText) qText.textContent = localization.getUIText('questionTemplate', { country: localization.getCountryName(q.target.code) });
   }
@@ -314,9 +389,11 @@ game.onQuestionChange((q: Question, index: number, total: number) => {
   q.choices.forEach(choice => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
-    // For Flag mode, choices are country names. For Capital mode, choices are capitals.
+    // For Flag mode, choices are country names. For Capital/Province modes, choices are capitals.
     if (game.getGameMode() === 'FLAGS') {
       btn.textContent = localization.getCountryName(choice.code);
+    } else if (q.isProvince) {
+      btn.textContent = localization.getProvinceCapital(choice.code);
     } else {
       btn.textContent = localization.getCapital(choice.code);
     }
@@ -329,7 +406,7 @@ game.onQuestionChange((q: Question, index: number, total: number) => {
   });
 });
 
-const handleAnswer = (choice: Country, btn: HTMLElement, target: Country) => {
+const handleAnswer = (choice: Country | Province, btn: HTMLElement, target: Country | Province) => {
   // Disable all buttons
   const buttons = document.querySelectorAll('.choice-btn');
   buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
@@ -342,9 +419,16 @@ const handleAnswer = (choice: Country, btn: HTMLElement, target: Country) => {
     btn.classList.add('wrong');
     // Highlight correct one
     buttons.forEach(b => {
-      const correctText = game.getGameMode() === 'FLAGS'
-        ? localization.getCountryName(target.code)
-        : localization.getCapital(target.code);
+      let correctText = '';
+      const mode = game.getGameMode();
+
+      if (mode === 'FLAGS') {
+        correctText = localization.getCountryName(target.code);
+      } else if (mode === 'PROVINCES') {
+        correctText = localization.getProvinceCapital(target.code);
+      } else {
+        correctText = localization.getCapital(target.code);
+      }
 
       if (b.textContent === correctText) {
         b.classList.add('correct');
@@ -371,8 +455,13 @@ const saveHighScore = () => {
   const { score, total } = game.getScore();
   const time = game.getElapsedTime();
   const mode = game.getGameMode();
-  const region = game.getRegion();
-  const key = `geogame_highscores_${mode}_${region}`;
+
+  // For provinces mode, use country filter; for other modes, use region
+  const filterValue = mode === 'PROVINCES'
+    ? (game.getCountryFilter() || 'allCountries')
+    : game.getRegion();
+
+  const key = `geogame_highscores_${mode}_${filterValue}`;
   const date = Date.now();
 
   const newScore: HighScore = { score, total, time, date };
@@ -402,8 +491,13 @@ const saveHighScore = () => {
 
 const getHighScores = (): HighScore[] => {
   const mode = game.getGameMode();
-  const region = game.getRegion();
-  const key = `geogame_highscores_${mode}_${region}`;
+
+  // For provinces mode, use country filter; for other modes, use region
+  const filterValue = mode === 'PROVINCES'
+    ? (game.getCountryFilter() || 'allCountries')
+    : game.getRegion();
+
+  const key = `geogame_highscores_${mode}_${filterValue}`;
   try {
     const existing = localStorage.getItem(key);
     return existing ? JSON.parse(existing) : [];

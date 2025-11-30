@@ -1,5 +1,7 @@
 import { countries } from './data';
 import type { Country } from './data';
+import { provinces, provinceCountries } from './data/provinces';
+import type { Province } from './data/provinces';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import en from './i18n/en';
@@ -7,23 +9,35 @@ import ja from './i18n/ja';
 import vi from './i18n/vi';
 
 class GeogameLocalization extends Localization {
-  getCountryName(code: string): string {
-    // @ts-ignore
-    const data = this.locales[this.currentLang].countries[code];
-    return data ? data.name : code;
-  }
+    getCountryName(code: string): string {
+        // @ts-ignore
+        const data = this.locales[this.currentLang].countries[code];
+        return data ? data.name : code;
+    }
 
-  getCapital(code: string): string {
-    // @ts-ignore
-    const data = this.locales[this.currentLang].countries[code];
-    return data ? data.capital : "Unknown";
-  }
+    getCapital(code: string): string {
+        // @ts-ignore
+        const data = this.locales[this.currentLang].countries[code];
+        return data ? data.capital : "Unknown";
+    }
 
-  getRegionName(key: string): string {
-    // @ts-ignore
-    const regionName = this.locales[this.currentLang].regions[key];
-    return regionName || key;
-  }
+    getProvinceName(code: string): string {
+        // @ts-ignore
+        const data = this.locales[this.currentLang].provinces[code];
+        return data ? data.name : code;
+    }
+
+    getProvinceCapital(code: string): string {
+        // @ts-ignore
+        const data = this.locales[this.currentLang].provinces[code];
+        return data ? data.capital : "Unknown";
+    }
+
+    getRegionName(key: string): string {
+        // @ts-ignore
+        const regionName = this.locales[this.currentLang].regions[key];
+        return regionName || key;
+    }
 }
 
 // Initialize Localization
@@ -31,12 +45,13 @@ const savedLang = localStorage.getItem('language') as Language | null;
 export const localization = new GeogameLocalization({ en, ja, vi }, savedLang || 'en');
 
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
-export type GameMode = 'CAPITALS' | 'FLAGS';
+export type GameMode = 'CAPITALS' | 'FLAGS' | 'PROVINCES';
 
 export interface Question {
-    target: Country;
-    choices: Country[]; // 4 choices including target
+    target: Country | Province;
+    choices: (Country | Province)[]; // 4 choices including target
     flagUrl?: string;
+    isProvince?: boolean;
 }
 
 export class Game {
@@ -49,6 +64,8 @@ export class Game {
     private questions: Question[] = [];
     private startTime: number | null = null;
     private endTime: number | null = null;
+    private currentCountryFilter: string | null = null; // For states mode
+    private filteredProvinces: Province[] = [];
 
     // Event listeners
     private stateListeners: ((state: GameState) => void)[] = [];
@@ -93,13 +110,34 @@ export class Game {
         return this.mode;
     }
 
+    getProvinceCountries(): string[] {
+        return provinceCountries;
+    }
+
+    setCountryFilter(countryCode: string | null) {
+        this.currentCountryFilter = countryCode;
+        if (countryCode) {
+            this.filteredProvinces = provinces.filter(s => s.parentCountry === countryCode);
+        } else {
+            this.filteredProvinces = [...provinces];
+        }
+    }
+
+    getCountryFilter(): string | null {
+        return this.currentCountryFilter;
+    }
+
+
     // --- Game Flow ---
 
     start(questionCount: number = 5) {
-        if (this.filteredCountries.length < questionCount) {
+        const pool = this.mode === 'PROVINCES' ? this.filteredProvinces : this.filteredCountries;
+
+        if (pool.length < questionCount) {
             alert(localization.getUIText('notEnoughCountries'));
             return;
         }
+
         this.score = 0;
         this.currentQuestionIndex = 0;
         this.startTime = Date.now();
@@ -111,31 +149,51 @@ export class Game {
 
     private generateQuestions(count: number) {
         this.questions = [];
-        const pool = [...this.filteredCountries];
 
-        // Shuffle pool
-        for (let i = pool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [pool[i], pool[j]] = [pool[j], pool[i]];
-        }
+        if (this.mode === 'PROVINCES') {
+            const pool = [...this.filteredProvinces];
 
-        // Pick top N or max available
-        const finalCount = Math.min(count, pool.length);
-        for (let i = 0; i < finalCount; i++) {
-            const target = pool[i];
-            const choices = this.generateChoices(target);
-            const question: Question = { target, choices };
-
-            if (this.mode === 'FLAGS') {
-                question.flagUrl = `https://flagcdn.com/w320/${target.code.toLowerCase()}.png`;
+            // Shuffle pool
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
             }
 
-            this.questions.push(question);
+            // Pick top N or max available
+            const finalCount = Math.min(count, pool.length);
+            for (let i = 0; i < finalCount; i++) {
+                const target = pool[i];
+                const choices = this.generateProvinceChoices(target);
+                const question: Question = { target, choices, isProvince: true };
+                this.questions.push(question);
+            }
+        } else {
+            const pool = [...this.filteredCountries];
+
+            // Shuffle pool
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+
+            // Pick top N or max available
+            const finalCount = Math.min(count, pool.length);
+            for (let i = 0; i < finalCount; i++) {
+                const target = pool[i];
+                const choices = this.generateChoices(target);
+                const question: Question = { target, choices, isProvince: false };
+
+                if (this.mode === 'FLAGS') {
+                    question.flagUrl = `https://flagcdn.com/w320/${target.code.toLowerCase()}.png`;
+                }
+
+                this.questions.push(question);
+            }
         }
     }
 
     private generateChoices(target: Country): Country[] {
-        const choices = [target];
+        const choices: Country[] = [target];
         const distractors = this.filteredCountries.filter(c => c.code !== target.code);
 
         // Shuffle distractors
@@ -158,7 +216,31 @@ export class Game {
         return choices;
     }
 
-    submitAnswer(choice: Country): boolean {
+    private generateProvinceChoices(target: Province): Province[] {
+        const choices: Province[] = [target];
+        const distractors = this.filteredProvinces.filter(p => p.code !== target.code);
+
+        // Shuffle distractors
+        for (let i = distractors.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [distractors[i], distractors[j]] = [distractors[j], distractors[i]];
+        }
+
+        // Pick 3
+        for (let i = 0; i < 3 && i < distractors.length; i++) {
+            choices.push(distractors[i]);
+        }
+
+        // Shuffle choices so target isn't always first
+        for (let i = choices.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [choices[i], choices[j]] = [choices[j], choices[i]];
+        }
+
+        return choices;
+    }
+
+    submitAnswer(choice: Country | Province): boolean {
         const currentQ = this.questions[this.currentQuestionIndex];
         const isCorrect = choice.code === currentQ.target.code;
 

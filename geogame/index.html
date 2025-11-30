@@ -77,15 +77,25 @@
         <div class="mode-selector">
           <button id="mode-capitals" class="mode-btn active" data-mode="CAPITALS">Capitals</button>
           <button id="mode-flags" class="mode-btn" data-mode="FLAGS">Flags</button>
+          <button id="mode-provinces" class="mode-btn" data-mode="PROVINCES">Capitals of States/Provinces</button>
         </div>
 
-        <label id="label-filter">Filter by Region</label>
-        <select id="region-filter">
-          <option value="allWorld" id="option-all-world">All World</option>
-          <optgroup label="Continents" id="continent-options"></optgroup>
-          <optgroup label="Regions" id="region-options"></optgroup>
-        </select>
-        </label>
+        <div id="country-filter-container" class="hidden">
+          <label id="label-country-filter">Filter by Country</label>
+          <select id="country-filter">
+            <option value="allCountries">All Countries</option>
+            <!-- Options will be populated by JavaScript -->
+          </select>
+        </div>
+
+        <div id="region-filter-container">
+          <label id="label-filter">Filter by Region</label>
+          <select id="region-filter">
+            <option value="allWorld" id="option-all-world">All World</option>
+            <optgroup label="Continents" id="continent-options"></optgroup>
+            <optgroup label="Regions" id="region-options"></optgroup>
+          </select>
+        </div>
 
         <label>
           <span id="label-count">Number of Questions</span>
