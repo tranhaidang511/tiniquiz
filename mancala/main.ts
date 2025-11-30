@@ -518,7 +518,7 @@ game.onStateChange((state: GameState) => {
     }
 });
 
-game.onMove((move: Move) => {
+game.onMove(() => {
     renderBoard();
     updateGameInfo();
 });

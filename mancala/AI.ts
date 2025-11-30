@@ -2,11 +2,6 @@ import type { Player, PitCount } from './Game';
 
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
-interface MoveScore {
-    move: number;
-    score: number;
-}
-
 export class MancalaAI {
     private difficulty: Difficulty;
     private maxDepth: number;
