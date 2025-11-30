@@ -369,6 +369,11 @@ const createPit = (stones: number, index: number, owner: Player): HTMLElement =>
     pit.dataset.index = index.toString();
     pit.dataset.owner = owner;
 
+    // Highlight the last move
+    if (game.getLastMovePit() === index) {
+        pit.classList.add('last-move');
+    }
+
     pit.innerHTML = renderStones(stones);
 
     // Add click handler

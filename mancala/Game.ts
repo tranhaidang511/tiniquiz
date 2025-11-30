@@ -25,9 +25,10 @@ class MancalaGame {
     private startTime: number = 0;
     private elapsedTime: number = 0;
     private timerInterval: number | null = null;
+    private lastMovePit: number | null = null;
+
     private ai: MancalaAI;
     private aiMoveListeners: (() => void)[] = [];
-
     private stateChangeListeners: ((state: GameState) => void)[] = [];
     private moveListeners: ((move: Move) => void)[] = [];
     private boardUpdateListeners: (() => void)[] = [];
@@ -79,6 +80,10 @@ class MancalaGame {
         return this.gameMode;
     }
 
+    getLastMovePit(): number | null {
+        return this.lastMovePit;
+    }
+
     start() {
         this.initializeBoard();
         this.currentPlayer = 'PLAYER1';
@@ -128,6 +133,9 @@ class MancalaGame {
 
     makeMove(pitIndex: number): boolean {
         if (!this.isValidMove(pitIndex)) return false;
+
+        // Track the last move
+        this.lastMovePit = pitIndex;
 
         const stones = this.board[pitIndex];
         this.board[pitIndex] = 0;
@@ -213,7 +221,7 @@ class MancalaGame {
         }
 
         // Add small delay to make AI moves feel more natural
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         const bestMove = this.ai.getBestMove(this.getBoard(), this.pitCount, 'PLAYER2');
 
