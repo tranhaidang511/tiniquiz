@@ -78,9 +78,16 @@
                     <label id="label-mode">Game Mode</label>
                     <div class="mode-selector">
                         <button id="mode-two-player" class="mode-btn active" data-mode="TWO_PLAYER">2 Players</button>
-                        <button id="mode-vs-ai" class="mode-btn disabled" data-mode="VS_AI">vs AI<br><span
-                                style="font-size: 0.7rem; opacity: 0.7;"><span id="coming-soon">(Coming
-                                    Soon)</span></span></button>
+                        <button id="mode-vs-ai" class="mode-btn" data-mode="VS_AI">vs AI</button>
+                    </div>
+                </div>
+
+                <div class="option-group difficulty-section hidden">
+                    <label id="label-difficulty">Difficulty</label>
+                    <div class="mode-selector">
+                        <button class="mode-btn" data-difficulty="EASY" id="difficulty-easy">Easy</button>
+                        <button class="mode-btn active" data-difficulty="MEDIUM" id="difficulty-medium">Medium</button>
+                        <button class="mode-btn" data-difficulty="HARD" id="difficulty-hard">Hard</button>
                     </div>
                 </div>
 
@@ -104,51 +111,51 @@
             <button id="new-game-btn" class="primary">New Game</button>
             <div class="game-info">
                 <div class="current-turn">
-                    <div class="turn-indicator player1"></div>
-                    <span id="turn-text">Player 1's Turn</span>
-                </div>
-                <div class="move-count">
-                    <span id="label-move">Move</span>: <span id="move-number">0</span>
-                </div>
-                <div class="game-timer">
-                    <span id="label-time">Time</span>: <span id="game-timer">00:00</span>
-                </div>
-            </div>
+            <div class="turn-indicator player1"></div>
+            <span id="turn-text">Player 1's Turn</span>
+        </div>
+        <div class="move-count">
+            <span id="label-move">Move</span>: <span id="move-number">0</span>
+        </div>
+        <div class="game-timer">
+            <span id="label-time">Time</span>: <span id="game-timer">00:00</span>
+        </div>
+    </div>
 
-            <div id="board-container">
-                <!-- Board will be rendered here -->
+    <div id="board-container">
+        <!-- Board will be rendered here -->
+    </div>
+    </div>
+
+    <!-- Result View -->
+    <div id="result-view" class="card hidden animate-fade-in">
+        <h2 id="result-title">Game Over!</h2>
+
+        <div class="winner-display" id="winner-display">
+            <!-- Winner info will be injected here -->
+        </div>
+
+        <div class="game-stats">
+            <div class="stat">
+                <div class="stat-label" id="label-player1-score">Player 1 Score</div>
+                <div class="stat-value" id="player1-score">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label" id="label-player2-score">Player 2 Score</div>
+                <div class="stat-value" id="player2-score">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label" id="label-total-moves">Total Moves</div>
+                <div class="stat-value" id="total-moves">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label" id="label-total-time">Total Time</div>
+                <div class="stat-value" id="total-time">00:00</div>
             </div>
         </div>
 
-        <!-- Result View -->
-        <div id="result-view" class="card hidden animate-fade-in">
-            <h2 id="result-title">Game Over!</h2>
-
-            <div class="winner-display" id="winner-display">
-                <!-- Winner info will be injected here -->
-            </div>
-
-            <div class="game-stats">
-                <div class="stat">
-                    <div class="stat-label" id="label-player1-score">Player 1 Score</div>
-                    <div class="stat-value" id="player1-score">0</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label" id="label-player2-score">Player 2 Score</div>
-                    <div class="stat-value" id="player2-score">0</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label" id="label-total-moves">Total Moves</div>
-                    <div class="stat-value" id="total-moves">0</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label" id="label-total-time">Total Time</div>
-                    <div class="stat-value" id="total-time">00:00</div>
-                </div>
-            </div>
-
-            <button id="restart-btn" class="primary">Play Again</button>
-        </div>
+        <button id="restart-btn" class="primary">Play Again</button>
+    </div>
     </div>
     <script type="module" src="/main.ts"></script>
 </body>

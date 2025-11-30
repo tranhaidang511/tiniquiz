@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Player, PitCount, Move } from './Game';
+import type { GameState, Player, PitCount, Move, Difficulty } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import en from './i18n/en';
@@ -98,9 +98,21 @@ const updateTexts = () => {
     if (modeTwoPlayer) modeTwoPlayer.textContent = localization.getUIText('twoPlayers');
 
     const modeVsAI = document.getElementById('mode-vs-ai');
-    if (modeVsAI && modeVsAI.classList.contains('disabled')) {
-        modeVsAI.innerHTML = `${localization.getUIText('vsAI')}<br><span style="font-size: 0.7rem; opacity: 0.7;">(${localization.getUIText('comingSoon')})</span>`;
+    if (modeVsAI) {
+        modeVsAI.textContent = localization.getUIText('vsAI');
     }
+
+    const labelDifficulty = document.getElementById('label-difficulty');
+    if (labelDifficulty) labelDifficulty.textContent = localization.getUIText('difficulty');
+
+    const difficultyEasy = document.getElementById('difficulty-easy');
+    if (difficultyEasy) difficultyEasy.textContent = localization.getUIText('easy');
+
+    const difficultyMedium = document.getElementById('difficulty-medium');
+    if (difficultyMedium) difficultyMedium.textContent = localization.getUIText('medium');
+
+    const difficultyHard = document.getElementById('difficulty-hard');
+    if (difficultyHard) difficultyHard.textContent = localization.getUIText('hard');
 
     const labelPitCount = document.getElementById('label-pit-count');
     if (labelPitCount) labelPitCount.textContent = localization.getUIText('pitCount');
@@ -118,10 +130,20 @@ const updateTexts = () => {
     if (labelTime) labelTime.textContent = localization.getUIText('time');
 
     const labelPlayer1Score = document.getElementById('label-player1-score');
-    if (labelPlayer1Score) labelPlayer1Score.textContent = localization.getUIText('player1Score');
+    if (labelPlayer1Score) {
+        const isAIMode = game.getGameMode() === 'VS_AI';
+        labelPlayer1Score.textContent = isAIMode 
+            ? localization.getUIText('yourScore') 
+            : localization.getUIText('player1Score');
+    }
 
     const labelPlayer2Score = document.getElementById('label-player2-score');
-    if (labelPlayer2Score) labelPlayer2Score.textContent = localization.getUIText('player2Score');
+    if (labelPlayer2Score) {
+        const isAIMode = game.getGameMode() === 'VS_AI';
+        labelPlayer2Score.textContent = isAIMode 
+            ? localization.getUIText('aiScore') 
+            : localization.getUIText('player2Score');
+    }
 
     const labelTotalMoves = document.getElementById('label-total-moves');
     if (labelTotalMoves) labelTotalMoves.textContent = localization.getUIText('totalMoves');
@@ -155,15 +177,38 @@ const setupEventListeners = () => {
     });
 
     // Mode selection
-    document.querySelectorAll('.mode-btn:not(.disabled)').forEach(btn => {
+    document.querySelectorAll('.mode-btn:not([data-difficulty])').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const target = e.target as HTMLButtonElement;
             const mode = target.dataset.mode as any;
 
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.mode-btn:not([data-difficulty])').forEach(b => b.classList.remove('active'));
             target.classList.add('active');
 
             game.setGameMode(mode);
+
+            // Show/hide difficulty selector
+            const difficultySection = document.querySelector('.difficulty-section');
+            if (difficultySection) {
+                if (mode === 'VS_AI') {
+                    difficultySection.classList.remove('hidden');
+                } else {
+                    difficultySection.classList.add('hidden');
+                }
+            }
+        });
+    });
+
+    // Difficulty selection
+    document.querySelectorAll('.mode-btn[data-difficulty]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLButtonElement;
+            const difficulty = target.dataset.difficulty as Difficulty;
+
+            document.querySelectorAll('.mode-btn[data-difficulty]').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+
+            game.setDifficulty(difficulty);
         });
     });
 
@@ -196,6 +241,48 @@ const setupEventListeners = () => {
         game.restart();
     });
 };
+
+// Difficulty selection
+document.querySelectorAll('.mode-btn[data-difficulty]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const target = e.target as HTMLButtonElement;
+        const difficulty = target.dataset.difficulty as Difficulty;
+
+        document.querySelectorAll('.mode-btn[data-difficulty]').forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+
+        game.setDifficulty(difficulty);
+    });
+});
+
+// Pit count selection
+document.querySelectorAll('.pit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const target = e.target as HTMLButtonElement;
+        const pits = parseInt(target.dataset.pits || '6') as PitCount;
+
+        document.querySelectorAll('.pit-btn').forEach(b => b.classList.remove('active'));
+        target.classList.add('active');
+
+        game.setPitCount(pits);
+    });
+});
+
+// Start game
+document.getElementById('start-btn')?.addEventListener('click', () => {
+    saveSetup();
+    game.start();
+});
+
+// New Game (during gameplay)
+document.getElementById('new-game-btn')?.addEventListener('click', () => {
+    game.restart();
+});
+
+// Restart game
+document.getElementById('restart-btn')?.addEventListener('click', () => {
+    game.restart();
+});
 
 // --- Board Rendering ---
 
@@ -308,143 +395,183 @@ const updateGameInfo = () => {
     const turnIndicator = document.querySelector('.turn-indicator');
     const turnText = document.getElementById('turn-text');
     const moveNumber = document.getElementById('move-number');
-        const gameTimer = document.getElementById('game-timer');
+    const gameTimer = document.getElementById('game-timer');
 
-        const currentPlayer = game.getCurrentPlayer();
-        const moves = game.getMoves();
+    const currentPlayer = game.getCurrentPlayer();
+    const moves = game.getMoves();
 
-        if (turnIndicator) {
-            turnIndicator.className = `turn-indicator ${currentPlayer.toLowerCase()}`;
-        }
+    if (turnIndicator) {
+        turnIndicator.className = `turn-indicator ${currentPlayer.toLowerCase()}`;
+    }
 
-        if (turnText) {
+    if (turnText) {
+        const isAIMode = game.getGameMode() === 'VS_AI';
+        if (isAIMode) {
+            turnText.textContent = currentPlayer === 'PLAYER1'
+                ? localization.getUIText('yourTurn')
+                : localization.getUIText('aiTurn');
+        } else {
             turnText.textContent = currentPlayer === 'PLAYER1'
                 ? localization.getUIText('player1Turn')
                 : localization.getUIText('player2Turn');
         }
+    }
 
-        if (moveNumber) {
-            moveNumber.textContent = moves.length.toString();
-        }
+    if (moveNumber) {
+        moveNumber.textContent = moves.length.toString();
+    }
 
-        if (gameTimer) {
-            gameTimer.textContent = game.formatTime(game.getElapsedTime());
-        }
-    };
+    if (gameTimer) {
+        gameTimer.textContent = game.formatTime(game.getElapsedTime());
+    }
+};
 
-    // --- View Management ---
+// --- View Management ---
 
-    const showView = (viewId: string) => {
-        ['menu-view', 'game-view', 'result-view'].forEach(id => {
-            const el = document.getElementById(id);
-            if (el) {
-                if (id === viewId) el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            }
-        });
-    };
-
-    // --- Game Event Handlers ---
-
-    let currentGameState: GameState = 'MENU';
-    let timerInterval: number | null = null;
-
-    game.onStateChange((state: GameState) => {
-        currentGameState = state;
-        if (state === 'MENU') {
-            showView('menu-view');
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-        }
-        if (state === 'PLAYING') {
-            showView('game-view');
-            renderBoard();
-            updateGameInfo();
-
-            // Start timer
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = window.setInterval(() => {
-                updateGameInfo();
-            }, 1000);
-        }
-        if (state === 'RESULT') {
-            showView('result-view');
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            displayResult();
+const showView = (viewId: string) => {
+    ['menu-view', 'game-view', 'result-view'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            if (id === viewId) el.classList.remove('hidden');
+            else el.classList.add('hidden');
         }
     });
+};
 
-    game.onMove((move: Move) => {
+// --- Game Event Handlers ---
+
+let currentGameState: GameState = 'MENU';
+let timerInterval: number | null = null;
+
+game.onStateChange((state: GameState) => {
+    currentGameState = state;
+    if (state === 'MENU') {
+        showView('menu-view');
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+    }
+    if (state === 'PLAYING') {
+        showView('game-view');
         renderBoard();
         updateGameInfo();
-    });
 
-    game.onBoardUpdate(() => {
-        renderBoard();
-    });
-
-    const displayResult = () => {
-        const winner = game.getWinner();
-        const winnerDisplay = document.getElementById('winner-display');
-        const player1Score = document.getElementById('player1-score');
-        const player2Score = document.getElementById('player2-score');
-        const totalMoves = document.getElementById('total-moves');
-        const totalTime = document.getElementById('total-time');
-        const resultTitle = document.getElementById('result-title');
-
-        if (player1Score) {
-            player1Score.textContent = game.getPlayerScore('PLAYER1').toString();
+        // Start timer
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = window.setInterval(() => {
+            updateGameInfo();
+        }, 1000);
+    }
+    if (state === 'RESULT') {
+        showView('result-view');
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
         }
+        displayResult();
+    }
+});
 
-        if (player2Score) {
-            player2Score.textContent = game.getPlayerScore('PLAYER2').toString();
-        }
+game.onMove((move: Move) => {
+    renderBoard();
+    updateGameInfo();
+});
 
-        if (totalMoves) {
-            totalMoves.textContent = game.getMoves().length.toString();
-        }
+game.onBoardUpdate(() => {
+    renderBoard();
+});
 
-        if (totalTime) {
-            totalTime.textContent = game.formatTime(game.getElapsedTime());
-        }
+// Handle AI moves
+game.onAIMove(() => {
+    game.makeAIMove();
+});
 
-        if (winner) {
-            if (resultTitle) {
+const displayResult = () => {
+    const winner = game.getWinner();
+    const winnerDisplay = document.getElementById('winner-display');
+    const player1Score = document.getElementById('player1-score');
+    const player2Score = document.getElementById('player2-score');
+    const totalMoves = document.getElementById('total-moves');
+    const totalTime = document.getElementById('total-time');
+    const resultTitle = document.getElementById('result-title');
+
+    // Update score labels for AI mode
+    const isAIMode = game.getGameMode() === 'VS_AI';
+    const labelPlayer1Score = document.getElementById('label-player1-score');
+    if (labelPlayer1Score) {
+        labelPlayer1Score.textContent = isAIMode 
+            ? localization.getUIText('yourScore') 
+            : localization.getUIText('player1Score');
+    }
+
+    const labelPlayer2Score = document.getElementById('label-player2-score');
+    if (labelPlayer2Score) {
+        labelPlayer2Score.textContent = isAIMode 
+            ? localization.getUIText('aiScore') 
+            : localization.getUIText('player2Score');
+    }
+
+    if (player1Score) {
+        player1Score.textContent = game.getPlayerScore('PLAYER1').toString();
+    }
+
+    if (player2Score) {
+        player2Score.textContent = game.getPlayerScore('PLAYER2').toString();
+    }
+
+    if (totalMoves) {
+        totalMoves.textContent = game.getMoves().length.toString();
+    }
+
+    if (totalTime) {
+        totalTime.textContent = game.formatTime(game.getElapsedTime());
+    }
+
+    if (winner) {
+        if (resultTitle) {
+            const isAIMode = game.getGameMode() === 'VS_AI';
+            if (isAIMode) {
+                resultTitle.textContent = winner === 'PLAYER1'
+                    ? localization.getUIText('youWin')
+                    : localization.getUIText('aiWins');
+            } else {
                 resultTitle.textContent = winner === 'PLAYER1'
                     ? localization.getUIText('player1Wins')
                     : localization.getUIText('player2Wins');
             }
+        }
 
-            if (winnerDisplay) {
-                const playerWinsText = winner === 'PLAYER1'
+        if (winnerDisplay) {
+            const isAIMode = game.getGameMode() === 'VS_AI';
+            const playerWinsText = isAIMode
+                ? (winner === 'PLAYER1'
+                    ? localization.getUIText('youWin')
+                    : localization.getUIText('aiWins'))
+                : (winner === 'PLAYER1'
                     ? localization.getUIText('player1Wins')
-                    : localization.getUIText('player2Wins');
+                    : localization.getUIText('player2Wins'));
 
-                winnerDisplay.innerHTML = `
+            winnerDisplay.innerHTML = `
                 <div class="winner-icon ${winner.toLowerCase()}">🏆</div>
                 <span>${playerWinsText}</span>
             `;
-            }
-        } else {
-            if (resultTitle) resultTitle.textContent = localization.getUIText('draw');
-            if (winnerDisplay) {
-                winnerDisplay.innerHTML = `<span>${localization.getUIText('draw')}</span>`;
-            }
         }
-    };
-
-    // Subscribe to language changes
-    localization.subscribe(() => {
-        updateTexts();
-        if (currentGameState === 'RESULT') {
-            displayResult();
+    } else {
+        if (resultTitle) resultTitle.textContent = localization.getUIText('draw');
+        if (winnerDisplay) {
+            winnerDisplay.innerHTML = `<span>${localization.getUIText('draw')}</span>`;
         }
-    });
+    }
+};
 
-    // --- Initialize ---
-    renderApp();
+// Subscribe to language changes
+localization.subscribe(() => {
+    updateTexts();
+    if (currentGameState === 'RESULT') {
+        displayResult();
+    }
+});
+
+// --- Initialize ---
+renderApp();

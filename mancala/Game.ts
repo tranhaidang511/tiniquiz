@@ -1,7 +1,10 @@
+import { MancalaAI, type Difficulty } from './AI';
+
 export type Player = 'PLAYER1' | 'PLAYER2';
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
 export type PitCount = 4 | 5 | 6 | 7 | 8;
+export type { Difficulty };
 
 export interface Move {
     player: Player;
@@ -13,6 +16,7 @@ export interface Move {
 class MancalaGame {
     private pitCount: PitCount = 6;
     private gameMode: GameMode = 'TWO_PLAYER';
+    private difficulty: Difficulty = 'MEDIUM';
     private gameState: GameState = 'MENU';
     private currentPlayer: Player = 'PLAYER1';
     private board: number[] = [];
@@ -21,12 +25,15 @@ class MancalaGame {
     private startTime: number = 0;
     private elapsedTime: number = 0;
     private timerInterval: number | null = null;
+    private ai: MancalaAI;
+    private aiMoveListeners: (() => void)[] = [];
 
     private stateChangeListeners: ((state: GameState) => void)[] = [];
     private moveListeners: ((move: Move) => void)[] = [];
     private boardUpdateListeners: (() => void)[] = [];
 
     constructor() {
+        this.ai = new MancalaAI(this.difficulty);
         this.initializeBoard();
     }
 
@@ -53,6 +60,15 @@ class MancalaGame {
 
     setGameMode(mode: GameMode) {
         this.gameMode = mode;
+    }
+
+    setDifficulty(difficulty: Difficulty) {
+        this.difficulty = difficulty;
+        this.ai.setDifficulty(difficulty);
+    }
+
+    getDifficulty(): Difficulty {
+        return this.difficulty;
     }
 
     getPitCount(): PitCount {
@@ -183,7 +199,27 @@ class MancalaGame {
         this.checkWinCondition();
         this.notifyBoardUpdate();
 
+        // Trigger AI move if in VS_AI mode and it's AI's turn
+        if (this.gameMode === 'VS_AI' && this.currentPlayer === 'PLAYER2' && this.gameState === 'PLAYING') {
+            this.notifyAIMove();
+        }
+
         return true;
+    }
+
+    async makeAIMove(): Promise<void> {
+        if (this.gameMode !== 'VS_AI' || this.currentPlayer !== 'PLAYER2' || this.gameState !== 'PLAYING') {
+            return;
+        }
+
+        // Add small delay to make AI moves feel more natural
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const bestMove = this.ai.getBestMove(this.getBoard(), this.pitCount, 'PLAYER2');
+
+        if (bestMove !== -1) {
+            this.makeMove(bestMove);
+        }
     }
 
     private getOppositeIndex(index: number): number {
@@ -290,6 +326,10 @@ class MancalaGame {
         this.boardUpdateListeners.push(listener);
     }
 
+    onAIMove(listener: () => void) {
+        this.aiMoveListeners.push(listener);
+    }
+
     private notifyStateChange() {
         this.stateChangeListeners.forEach(listener => listener(this.gameState));
     }
@@ -300,6 +340,10 @@ class MancalaGame {
 
     private notifyBoardUpdate() {
         this.boardUpdateListeners.forEach(listener => listener());
+    }
+
+    private notifyAIMove() {
+        this.aiMoveListeners.forEach(listener => listener());
     }
 }
 
