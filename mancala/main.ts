@@ -377,7 +377,13 @@ const createPit = (stones: number, index: number, owner: Player): HTMLElement =>
     });
 
     // Highlight clickable pits
-    if (game.isValidMove(index)) {
+    // In VS_AI mode, only make PLAYER1 pits clickable
+    const isAIMode = game.getGameMode() === 'VS_AI';
+    const shouldBeClickable = isAIMode 
+        ? (owner === 'PLAYER1' && game.isValidMove(index))
+        : game.isValidMove(index);
+    
+    if (shouldBeClickable) {
         pit.classList.add('clickable');
     }
 
