@@ -693,19 +693,22 @@ class ChessGame {
             this.board,
             this.currentPlayer,
             this.aiDifficulty,
-            (piece) => this.getValidMoves(piece)
+            (piece) => {
+                // Find the piece in the real board using row/col from the simulated piece
+                const realPiece = this.board[piece.row][piece.col];
+                if (realPiece) {
+                    return this.getValidMoves(realPiece);
+                }
+                return [];
+            }
         );
 
         if (bestMove) {
-            // Select the piece
-            const piece = this.board[bestMove.from.row][bestMove.from.col];
-            if (piece && piece.player === this.currentPlayer) {
-                this.selectedPiece = piece;
-                this.validMoves = this.getValidMoves(piece);
-
-                // Make the move
-                this.makeMove(bestMove.to.row, bestMove.to.col);
-            }
+            // Use selectPiece to properly select and then make the move
+            this.selectPiece(bestMove.from.row, bestMove.from.col);
+            this.makeMove(bestMove.to.row, bestMove.to.col);
+        } else {
+            console.error('No valid move found for AI!');
         }
     }
 

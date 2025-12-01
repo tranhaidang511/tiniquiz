@@ -30,6 +30,7 @@ let timerInterval: number | null = null;
 // Track current game settings
 let currentGameMode: 'pvp' | 'pve' = 'pvp';
 let currentDifficulty: 'easy' | 'medium' | 'hard' = 'medium';
+let currentAISide: 'WHITE' | 'BLACK' | null = null;
 
 // --- UI Rendering ---
 
@@ -213,6 +214,7 @@ function setupEventListeners() {
         // Store current settings
         currentGameMode = mode;
         currentDifficulty = difficulty;
+        currentAISide = aiSide;
         
         game.start(mode, aiSide, difficulty);
     });
@@ -457,6 +459,11 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding
 }
 
 function handleBoardClick(e: MouseEvent) {
+    // Don't allow interaction during AI's turn
+    if (currentGameMode === 'pve' && currentAISide === game.getCurrentPlayer()) {
+        return;
+    }
+
     const svg = document.getElementById('board') as unknown as SVGSVGElement;
     if (!svg) return;
 

@@ -50,8 +50,8 @@ export class ChessAI {
     private static getSearchDepth(difficulty: Difficulty): number {
         switch (difficulty) {
             case 'easy': return 2;
-            case 'medium': return 3;
-            case 'hard': return 4;
+            case 'medium': return 4;
+            case 'hard': return 5;
         }
     }
 
