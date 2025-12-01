@@ -3,7 +3,7 @@ import { game } from './Game';
 import type { GameState, Piece } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
-import { Consent } from '../common/consent';
+import { Consent } from '../common/Consent';
 
 import { en } from './i18n/en';
 import { ja } from './i18n/ja';
@@ -78,52 +78,113 @@ function renderBoard() {
     const svg = document.getElementById('board') as unknown as SVGSVGElement;
     if (!svg) return;
 
-    // Clear existing content
     svg.innerHTML = '';
-
     const squareSize = 100;
-    const board = game.getBoard();
-    const selectedPiece = game.getSelectedPiece();
-    const validMoves = game.getValidMovesForSelected();
-    const lastMove = game.getLastMove();
+    const padding = 40; // Padding for coordinates
+
+    // Set viewBox to include padding
+    // Board is 800x800, plus 40px padding on all sides = 880x880
+    svg.setAttribute('viewBox', '0 0 880 880');
 
     // Draw squares
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
-            const isLight = (row + col) % 2 === 0;
             const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', (col * squareSize).toString());
-            rect.setAttribute('y', (row * squareSize).toString());
+            rect.setAttribute('x', (col * squareSize + padding).toString());
+            rect.setAttribute('y', (row * squareSize + padding).toString());
             rect.setAttribute('width', squareSize.toString());
             rect.setAttribute('height', squareSize.toString());
-            rect.classList.add('square');
-            rect.classList.add(isLight ? 'light' : 'dark');
+
+            const isDark = (row + col) % 2 === 1;
+            rect.setAttribute('class', isDark ? 'square dark' : 'square light');
+
+            // Add data attributes for click handling
             rect.dataset.row = row.toString();
             rect.dataset.col = col.toString();
-
-            // Highlight selected square
-            if (selectedPiece && selectedPiece.row === row && selectedPiece.col === col) {
-                rect.classList.add('selected');
-            }
-
-            // Highlight last move
-            if (lastMove) {
-                if ((lastMove.from.row === row && lastMove.from.col === col) ||
-                    (lastMove.to.row === row && lastMove.to.col === col)) {
-                    rect.classList.add('last-move');
-                }
-            }
 
             svg.appendChild(rect);
         }
     }
 
-    // Draw valid move indicators
+    // Draw coordinates
+    // Column labels (a-h)
+    for (let i = 0; i < 8; i++) {
+        const colLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        // Center in the square column, in the top margin
+        colLabel.setAttribute('x', (i * squareSize + squareSize / 2 + padding).toString());
+        colLabel.setAttribute('y', (padding - 10).toString()); // 10px above board
+        colLabel.classList.add('coord-label');
+        colLabel.setAttribute('text-anchor', 'middle');
+        colLabel.textContent = String.fromCharCode(97 + i); // a-h
+        svg.appendChild(colLabel);
+
+        // Bottom labels
+        const colLabelBottom = colLabel.cloneNode(true) as SVGTextElement;
+        colLabelBottom.setAttribute('y', (8 * squareSize + padding + 25).toString()); // 25px below board
+        svg.appendChild(colLabelBottom);
+    }
+
+    // Row labels (1-8)
+    for (let i = 0; i < 8; i++) {
+        const rowLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        // Center in the square row, in the left margin
+        rowLabel.setAttribute('x', (padding - 10).toString()); // 10px left of board
+        rowLabel.setAttribute('y', (i * squareSize + squareSize / 2 + padding + 5).toString()); // +5 for vertical centering
+        rowLabel.classList.add('coord-label');
+        rowLabel.setAttribute('text-anchor', 'end');
+        rowLabel.textContent = (8 - i).toString();
+        svg.appendChild(rowLabel);
+
+        // Right labels
+        const rowLabelRight = rowLabel.cloneNode(true) as SVGTextElement;
+        rowLabelRight.setAttribute('x', (8 * squareSize + padding + 10).toString()); // 10px right of board
+        rowLabelRight.setAttribute('text-anchor', 'start');
+        svg.appendChild(rowLabelRight);
+    }
+
+    // Highlight selected piece
+    const selectedPiece = game.getSelectedPiece();
+    if (selectedPiece) {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', (selectedPiece.col * squareSize + padding).toString());
+        rect.setAttribute('y', (selectedPiece.row * squareSize + padding).toString());
+        rect.setAttribute('width', squareSize.toString());
+        rect.setAttribute('height', squareSize.toString());
+        rect.setAttribute('class', 'square selected');
+        svg.appendChild(rect);
+    }
+
+    // Highlight last move
+    const lastMove = game.getLastMove();
+    if (lastMove) {
+        [lastMove.from, lastMove.to].forEach(pos => {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', (pos.col * squareSize + padding).toString());
+            rect.setAttribute('y', (pos.row * squareSize + padding).toString());
+            rect.setAttribute('width', squareSize.toString());
+            rect.setAttribute('height', squareSize.toString());
+            rect.setAttribute('class', 'square last-move');
+            svg.appendChild(rect);
+        });
+    }
+
+    // Draw pieces
+    const board = game.getBoard();
+    board.forEach(row => {
+        row.forEach(piece => {
+            if (piece) {
+                drawPiece(svg, piece, squareSize, padding);
+            }
+        });
+    });
+
+    // Draw valid moves
+    const validMoves = game.getValidMovesForSelected();
     validMoves.forEach(move => {
         const hasTarget = board[move.row][move.col] !== null;
         const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        indicator.setAttribute('cx', (move.col * squareSize + squareSize / 2).toString());
-        indicator.setAttribute('cy', (move.row * squareSize + squareSize / 2).toString());
+        indicator.setAttribute('cx', (move.col * squareSize + squareSize / 2 + padding).toString());
+        indicator.setAttribute('cy', (move.row * squareSize + squareSize / 2 + padding).toString());
         indicator.setAttribute('r', hasTarget ? '40' : '15');
         indicator.classList.add('move-indicator');
         if (hasTarget) {
@@ -133,52 +194,24 @@ function renderBoard() {
         }
         svg.appendChild(indicator);
     });
-
-    // Draw pieces
-    for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-            const piece = board[row][col];
-            if (piece) {
-                drawPiece(svg, piece, squareSize);
-            }
-        }
-    }
-
-    // Draw coordinates
-    for (let i = 0; i < 8; i++) {
-        // Column labels (a-h)
-        const colLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        colLabel.setAttribute('x', (i * squareSize + squareSize - 8).toString());
-        colLabel.setAttribute('y', (8 * squareSize - 5).toString());
-        colLabel.classList.add('coord-label');
-        colLabel.textContent = String.fromCharCode(97 + i); // a-h
-        svg.appendChild(colLabel);
-
-        // Row labels (1-8)
-        const rowLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        rowLabel.setAttribute('x', '5');
-        rowLabel.setAttribute('y', (i * squareSize + 15).toString());
-        rowLabel.classList.add('coord-label');
-        rowLabel.textContent = (8 - i).toString();
-        svg.appendChild(rowLabel);
-    }
 }
 
-function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number) {
-    const x = piece.col * squareSize + squareSize / 2;
-    const y = piece.row * squareSize + squareSize / 2;
+function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding: number) {
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    group.classList.add('piece');
-    group.classList.add(piece.player.toLowerCase());
+    const x = piece.col * squareSize + squareSize / 2 + padding;
+    const y = piece.row * squareSize + squareSize / 2 + padding;
+    const scale = 1; // Can adjust if needed
+
+    group.setAttribute('class', `piece ${piece.player.toLowerCase()}`);
     group.dataset.row = piece.row.toString();
     group.dataset.col = piece.col.toString();
+    group.dataset.player = piece.player;
 
     let path = '';
-    const scale = 0.8;
 
     switch (piece.type) {
         case 'PAWN':
-            path = `M ${x} ${y - 25 * scale} 
+            path = `M ${x} ${y - 20 * scale}
                     a ${12 * scale} ${12 * scale} 0 1 1 0 ${24 * scale}
                     a ${12 * scale} ${12 * scale} 0 1 1 0 -${24 * scale}
                     M ${x - 15 * scale} ${y + 15 * scale}
@@ -196,18 +229,20 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number) {
             break;
 
         case 'KNIGHT':
-            path = `M ${x} ${y - 25 * scale}
-                    q -${10 * scale} -${5 * scale} -${15 * scale} ${5 * scale}
-                    q -${5 * scale} ${10 * scale} 0 ${20 * scale}
-                    l -${5 * scale} ${5 * scale}
-                    q -${5 * scale} ${5 * scale} 0 ${15 * scale}
-                    l -${5 * scale} ${20 * scale}
-                    h ${50 * scale}
-                    l -${5 * scale} -${20 * scale}
-                    q ${5 * scale} -${10 * scale} 0 -${15 * scale}
-                    l -${5 * scale} -${5 * scale}
-                    q ${5 * scale} -${10 * scale} 0 -${20 * scale}
-                    q -${5 * scale} -${10 * scale} -${15 * scale} -${5 * scale}`;
+            path = `M ${x - 20 * scale} ${y + 30 * scale}
+                    h ${40 * scale}
+                    l -${7 * scale} -${10 * scale}
+                    q ${5 * scale} -${15 * scale} ${7 * scale} -${25 * scale}
+                    l -${5 * scale} -${8 * scale}
+                    l -${5 * scale} ${4 * scale}
+                    q -${8 * scale} ${2 * scale} -${14 * scale} ${10 * scale}
+                    l -${5 * scale} ${6 * scale}
+                    l ${4 * scale} ${6 * scale}
+                    q ${5 * scale} -${2 * scale} ${8 * scale} -${4 * scale}
+                    q -${2 * scale} ${10 * scale} ${2 * scale} ${15 * scale}
+                    L ${x - 13 * scale} ${y + 20 * scale}
+                    l -${7 * scale} ${10 * scale}
+                    z`;
             break;
 
         case 'BISHOP':
@@ -276,29 +311,33 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number) {
 }
 
 function handleBoardClick(e: MouseEvent) {
-    const target = e.target as SVGElement;
-    let row: number | null = null;
-    let col: number | null = null;
+    const svg = document.getElementById('board') as unknown as SVGSVGElement;
+    if (!svg) return;
 
-    // Check if clicked on a square or piece
-    if (target.dataset.row && target.dataset.col) {
-        row = parseInt(target.dataset.row);
-        col = parseInt(target.dataset.col);
-    } else if (target.parentElement && target.parentElement.dataset.row) {
-        row = parseInt(target.parentElement.dataset.row);
-        col = parseInt(target.parentElement.dataset.col!);
-    } else {
-        // Calculate from SVG coordinates
-        const svg = document.getElementById('board') as unknown as SVGSVGElement;
-        const rect = svg.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const squareSize = rect.width / 8;
-        col = Math.floor(x / squareSize);
-        row = Math.floor(y / squareSize);
-    }
+    const rect = svg.getBoundingClientRect();
+    const padding = 40; // Must match renderBoard padding
+    // Calculate click position relative to the board area (excluding padding)
+    // The SVG is scaled by CSS, so we need to map client coordinates to SVG coordinates
+    // However, since we use viewBox, the internal units are 880x880.
+    // We need to determine the scale factor between screen pixels and SVG units.
 
-    if (row !== null && col !== null && row >= 0 && row < 8 && col >= 0 && col < 8) {
+    const scaleX = 880 / rect.width;
+    const scaleY = 880 / rect.height;
+
+    const clickX = (e.clientX - rect.left) * scaleX;
+    const clickY = (e.clientY - rect.top) * scaleY;
+
+    // Adjust for padding
+    const boardX = clickX - padding;
+    const boardY = clickY - padding;
+
+    const squareSize = 100;
+
+    const col = Math.floor(boardX / squareSize);
+    const row = Math.floor(boardY / squareSize);
+
+    // Check if click is within the board grid
+    if (row >= 0 && row < 8 && col >= 0 && col < 8) {
         game.selectPiece(row, col);
     }
 }
@@ -360,7 +399,11 @@ function updateTexts() {
     document.getElementById('label-total-time')!.textContent = localization.getUIText('totalTime');
     document.getElementById('label-total-moves')!.textContent = localization.getUIText('totalMoves');
     document.getElementById('restart-btn')!.textContent = localization.getUIText('playAgain');
-
+    document.getElementById('promotion-title')!.textContent = localization.getUIText('promotion');
+    document.getElementById('promotion-queen')!.textContent = localization.getUIText('queen');
+    document.getElementById('promotion-rook')!.textContent = localization.getUIText('rook');
+    document.getElementById('promotion-bishop')!.textContent = localization.getUIText('bishop');
+    document.getElementById('promotion-knight')!.textContent = localization.getUIText('knight');
     updateGameInfo();
 }
 
@@ -416,8 +459,12 @@ function showPromotionModal() {
     // Setup piece selection
     const pieces = modal.querySelectorAll('.promotion-piece');
     pieces.forEach(piece => {
-        piece.addEventListener('click', () => {
-            const pieceType = (piece as HTMLElement).dataset.piece as 'ROOK' | 'KNIGHT' | 'BISHOP' | 'QUEEN';
+        // Clone to remove old listeners
+        const newPiece = piece.cloneNode(true);
+        piece.parentNode?.replaceChild(newPiece, piece);
+
+        newPiece.addEventListener('click', () => {
+            const pieceType = (newPiece as HTMLElement).dataset.piece as 'ROOK' | 'KNIGHT' | 'BISHOP' | 'QUEEN';
             game.promotePawn(pieceType);
             modal.classList.add('hidden');
         }, { once: true });
@@ -433,15 +480,15 @@ function displayResult() {
 
     if (winnerDisplay && totalTime && totalMoves) {
         const winner = game.getWinner();
-        const gameState = game.getState();
+        const finalState = game.getFinalGameState();
 
         let resultHTML = '';
-        if (gameState === 'STALEMATE') {
+        if (finalState === 'STALEMATE') {
             resultHTML = `
                 <h3>${localization.getUIText('stalemate')}</h3>
                 <p>${localization.getUIText('draw')}</p>
             `;
-        } else if (winner) {
+        } else if (finalState === 'CHECKMATE' && winner) {
             const winnerText = winner === 'WHITE' ?
                 localization.getUIText('whiteWins') :
                 localization.getUIText('blackWins');

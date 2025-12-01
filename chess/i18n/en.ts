@@ -29,5 +29,12 @@ export const en = {
         blackWins: 'Black Wins!',
         draw: 'Draw!',
         playAgain: 'Play Again',
+
+        // Promotion
+        promotion: 'Promotion',
+        queen: 'Queen',
+        rook: 'Rook',
+        bishop: 'Bishop',
+        knight: 'Knight',
     }
 };

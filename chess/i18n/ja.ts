@@ -29,5 +29,12 @@ export const ja = {
         blackWins: '黒の勝ち！',
         draw: '引き分け！',
         playAgain: 'もう一度',
+
+        // Promotion
+        promotion: '昇進',
+        queen: '女王',
+        rook: 'ロク',
+        bishop: 'ビショップ',
+        knight: 'ナイト',
     }
 };

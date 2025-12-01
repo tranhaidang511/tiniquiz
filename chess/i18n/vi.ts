@@ -29,5 +29,12 @@ export const vi = {
         blackWins: 'Đen Thắng!',
         draw: 'Hòa!',
         playAgain: 'Chơi Lại',
+
+        // Promotion
+        promotion: 'Phong cấp',
+        queen: 'Hậu',
+        rook: 'Xe',
+        bishop: 'Tượng',
+        knight: 'Mã',
     }
 };

@@ -34,6 +34,7 @@ class ChessGame {
     private enPassantTarget: Position | null = null;
     private lastMove: Move | null = null;
     private pendingPromotion: { row: number; col: number; move: Move } | null = null;
+    private finalGameState: 'CHECKMATE' | 'STALEMATE' | null = null;
 
     // Timer
     private startTime: number = 0;
@@ -533,21 +534,23 @@ class ChessGame {
         if (this.isInCheck(this.currentPlayer)) {
             if (this.hasNoLegalMoves(this.currentPlayer)) {
                 this.gameState = 'CHECKMATE';
+                this.finalGameState = 'CHECKMATE';
                 this.stopTimer();
                 setTimeout(() => {
                     this.gameState = 'RESULT';
                     this.notifyStateChange();
-                }, 1000);
+                }, 2000);
             } else {
                 this.gameState = 'CHECK';
             }
         } else if (this.hasNoLegalMoves(this.currentPlayer)) {
             this.gameState = 'STALEMATE';
+            this.finalGameState = 'STALEMATE';
             this.stopTimer();
             setTimeout(() => {
                 this.gameState = 'RESULT';
                 this.notifyStateChange();
-            }, 1000);
+            }, 2000);
         } else {
             this.gameState = 'PLAYING';
         }
@@ -608,10 +611,14 @@ class ChessGame {
     }
 
     getWinner(): Player | null {
-        if (this.gameState === 'CHECKMATE') {
+        if (this.finalGameState === 'CHECKMATE') {
             return this.currentPlayer === 'WHITE' ? 'BLACK' : 'WHITE';
         }
         return null;
+    }
+
+    getFinalGameState(): 'CHECKMATE' | 'STALEMATE' | null {
+        return this.finalGameState;
     }
 
     getPendingPromotion(): { row: number; col: number; move: Move } | null {

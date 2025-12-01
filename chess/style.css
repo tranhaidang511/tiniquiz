@@ -55,13 +55,21 @@ body {
 .header-controls {
     display: flex;
     align-items: center;
-    gap: 20px;
+    justify-content: center;
+    position: relative;
     margin-bottom: 30px;
+    min-height: 48px;
+}
+
+/* Position the home button absolutely to the left */
+.header-controls #home-btn {
+    position: absolute;
+    left: 0;
 }
 
 #game-title {
-    font-size: 2.5rem;
-    font-weight: 700;
+    font-size: 3rem;
+    font-weight: 800;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -166,14 +174,25 @@ button.primary:active {
     transform: translateY(0);
 }
 
+#new-game-btn {
+    margin-bottom: 20px;
+}
+
 /* Game Header */
 .game-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    /* Reduced margin slightly */
     gap: 20px;
     flex-wrap: wrap;
+
+    /* New visual styles */
+    background: var(--bg-secondary);
+    padding: 15px 25px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
 }
 
 .turn-indicator-container {
@@ -294,7 +313,7 @@ button.primary:active {
 /* Coordinates */
 .coord-label {
     fill: var(--text-secondary);
-    font-size: 14px;
+    font-size: 25px;
     font-weight: 600;
     user-select: none;
     pointer-events: none;
