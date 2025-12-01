@@ -64,14 +64,9 @@ const loadSetup = () => {
 // --- Text Updates ---
 
 const updateTexts = () => {
-    const gameTitle = document.getElementById('game-title');
-    if (gameTitle) gameTitle.textContent = localization.getUIText('gameTitle');
-
-    const menuTitle = document.getElementById('menu-title');
-    if (menuTitle) menuTitle.textContent = localization.getUIText('gameSetup');
-
-    const labelDifficulty = document.getElementById('label-difficulty');
-    if (labelDifficulty) labelDifficulty.textContent = localization.getUIText('difficulty');
+    document.getElementById('game-title')!.textContent = localization.getUIText('gameTitle');
+    document.getElementById('menu-title')!.textContent = localization.getUIText('gameSetup');
+    document.getElementById('label-difficulty')!.textContent = localization.getUIText('difficulty');
 
     const diffButtons = document.querySelectorAll('.diff-btn');
     diffButtons.forEach((btn, i) => {
@@ -79,60 +74,26 @@ const updateTexts = () => {
         btn.textContent = localization.getUIText(difficulties[i]);
     });
 
-    const startBtn = document.getElementById('start-btn');
-    if (startBtn) startBtn.textContent = localization.getUIText('startGame');
-
-    const labelTime = document.getElementById('label-time');
-    if (labelTime) labelTime.textContent = localization.getUIText('time');
-
-    const labelMistakes = document.getElementById('label-mistakes');
-    if (labelMistakes) labelMistakes.textContent = localization.getUIText('mistakes');
-
-    const labelHints = document.getElementById('label-hints');
-    if (labelHints) labelHints.textContent = localization.getUIText('hints');
-
-    const eraseBtn = document.getElementById('erase-btn');
-    if (eraseBtn) eraseBtn.textContent = localization.getUIText('erase');
-
-    const notesBtn = document.getElementById('notes-btn');
-    if (notesBtn) notesBtn.textContent = localization.getUIText('notes');
-
-    const hintBtn = document.getElementById('hint-btn');
-    if (hintBtn) hintBtn.textContent = localization.getUIText('hint');
-
-    const newGameBtn = document.getElementById('new-game-btn');
-    if (newGameBtn) newGameBtn.textContent = localization.getUIText('newGame');
-
-    const labelTotalTime = document.getElementById('label-total-time');
-    if (labelTotalTime) labelTotalTime.textContent = localization.getUIText('totalTime');
-
-    const labelFinalMistakes = document.getElementById('label-final-mistakes');
-    if (labelFinalMistakes) labelFinalMistakes.textContent = localization.getUIText('mistakes');
-
-    const labelFinalHints = document.getElementById('label-final-hints');
-    if (labelFinalHints) labelFinalHints.textContent = localization.getUIText('hints');
-
-    const playAgainBtn = document.getElementById('play-again-btn');
-    if (playAgainBtn) playAgainBtn.textContent = localization.getUIText('playAgain');
+    document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
+    document.getElementById('label-time')!.textContent = localization.getUIText('time');
+    document.getElementById('label-mistakes')!.textContent = localization.getUIText('mistakes');
+    document.getElementById('label-hints')!.textContent = localization.getUIText('hints');
+    document.getElementById('erase-btn')!.textContent = localization.getUIText('erase');
+    document.getElementById('notes-btn')!.textContent = localization.getUIText('notes');
+    document.getElementById('hint-btn')!.textContent = localization.getUIText('hint');
+    document.getElementById('new-game-btn')!.textContent = localization.getUIText('newGame');
+    document.getElementById('label-total-time')!.textContent = localization.getUIText('totalTime');
+    document.getElementById('label-final-mistakes')!.textContent = localization.getUIText('mistakes');
+    document.getElementById('label-final-hints')!.textContent = localization.getUIText('hints');
+    document.getElementById('play-again-btn')!.textContent = localization.getUIText('playAgain');
 
     // High Score Table Headers
-    const highScoresTitle = document.getElementById('high-scores-title');
-    if (highScoresTitle) highScoresTitle.textContent = localization.getUIText('highScores');
-
-    const thRank = document.getElementById('th-rank');
-    if (thRank) thRank.textContent = localization.getUIText('rank');
-
-    const thTime = document.getElementById('th-time');
-    if (thTime) thTime.textContent = localization.getUIText('time');
-
-    const thMistakes = document.getElementById('th-mistakes');
-    if (thMistakes) thMistakes.textContent = localization.getUIText('mistakes');
-
-    const thHints = document.getElementById('th-hints');
-    if (thHints) thHints.textContent = localization.getUIText('hints');
-
-    const thDate = document.getElementById('th-date');
-    if (thDate) thDate.textContent = localization.getUIText('date');
+    document.getElementById('high-scores-title')!.textContent = localization.getUIText('highScores');
+    document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
+    document.getElementById('th-time')!.textContent = localization.getUIText('time');
+    document.getElementById('th-mistakes')!.textContent = localization.getUIText('mistakes');
+    document.getElementById('th-hints')!.textContent = localization.getUIText('hints');
+    document.getElementById('th-date')!.textContent = localization.getUIText('date');
 };
 
 // --- Event Listeners ---

@@ -105,75 +105,30 @@ const loadSetup = () => {
 // --- Text Updates ---
 
 const updateTexts = () => {
-    const gameTitle = document.getElementById('game-title');
-    if (gameTitle) gameTitle.textContent = localization.getUIText('gameTitle');
-
-    const menuTitle = document.getElementById('menu-title');
-    if (menuTitle) menuTitle.textContent = localization.getUIText('gameSetup');
-
-    const labelMode = document.getElementById('label-mode');
-    if (labelMode) labelMode.textContent = localization.getUIText('gameMode');
-
-    const modeTwoPlayer = document.getElementById('mode-two-player');
-    if (modeTwoPlayer) modeTwoPlayer.textContent = localization.getUIText('twoPlayers');
-
-    const modeVsAI = document.getElementById('mode-vs-ai');
-    if (modeVsAI) modeVsAI.textContent = localization.getUIText('vsAI');
-
-    const startBtn = document.getElementById('start-btn');
-    if (startBtn) startBtn.textContent = localization.getUIText('startGame');
-
-    const newGameBtn = document.getElementById('new-game-btn');
-    if (newGameBtn) newGameBtn.textContent = localization.getUIText('newGame');
-
-    const labelTime = document.getElementById('label-time');
-    if (labelTime) labelTime.textContent = localization.getUIText('time');
-
-    const labelMoves = document.getElementById('label-moves');
-    if (labelMoves) labelMoves.textContent = localization.getUIText('moves');
-
-    const labelTotalTime = document.getElementById('label-total-time');
-    if (labelTotalTime) labelTotalTime.textContent = localization.getUIText('time');
-
-    const labelTotalMoves = document.getElementById('label-total-moves');
-    if (labelTotalMoves) labelTotalMoves.textContent = localization.getUIText('totalMoves');
-
-    const restartBtn = document.getElementById('restart-btn');
-    if (restartBtn) restartBtn.textContent = localization.getUIText('playAgain');
-
+    document.getElementById('game-title')!.textContent = localization.getUIText('gameTitle');
+    document.getElementById('menu-title')!.textContent = localization.getUIText('gameSetup');
+    document.getElementById('label-mode')!.textContent = localization.getUIText('gameMode');
+    document.getElementById('mode-two-player')!.textContent = localization.getUIText('twoPlayers');
+    document.getElementById('mode-vs-ai')!.textContent = localization.getUIText('vsAI');
+    document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
+    document.getElementById('new-game-btn')!.textContent = localization.getUIText('newGame');
+    document.getElementById('label-time')!.textContent = localization.getUIText('time');
+    document.getElementById('label-moves')!.textContent = localization.getUIText('moves');
+    document.getElementById('label-total-time')!.textContent = localization.getUIText('time');
+    document.getElementById('label-total-moves')!.textContent = localization.getUIText('totalMoves');
+    document.getElementById('restart-btn')!.textContent = localization.getUIText('playAgain');
     // High Score Table Headers
-    const highScoresTitle = document.getElementById('high-scores-title');
-    if (highScoresTitle) highScoresTitle.textContent = localization.getUIText('highScores');
-
-    const thRank = document.getElementById('th-rank');
-    if (thRank) thRank.textContent = localization.getUIText('rank');
-
-    const thMoves = document.getElementById('th-moves');
-    if (thMoves) thMoves.textContent = localization.getUIText('moves');
-
-    const thTime = document.getElementById('th-time');
-    if (thTime) thTime.textContent = localization.getUIText('time');
-
-    const thDate = document.getElementById('th-date');
-    if (thDate) thDate.textContent = localization.getUIText('date');
-
-    const labelBoardSize = document.getElementById('label-board-size');
-    if (labelBoardSize) labelBoardSize.textContent = localization.getUIText('boardSize');
-
-    const labelForceJump = document.getElementById('label-force-jump');
-    if (labelForceJump) labelForceJump.textContent = localization.getUIText('forceJump');
-
-    const labelDifficulty = document.getElementById('label-difficulty');
-    if (labelDifficulty) labelDifficulty.textContent = localization.getUIText('difficulty');
-
-    const diffEasy = document.getElementById('diff-easy');
-    if (diffEasy) diffEasy.textContent = localization.getUIText('easy');
-
-    const diffMedium = document.getElementById('diff-medium');
-    if (diffMedium) diffMedium.textContent = localization.getUIText('medium');
-
-    const diffHard = document.getElementById('diff-hard');
-    if (diffHard) diffHard.textContent = localization.getUIText('hard');
+    document.getElementById('high-scores-title')!.textContent = localization.getUIText('highScores');
+    document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
+    document.getElementById('th-moves')!.textContent = localization.getUIText('moves');
+    document.getElementById('th-time')!.textContent = localization.getUIText('time');
+    document.getElementById('th-date')!.textContent = localization.getUIText('date');
+    document.getElementById('label-board-size')!.textContent = localization.getUIText('boardSize');
+    document.getElementById('label-force-jump')!.textContent = localization.getUIText('forceJump');
+    document.getElementById('label-difficulty')!.textContent = localization.getUIText('difficulty');
+    document.getElementById('diff-easy')!.textContent = localization.getUIText('easy');
+    document.getElementById('diff-medium')!.textContent = localization.getUIText('medium');
+    document.getElementById('diff-hard')!.textContent = localization.getUIText('hard');
 
     updateGameInfo();
 };

@@ -93,6 +93,42 @@ const loadSetup = () => {
   }
 };
 
+// --- Text Updates ---
+
+const updateTexts = () => {
+  // Menu
+  document.getElementById('menu-title')!.textContent = localization.getUIText('gameSetup');
+  document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
+  document.getElementById('label-filter')!.textContent = localization.getUIText('filterByRegion');
+  document.getElementById('label-count')!.textContent = localization.getUIText('numberOfQuestions');
+  document.getElementById('label-mode')!.textContent = localization.getUIText('gameMode');
+  document.getElementById('mode-capitals')!.textContent = localization.getUIText('modeCapitals');
+  document.getElementById('mode-flags')!.textContent = localization.getUIText('modeFlags');
+  document.getElementById('mode-provinces')!.textContent = localization.getUIText('modeProvinces');
+  document.getElementById('label-country-filter')!.textContent = localization.getUIText('filterByCountry');
+
+  // Filter Options
+  document.getElementById('option-all-world')!.textContent = localization.getUIText('allWorld');
+  const optGroupContinents = document.getElementById('continent-options') as HTMLOptGroupElement;
+  if (optGroupContinents) optGroupContinents.label = localization.getUIText('continents');
+  const optGroupRegions = document.getElementById('region-options') as HTMLOptGroupElement;
+  if (optGroupRegions) optGroupRegions.label = localization.getUIText('regions');
+
+  // Result
+  document.getElementById('result-title')!.textContent = localization.getUIText('gameOver');
+  document.getElementById('restart-btn')!.textContent = localization.getUIText('playAgain');
+  document.getElementById('time-label')!.textContent = localization.getUIText('totalTime');
+  document.getElementById('game-time-label')!.textContent = localization.getUIText('time');
+  document.getElementById('new-game-btn')!.textContent = localization.getUIText('newGame');
+
+  // High Score Table Headers
+  document.getElementById('high-scores-title')!.textContent = localization.getUIText('highScores');
+  document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
+  document.getElementById('th-score')!.textContent = localization.getUIText('score');
+  document.getElementById('th-time')!.textContent = localization.getUIText('time');
+  document.getElementById('th-date')!.textContent = localization.getUIText('date');
+};
+
 // --- Event Listeners ---
 
 const setupEventListeners = () => {
@@ -226,80 +262,6 @@ const populateFilters = () => {
       countryFilterSelect.appendChild(option);
     });
   }
-};
-
-// --- Updates ---
-
-const updateTexts = () => {
-  // Menu
-  const menuTitle = document.getElementById('menu-title');
-  if (menuTitle) menuTitle.textContent = localization.getUIText('gameSetup');
-
-  const startBtn = document.getElementById('start-btn');
-  if (startBtn) startBtn.textContent = localization.getUIText('startGame');
-
-  const labelFilter = document.getElementById('label-filter');
-  if (labelFilter) labelFilter.textContent = localization.getUIText('filterByRegion');
-
-  const labelCount = document.getElementById('label-count');
-  if (labelCount) labelCount.textContent = localization.getUIText('numberOfQuestions');
-
-  const labelMode = document.getElementById('label-mode');
-  if (labelMode) labelMode.textContent = localization.getUIText('gameMode');
-
-  const modeCapitals = document.getElementById('mode-capitals');
-  if (modeCapitals) modeCapitals.textContent = localization.getUIText('modeCapitals');
-
-  const modeFlags = document.getElementById('mode-flags');
-  if (modeFlags) modeFlags.textContent = localization.getUIText('modeFlags');
-
-  const modeProvinces = document.getElementById('mode-provinces');
-  if (modeProvinces) modeProvinces.textContent = localization.getUIText('modeProvinces');
-
-  const labelCountryFilter = document.getElementById('label-country-filter');
-  if (labelCountryFilter) labelCountryFilter.textContent = localization.getUIText('filterByCountry');
-
-  // Filter Options
-  const optionAllWorld = document.getElementById('option-all-world');
-  if (optionAllWorld) optionAllWorld.textContent = localization.getUIText('allWorld');
-
-  const optGroupContinents = document.getElementById('continent-options') as HTMLOptGroupElement;
-  if (optGroupContinents) optGroupContinents.label = localization.getUIText('continents');
-
-  const optGroupRegions = document.getElementById('region-options') as HTMLOptGroupElement;
-  if (optGroupRegions) optGroupRegions.label = localization.getUIText('regions');
-
-  // Result
-  const resultTitle = document.getElementById('result-title');
-  if (resultTitle) resultTitle.textContent = localization.getUIText('gameOver');
-
-  const restartBtn = document.getElementById('restart-btn');
-  if (restartBtn) restartBtn.textContent = localization.getUIText('playAgain');
-
-  const timeLabel = document.getElementById('time-label');
-  if (timeLabel) timeLabel.textContent = localization.getUIText('totalTime');
-
-  const gameTimeLabel = document.getElementById('game-time-label');
-  if (gameTimeLabel) gameTimeLabel.textContent = localization.getUIText('time');
-
-  const newGameBtn = document.getElementById('new-game-btn');
-  if (newGameBtn) newGameBtn.textContent = localization.getUIText('newGame');
-
-  // High Score Table Headers
-  const highScoresTitle = document.getElementById('high-scores-title');
-  if (highScoresTitle) highScoresTitle.textContent = localization.getUIText('highScores');
-
-  const thRank = document.getElementById('th-rank');
-  if (thRank) thRank.textContent = localization.getUIText('rank');
-
-  const thScore = document.getElementById('th-score');
-  if (thScore) thScore.textContent = localization.getUIText('score');
-
-  const thTime = document.getElementById('th-time');
-  if (thTime) thTime.textContent = localization.getUIText('time');
-
-  const thDate = document.getElementById('th-date');
-  if (thDate) thDate.textContent = localization.getUIText('date');
 };
 
 const showView = (viewId: string) => {
