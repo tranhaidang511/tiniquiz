@@ -1,3 +1,5 @@
+import { ChessAI, type Difficulty } from './AI';
+
 export type Player = 'WHITE' | 'BLACK';
 export type PieceType = 'PAWN' | 'ROOK' | 'KNIGHT' | 'BISHOP' | 'QUEEN' | 'KING';
 export type GameState = 'MENU' | 'PLAYING' | 'CHECK' | 'CHECKMATE' | 'STALEMATE' | 'RESULT';
@@ -36,6 +38,11 @@ class ChessGame {
     private pendingPromotion: { row: number; col: number; move: Move } | null = null;
     private finalGameState: 'CHECKMATE' | 'STALEMATE' | null = null;
 
+    // AI properties
+    private gameMode: 'pvp' | 'pve' = 'pvp';
+    private aiPlayer: Player | null = null;
+    private aiDifficulty: Difficulty = 'medium';
+
     // Timer
     private startTime: number = 0;
     private elapsedTime: number = 0;
@@ -71,7 +78,7 @@ class ChessGame {
         }
     }
 
-    start() {
+    start(mode: 'pvp' | 'pve' = 'pvp', aiSide: Player | null = null, difficulty: Difficulty = 'medium') {
         this.initializeBoard();
         this.currentPlayer = 'WHITE';
         this.gameState = 'PLAYING';
@@ -81,9 +88,21 @@ class ChessGame {
         this.capturedPieces = [];
         this.enPassantTarget = null;
         this.lastMove = null;
+        this.finalGameState = null;
+
+        // Set game mode and AI properties
+        this.gameMode = mode;
+        this.aiPlayer = mode === 'pve' ? aiSide : null;
+        this.aiDifficulty = difficulty;
+
         this.startTimer();
         this.notifyStateChange();
         this.notifyBoardUpdate();
+
+        // If AI plays first (as White), make AI move
+        if (this.gameMode === 'pve' && this.aiPlayer === 'WHITE') {
+            setTimeout(() => this.makeAIMove(), 500);
+        }
     }
 
     restart() {
@@ -218,6 +237,13 @@ class ChessGame {
 
         this.notifyMove(move);
         this.notifyBoardUpdate();
+
+        // Trigger AI move if in PvE mode and it's AI's turn
+        if (this.gameMode === 'pve' && this.aiPlayer === this.currentPlayer && 
+            (this.gameState === 'PLAYING' || this.gameState === 'CHECK')) {
+            setTimeout(() => this.makeAIMove(), 500);
+        }
+
         return true;
     }
 
@@ -649,6 +675,38 @@ class ChessGame {
         this.checkGameState();
         this.notifyMove(move);
         this.notifyBoardUpdate();
+
+        // Trigger AI move if in PvE mode and it's AI's turn
+        if (this.gameMode === 'pve' && this.aiPlayer === this.currentPlayer && 
+            (this.gameState === 'PLAYING' || this.gameState === 'CHECK')) {
+            setTimeout(() => this.makeAIMove(), 500);
+        }
+    }
+
+    private makeAIMove() {
+        if ((this.gameState !== 'PLAYING' && this.gameState !== 'CHECK') || 
+            this.gameMode !== 'pve' || this.aiPlayer !== this.currentPlayer) {
+            return;
+        }
+
+        const bestMove = ChessAI.getBestMove(
+            this.board,
+            this.currentPlayer,
+            this.aiDifficulty,
+            (piece) => this.getValidMoves(piece)
+        );
+
+        if (bestMove) {
+            // Select the piece
+            const piece = this.board[bestMove.from.row][bestMove.from.col];
+            if (piece && piece.player === this.currentPlayer) {
+                this.selectedPiece = piece;
+                this.validMoves = this.getValidMoves(piece);
+
+                // Make the move
+                this.makeMove(bestMove.to.row, bestMove.to.col);
+            }
+        }
     }
 
     // Event listeners

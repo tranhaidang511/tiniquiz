@@ -36,5 +36,18 @@ export const ja = {
         rook: 'ロク',
         bishop: 'ビショップ',
         knight: 'ナイト',
+
+        // Game Mode
+        labelMode: 'ゲームモード',
+        modePvP: '2プレイヤー',
+        modePvE: 'VS AI',
+        labelDifficulty: '難易度',
+        difficultyEasy: '簡単',
+        difficultyMedium: '普通',
+        difficultyHard: '難しい',
+        labelSide: 'プレイヤー',
+        sideWhite: '白',
+        sideBlack: '黒',
+        aiThinking: 'AIが考え中...',
     }
 };

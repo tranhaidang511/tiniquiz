@@ -427,3 +427,54 @@ button.primary:active {
         font-size: 1rem;
     }
 }
+
+/* Setup Groups */
+.setup-group {
+    margin-bottom: 24px;
+}
+.setup-group h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    text-align: center;
+}
+.radio-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+/* Mode/Difficulty/Side Buttons */
+.mode-btn,
+.difficulty-btn,
+.side-btn {
+    padding: 12px 24px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 100px;
+}
+.mode-btn:hover,
+.difficulty-btn:hover,
+.side-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary-color);
+}
+.mode-btn.active,
+.difficulty-btn.active,
+.side-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+.mode-btn.active:hover,
+.difficulty-btn.active:hover,
+.side-btn.active:hover {
+    opacity: 0.9;
+}

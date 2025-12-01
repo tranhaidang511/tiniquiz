@@ -36,5 +36,18 @@ export const vi = {
         rook: 'Xe',
         bishop: 'Tượng',
         knight: 'Mã',
+
+        // Game Mode
+        labelMode: 'Chế Độ',
+        modePvP: '2 Người Chơi',
+        modePvE: 'vs AI',
+        labelDifficulty: 'Độ Khó',
+        difficultyEasy: 'Dễ',
+        difficultyMedium: 'Trung Bình',
+        difficultyHard: 'Khó',
+        labelSide: 'Chơi Với',
+        sideWhite: 'Trắng',
+        sideBlack: 'Đen',
+        aiThinking: 'AI đang suy nghĩ...',
     }
 };

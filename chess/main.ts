@@ -70,6 +70,59 @@ function setupEventListeners() {
     // Board click
     const board = document.getElementById('board');
     board?.addEventListener('click', handleBoardClick);
+
+    // Game mode selection
+    const modePvPBtn = document.getElementById('mode-pvp');
+    const modePvEBtn = document.getElementById('mode-pve');
+    const difficultySection = document.getElementById('difficulty-section');
+    const sideSection = document.getElementById('side-section');
+    modePvPBtn?.addEventListener('click', () => {
+        modePvPBtn.classList.add('active');
+        modePvEBtn?.classList.remove('active');
+        difficultySection?.classList.add('hidden');
+        sideSection?.classList.add('hidden');
+    });
+    modePvEBtn?.addEventListener('click', () => {
+        modePvEBtn.classList.add('active');
+        modePvPBtn?.classList.remove('active');
+        difficultySection?.classList.remove('hidden');
+        sideSection?.classList.remove('hidden');
+    });
+    // Difficulty selection
+    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
+    difficultyBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            difficultyBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+    // Side selection
+    const sideBtns = document.querySelectorAll('.side-btn');
+    sideBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            sideBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+    });
+    // Update the existing start button handler to read the selected values
+    startBtn?.addEventListener('click', () => {
+        const modeBtn = document.querySelector('.mode-btn.active');
+        const mode = modeBtn?.getAttribute('data-mode') as 'pvp' | 'pve' || 'pvp';
+        
+        let aiSide: 'WHITE' | 'BLACK' | null = null;
+        let difficulty: 'easy' | 'medium' | 'hard' = 'medium';
+        
+        if (mode === 'pve') {
+            const sideBtn = document.querySelector('.side-btn.active');
+            const selectedSide = sideBtn?.getAttribute('data-side');
+            aiSide = selectedSide === 'white' ? 'BLACK' : 'WHITE'; // AI plays opposite
+            
+            const diffBtn = document.querySelector('.difficulty-btn.active');
+            difficulty = (diffBtn?.getAttribute('data-difficulty') as 'easy' | 'medium' | 'hard') || 'medium';
+        }
+        
+        game.start(mode, aiSide, difficulty);
+    });
 }
 
 // --- Board Rendering ---
@@ -404,6 +457,17 @@ function updateTexts() {
     document.getElementById('promotion-rook')!.textContent = localization.getUIText('rook');
     document.getElementById('promotion-bishop')!.textContent = localization.getUIText('bishop');
     document.getElementById('promotion-knight')!.textContent = localization.getUIText('knight');
+    // Update game mode labels
+    document.getElementById('label-mode')!.textContent = localization.getUIText('labelMode');
+    document.getElementById('mode-pvp')!.textContent = localization.getUIText('modePvP');
+    document.getElementById('mode-pve')!.textContent = localization.getUIText('modePvE');
+    document.getElementById('label-difficulty')!.textContent = localization.getUIText('labelDifficulty');
+    document.getElementById('diff-easy')!.textContent = localization.getUIText('difficultyEasy');
+    document.getElementById('diff-medium')!.textContent = localization.getUIText('difficultyMedium');
+    document.getElementById('diff-hard')!.textContent = localization.getUIText('difficultyHard');
+    document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
+    document.getElementById('side-white')!.textContent = localization.getUIText('sideWhite');
+    document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
     updateGameInfo();
 }
 

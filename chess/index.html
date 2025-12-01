@@ -75,6 +75,29 @@
         <!-- Menu View -->
         <div id="menu-view" class="card animate-fade-in">
             <h2 id="menu-title">Game Setup</h2>
+            
+            <div class="setup-group">
+                <h3 id="label-mode">Game Mode</h3>
+                <div class="radio-group">
+                    <button class="mode-btn active" data-mode="pvp" id="mode-pvp">2 Players</button>
+                    <button class="mode-btn" data-mode="pve" id="mode-pve">vs AI</button>
+                </div>
+            </div>
+            <div class="setup-group hidden" id="difficulty-section">
+                <h3 id="label-difficulty">Difficulty</h3>
+                <div class="radio-group">
+                    <button class="difficulty-btn" data-difficulty="easy" id="diff-easy">Easy</button>
+                    <button class="difficulty-btn active" data-difficulty="medium" id="diff-medium">Medium</button>
+                    <button class="difficulty-btn" data-difficulty="hard" id="diff-hard">Hard</button>
+                </div>
+            </div>
+            <div class="setup-group hidden" id="side-section">
+                <h3 id="label-side">Play As</h3>
+                <div class="radio-group">
+                    <button class="side-btn active" data-side="white" id="side-white">White</button>
+                    <button class="side-btn" data-side="black" id="side-black">Black</button>
+                </div>
+            </div>
             <button id="start-btn" class="primary">Start Game</button>
         </div>
 

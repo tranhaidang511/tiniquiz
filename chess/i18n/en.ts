@@ -36,5 +36,18 @@ export const en = {
         rook: 'Rook',
         bishop: 'Bishop',
         knight: 'Knight',
+
+        // Game Mode
+        labelMode: 'Game Mode',
+        modePvP: '2 Players',
+        modePvE: 'vs AI',
+        labelDifficulty: 'Difficulty',
+        difficultyEasy: 'Easy',
+        difficultyMedium: 'Medium',
+        difficultyHard: 'Hard',
+        labelSide: 'Play As',
+        sideWhite: 'White',
+        sideBlack: 'Black',
+        aiThinking: 'AI is thinking...',
     }
 };
