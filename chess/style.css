@@ -478,3 +478,56 @@ button.primary:active {
 .side-btn.active:hover {
     opacity: 0.9;
 }
+
+/* High Scores Table */
+.high-scores-container {
+    margin-top: 32px;
+    margin-bottom: 24px;
+    width: 100%;
+}
+.high-scores-container h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    text-align: center;
+}
+.high-scores-container.hidden {
+    display: none;
+}
+#high-scores-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+#high-scores-table thead {
+    background: var(--primary-color);
+}
+#high-scores-table th {
+    padding: 12px;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: left;
+}
+#high-scores-table td {
+    padding: 12px;
+    color: var(--text-primary);
+    font-size: 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+#high-scores-table tbody tr:last-child td {
+    border-bottom: none;
+}
+#high-scores-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+#high-scores-table tbody tr.current-run {
+    background: rgba(129, 182, 76, 0.2);
+    font-weight: 600;
+}
+#high-scores-table tbody tr.current-run:hover {
+    background: rgba(129, 182, 76, 0.3);
+}

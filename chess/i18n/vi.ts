@@ -49,5 +49,9 @@ export const vi = {
         sideWhite: 'Trắng',
         sideBlack: 'Đen',
         aiThinking: 'AI đang suy nghĩ...',
+
+        highScores: 'Điểm Cao',
+        rank: 'Hạng',
+        date: 'Ngày',
     }
 };

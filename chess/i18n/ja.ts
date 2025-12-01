@@ -49,5 +49,9 @@ export const ja = {
         sideWhite: '白',
         sideBlack: '黒',
         aiThinking: 'AIが考え中...',
+
+        highScores: 'ハイスコア',
+        rank: '順位',
+        date: '日付',
     }
 };

@@ -49,5 +49,9 @@ export const en = {
         sideWhite: 'White',
         sideBlack: 'Black',
         aiThinking: 'AI is thinking...',
+
+        highScores: 'High Scores',
+        rank: 'Rank',
+        date: 'Date',
     }
 };

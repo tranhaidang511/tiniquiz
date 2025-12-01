@@ -4,10 +4,17 @@ import type { GameState, Piece } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import { Consent } from '../common/Consent';
+import { util } from '../common/util';
 
 import { en } from './i18n/en';
 import { ja } from './i18n/ja';
 import { vi } from './i18n/vi';
+
+interface HighScore {
+    moves: number;
+    time: number;
+    date: number | string;
+}
 
 // Initialize Consent Banner
 new Consent();
@@ -20,12 +27,98 @@ const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 let currentGameState: GameState = 'MENU';
 let timerInterval: number | null = null;
 
+// Track current game settings
+let currentGameMode: 'pvp' | 'pve' = 'pvp';
+let currentDifficulty: 'easy' | 'medium' | 'hard' = 'medium';
+
 // --- UI Rendering ---
 
 function renderApp() {
     setupEventListeners();
     updateTexts();
+
+    // Set active language button
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
+    });
+    
+    loadSetup();
 }
+
+// --- Setup Persistence ---
+
+const saveSetup = () => {
+    const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+    const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
+    const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
+
+    if (modeBtn && diffBtn && sideBtn) {
+        const setup = {
+            mode: modeBtn.dataset.mode,
+            difficulty: diffBtn.dataset.difficulty,
+            side: sideBtn.dataset.side
+        };
+        localStorage.setItem('chess_setup', JSON.stringify(setup));
+    }
+};
+
+const loadSetup = () => {
+    try {
+        const saved = localStorage.getItem('chess_setup');
+        if (saved) {
+            const { mode, difficulty, side } = JSON.parse(saved);
+
+            // Restore Mode
+            if (mode) {
+                document.querySelectorAll('.mode-btn').forEach(btn => {
+                    const btnMode = (btn as HTMLElement).dataset.mode;
+                    if (btnMode === mode) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+                
+                // Show/hide difficulty and side sections based on mode
+                const diffSection = document.getElementById('difficulty-section');
+                const sideSection = document.getElementById('side-section');
+                if (mode === 'pve') {
+                    diffSection?.classList.remove('hidden');
+                    sideSection?.classList.remove('hidden');
+                } else {
+                    diffSection?.classList.add('hidden');
+                    sideSection?.classList.add('hidden');
+                }
+            }
+
+            // Restore Difficulty
+            if (difficulty) {
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    const btnDiff = (btn as HTMLElement).dataset.difficulty;
+                    if (btnDiff === difficulty) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Restore Side
+            if (side) {
+                document.querySelectorAll('.side-btn').forEach(btn => {
+                    const btnSide = (btn as HTMLElement).dataset.side;
+                    if (btnSide === side) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load chess setup:', e);
+    }
+};
 
 // --- Event Listeners ---
 
@@ -47,12 +140,6 @@ function setupEventListeners() {
                 target.classList.add('active');
             }
         });
-    });
-
-    // Start game
-    const startBtn = document.getElementById('start-btn');
-    startBtn?.addEventListener('click', () => {
-        game.start();
     });
 
     // New game
@@ -104,8 +191,10 @@ function setupEventListeners() {
             btn.classList.add('active');
         });
     });
-    // Update the existing start button handler to read the selected values
+    // Start game
+    const startBtn = document.getElementById('start-btn');
     startBtn?.addEventListener('click', () => {
+        saveSetup();
         const modeBtn = document.querySelector('.mode-btn.active');
         const mode = modeBtn?.getAttribute('data-mode') as 'pvp' | 'pve' || 'pvp';
         
@@ -120,6 +209,10 @@ function setupEventListeners() {
             const diffBtn = document.querySelector('.difficulty-btn.active');
             difficulty = (diffBtn?.getAttribute('data-difficulty') as 'easy' | 'medium' | 'hard') || 'medium';
         }
+        
+        // Store current settings
+        currentGameMode = mode;
+        currentDifficulty = difficulty;
         
         game.start(mode, aiSide, difficulty);
     });
@@ -468,6 +561,12 @@ function updateTexts() {
     document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
     document.getElementById('side-white')!.textContent = localization.getUIText('sideWhite');
     document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
+    // High Score Table Headers
+    document.getElementById('high-scores-title')!.textContent = localization.getUIText('highScores');
+    document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
+    document.getElementById('th-moves')!.textContent = localization.getUIText('moves');
+    document.getElementById('th-time')!.textContent = localization.getUIText('time');
+    document.getElementById('th-date')!.textContent = localization.getUIText('date');
     updateGameInfo();
 }
 
@@ -493,10 +592,12 @@ game.onStateChange((state: GameState) => {
             }, 1000);
         }
     } else if (state === 'RESULT') {
+        showView('result-view');
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
+        saveHighScore();
         displayResult();
     }
 });
@@ -535,6 +636,59 @@ function showPromotionModal() {
     });
 }
 
+const saveHighScore = () => {
+    const finalState = game.getFinalGameState();
+    if (finalState !== 'CHECKMATE') return;
+    
+    const winner = game.getWinner();
+    if (!winner) return;
+    
+    // Only save for PvE mode when White (human) wins
+    if (currentGameMode !== 'pve') return;
+    if (winner !== 'WHITE') return;
+    
+    const moves = game.getMoveCount();
+    const time = game.getElapsedTime();
+    const date = Date.now();
+    
+    const newScore: HighScore = { moves, time, date };
+    const key = `chess_highscores_${currentDifficulty}`;
+    
+    try {
+        const existing = localStorage.getItem(key);
+        let scores: HighScore[] = existing ? JSON.parse(existing) : [];
+        
+        scores.push(newScore);
+        
+        // Sort: Fewer moves first, then faster time
+        scores.sort((a, b) => {
+            if (a.moves !== b.moves) {
+                return a.moves - b.moves;
+            }
+            return a.time - b.time;
+        });
+        
+        // Keep top 5
+        scores = scores.slice(0, 5);
+        
+        localStorage.setItem(key, JSON.stringify(scores));
+    } catch (e) {
+        console.error('Failed to save high score:', e);
+    }
+};
+
+const getHighScores = (): HighScore[] => {
+    if (currentGameMode !== 'pve') return [];
+    
+    const key = `chess_highscores_${currentDifficulty}`;
+    try {
+        const existing = localStorage.getItem(key);
+        return existing ? JSON.parse(existing) : [];
+    } catch (e) {
+        return [];
+    }
+};
+
 function displayResult() {
     showView('result-view');
 
@@ -570,6 +724,53 @@ function displayResult() {
         const seconds = elapsed % 60;
         totalTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         totalMoves.textContent = game.getMoveCount().toString();
+    }
+
+    // Render High Scores (add at end of displayResult function)
+    const scores = getHighScores();
+    const tbody = document.getElementById('high-scores-body');
+    const container = document.querySelector('.high-scores-container');
+    
+    const mode = 'pve'; // Get from your stored mode value
+    if (mode === 'pve') {
+        if (container) container.classList.remove('hidden');
+        if (tbody) {
+            tbody.innerHTML = '';
+            scores.forEach((s, index) => {
+                const tr = document.createElement('tr');
+                
+                // Highlight current run if it matches
+                const currentMoves = game.getMoveCount();
+                const currentTime = game.getElapsedTime();
+                const winner = game.getWinner();
+                
+                if (winner === 'WHITE' &&
+                    s.moves === currentMoves &&
+                    s.time === currentTime &&
+                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                    tr.classList.add('current-run');
+                }
+                
+                let dateStr = '';
+                if (typeof s.date === 'number') {
+                    const lang = localization.language;
+                    const locale = lang === 'vi' ? 'vi-VN' : lang === 'ja' ? 'ja-JP' : 'en-US';
+                    dateStr = new Date(s.date).toLocaleDateString(locale);
+                } else {
+                    dateStr = s.date as string;
+                }
+                
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${s.moves}</td>
+                    <td>${util.formatTime(s.time)}</td>
+                    <td>${dateStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } else {
+        if (container) container.classList.add('hidden');
     }
 }
 
