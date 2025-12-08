@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* Import common styles */
-@import url('../common/consent.css');
 @import url('../common/style.css');
 
 :root {
@@ -101,14 +100,6 @@ button.primary:active {
 }
 
 /* --- Game View --- */
-
-#game-view {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-}
-
 .game-info {
     width: 100%;
     display: flex;
@@ -167,20 +158,6 @@ button.primary:active {
 }
 
 /* --- Result View --- */
-
-#result-view {
-    text-align: center;
-}
-
-#result-view h2 {
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
 .winner-display {
     display: flex;
     align-items: center;
@@ -369,62 +346,4 @@ button.primary:active {
     display: block;
     cursor: crosshair;
     filter: drop-shadow(var(--shadow-md));
-}
-
-/* --- High Scores --- */
-
-.high-scores-container {
-    width: 100%;
-    margin-top: 2rem;
-    animation: fadeIn 0.5s ease;
-}
-
-#high-scores-title {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-    text-align: center;
-}
-
-#high-scores-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 0.5rem;
-    overflow: hidden;
-}
-
-#high-scores-table th,
-#high-scores-table td {
-    padding: 1rem;
-    text-align: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-#high-scores-table th {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-secondary);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.05em;
-}
-
-#high-scores-table td {
-    color: var(--text-primary);
-    font-size: 1rem;
-}
-
-#high-scores-table tr:last-child td {
-    border-bottom: none;
-}
-
-#high-scores-table tr.current-run {
-    background: rgba(138, 180, 248, 0.1);
-    border-left: 3px solid var(--accent-primary);
-}
-
-#high-scores-table tr.current-run td {
-    color: var(--accent-primary);
-    font-weight: 600;
 }

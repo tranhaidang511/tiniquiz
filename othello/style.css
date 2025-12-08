@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 /* Import common styles */
-@import url('../common/consent.css');
 @import url('../common/style.css');
 
 :root {
@@ -222,20 +221,6 @@ h1 {
 }
 
 /* High Scores */
-.high-scores-container {
-    margin: 2rem 0;
-    width: 100%;
-}
-
-.high-scores-container h3 {
-    text-align: center;
-    color: var(--text-secondary);
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 1rem;
-}
-
 .high-scores-table {
     width: 100%;
     border-collapse: collapse;
@@ -257,25 +242,6 @@ h1 {
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.75rem;
-}
-
-.high-scores-table td {
-    color: var(--text-primary);
-    font-size: 0.9rem;
-}
-
-.high-scores-table tr:last-child td {
-    border-bottom: none;
-}
-
-.high-scores-table tr.current-run {
-    background: rgba(15, 118, 110, 0.15);
-    border-left: 3px solid var(--accent-othello);
-}
-
-.high-scores-table tr.current-run td {
-    color: var(--accent-othello);
-    font-weight: 600;
 }
 
 /* Animations */
