@@ -73,46 +73,44 @@
         <!-- Menu View -->
         <div id="menu-view" class="card animate-fade-in">
             <h2 id="menu-title">Game Setup</h2>
-            <div class="menu-options">
-                <div class="option-group">
-                    <label id="label-mode">Game Mode</label>
-                    <div class="mode-selector">
-                        <button id="mode-two-player" class="mode-btn active" data-mode="TWO_PLAYER">2 Players</button>
-                        <button id="mode-vs-ai" class="mode-btn" data-mode="VS_AI">vs AI</button>
-                    </div>
+            <div class="setup-group">
+                <h3 id="label-mode">Game Mode</h3>
+                <div class="radio-group">
+                    <button id="mode-two-player" class="mode-btn active" data-mode="TWO_PLAYER">2 Players</button>
+                    <button id="mode-vs-ai" class="mode-btn" data-mode="VS_AI">vs AI</button>
                 </div>
-
-                <div class="option-group difficulty-section hidden">
-                    <label id="label-difficulty">Difficulty</label>
-                    <div class="mode-selector">
-                        <button class="mode-btn" data-difficulty="EASY" id="difficulty-easy">Easy</button>
-                        <button class="mode-btn active" data-difficulty="MEDIUM" id="difficulty-medium">Medium</button>
-                        <button class="mode-btn" data-difficulty="HARD" id="difficulty-hard">Hard</button>
-                    </div>
-                </div>
-
-                <div class="option-group">
-                    <label id="label-pit-count">Pits Per Side</label>
-                    <div class="pit-selector">
-                        <button class="pit-btn" data-pits="4">4</button>
-                        <button class="pit-btn" data-pits="5">5</button>
-                        <button class="pit-btn active" data-pits="6">6</button>
-                        <button class="pit-btn" data-pits="7">7</button>
-                        <button class="pit-btn" data-pits="8">8</button>
-                    </div>
-                </div>
-
-                <div class="option-group">
-                    <label id="label-initial-stones">Stones Per Pit</label>
-                    <div class="stones-selector">
-                        <button class="stones-btn" data-stones="3">3</button>
-                        <button class="stones-btn active" data-stones="4">4</button>
-                        <button class="stones-btn" data-stones="5">5</button>
-                    </div>
-                </div>
-
-                <button id="start-btn" class="primary">Start Game</button>
             </div>
+
+            <div class="setup-group difficulty-section hidden">
+                <h3 id="label-difficulty">Difficulty</h3>
+                <div class="radio-group">
+                    <button class="mode-btn" data-difficulty="EASY" id="difficulty-easy">Easy</button>
+                    <button class="mode-btn active" data-difficulty="MEDIUM" id="difficulty-medium">Medium</button>
+                    <button class="mode-btn" data-difficulty="HARD" id="difficulty-hard">Hard</button>
+                </div>
+            </div>
+
+            <div class="setup-group">
+                <h3 id="label-pit-count">Pits Per Side</h3>
+                <div class="radio-group">
+                    <button class="pit-btn" data-pits="4">4</button>
+                    <button class="pit-btn" data-pits="5">5</button>
+                    <button class="pit-btn active" data-pits="6">6</button>
+                    <button class="pit-btn" data-pits="7">7</button>
+                    <button class="pit-btn" data-pits="8">8</button>
+                </div>
+            </div>
+
+            <div class="setup-group">
+                <h3 id="label-initial-stones">Stones Per Pit</h3>
+                <div class="radio-group">
+                    <button class="stones-btn" data-stones="3">3</button>
+                    <button class="stones-btn active" data-stones="4">4</button>
+                    <button class="stones-btn" data-stones="5">5</button>
+                </div>
+            </div>
+
+            <button id="start-btn" class="primary">Start Game</button>
         </div>
 
         <!-- Game View -->

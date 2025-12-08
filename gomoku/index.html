@@ -73,26 +73,24 @@
         <!-- Menu View -->
         <div id="menu-view" class="card animate-fade-in">
             <h2 id="menu-title">Game Setup</h2>
-            <div class="menu-options">
-                <div class="option-group">
-                    <label id="label-mode">Game Mode</label>
-                    <div class="mode-selector">
-                        <button id="mode-two-player" class="mode-btn active" data-mode="TWO_PLAYER">2 Players</button>
-                        <button id="mode-vs-ai" class="mode-btn" data-mode="VS_AI">vs AI</button>
-                    </div>
+            <div class="setup-group">
+                <h3 id="label-mode">Game Mode</h3>
+                <div class="radio-group">
+                    <button id="mode-two-player" class="mode-btn active" data-mode="TWO_PLAYER">2 Players</button>
+                    <button id="mode-vs-ai" class="mode-btn" data-mode="VS_AI">vs AI</button>
                 </div>
-
-                <div class="option-group">
-                    <label id="label-board-size">Board Size</label>
-                    <div class="size-selector">
-                        <button class="size-btn" data-size="9">9 × 9</button>
-                        <button class="size-btn active" data-size="15">15 × 15</button>
-                        <button class="size-btn" data-size="19">19 × 19</button>
-                    </div>
-                </div>
-
-                <button id="start-btn" class="primary">Start Game</button>
             </div>
+
+            <div class="setup-group">
+                <h3 id="label-board-size">Board Size</h3>
+                <div class="radio-group">
+                    <button class="size-btn" data-size="9">9 × 9</button>
+                    <button class="size-btn active" data-size="15">15 × 15</button>
+                    <button class="size-btn" data-size="19">19 × 19</button>
+                </div>
+            </div>
+
+            <button id="start-btn" class="primary">Start Game</button>
         </div>
 
         <!-- Game View -->

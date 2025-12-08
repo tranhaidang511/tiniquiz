@@ -1,5 +1,6 @@
 /* Import common styles */
 @import url('../common/consent.css');
+@import url('../common/style.css');
 
 :root {
   --bg-color: #0f172a;
@@ -48,38 +49,6 @@ h1 {
   background: linear-gradient(to right, var(--accent), #a855f7);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.header-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  position: relative;
-}
-
-.icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 64px;
-  height: 64px;
-  position: absolute;
-  left: 0;
-}
-
-.icon-btn:hover {
-  background: var(--bg-secondary);
-  color: var(--accent-primary);
-  transform: translateY(-2px);
 }
 
 /* Cards */
@@ -137,27 +106,6 @@ button.primary {
 button.primary:hover {
   background-color: var(--accent-hover);
   transform: translateY(-2px);
-}
-
-/* Language Switcher */
-.lang-switcher {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.lang-btn {
-  background: transparent;
-  border: 1px solid #334155;
-  padding: 0.5rem 1rem;
-  width: auto;
-}
-
-.lang-btn.active {
-  background-color: var(--accent);
-  color: #0f172a;
-  border-color: var(--accent);
 }
 
 /* Mode Selector */
