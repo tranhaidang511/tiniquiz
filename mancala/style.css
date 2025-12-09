@@ -327,8 +327,8 @@ button.primary:active {
 
 /* For stores */
 .store .stone {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
 }
 
 .stone-badge {
@@ -465,9 +465,15 @@ button.primary:active {
         padding: 1rem;
     }
 
+    .pits-area {
+        height: 180px;
+        justify-content: space-between;
+    }
+
     .store {
         width: 80px;
         height: 180px;
+        flex-shrink: 0;
     }
 
     .store .stone-count {
@@ -475,7 +481,8 @@ button.primary:active {
     }
 
     .pit {
-        min-width: 60px;
+        min-width: 50px;
+        max-width: 70px;
     }
 
     .pit .stone-count {
@@ -501,17 +508,103 @@ button.primary:active {
 @media (max-width: 480px) {
     .mancala-board {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
+        gap: 0.75rem;
+        padding: 0.75rem;
     }
 
-    .store {
+    /* Reorder: Player 2 pits at top */
+    .pits-area {
         width: 100%;
-        max-width: 100px;
-        height: 100px;
+        order: 1;
+        gap: 0.25rem;
+    }
+
+    .pit-row.player2-pits {
+        order: -1;
+        gap: 0.25rem;
+        /* Move player 2 pits to top */
+    }
+
+    .pit-row.player1-pits {
+        order: 1;
+        gap: 0.25rem;
+        /* Keep player 1 pits at bottom */
+    }
+
+    /* Smaller pits for mobile */
+    .pit {
+        min-width: 40px;
+        max-width: 60px;
+    }
+
+    .pit .stone-count {
+        font-size: 0.9rem;
+    }
+
+    /* Smaller stones for mobile */
+    .stone {
+        width: 6px;
+        height: 6px;
+    }
+
+    .store .stone {
+        width: 6px;
+        height: 6px;
+    }
+
+    /* Stores in a horizontal row between pit rows */
+    .store {
+        width: 80px;
+        height: 80px;
         border-radius: 50%;
     }
 
+    .store .stone-count {
+        font-size: 1.25rem;
+    }
+
+    .store:first-of-type {
+        order: 0;
+        justify-self: start;
+        /* Store 1 (left) */
+    }
+
+    .store:last-of-type {
+        order: 0;
+        justify-self: end;
+        /* Store 2 (right) */
+    }
+
+    /* Create a stores row wrapper */
+    .mancala-board {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "pit2 pit2"
+            "store1 store2"
+            "pit1 pit1";
+        gap: 0.75rem;
+    }
+
+    .pit-row.player2-pits {
+        grid-area: pit2;
+    }
+
+    .store:first-of-type {
+        grid-area: store1;
+    }
+
+    .store:last-of-type {
+        grid-area: store2;
+    }
+
+    .pit-row.player1-pits {
+        grid-area: pit1;
+    }
+
     .pits-area {
-        width: 100%;
+        display: contents;
+        /* Unwrap pits-area */
     }
 }
