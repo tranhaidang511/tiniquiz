@@ -151,7 +151,6 @@ const updateTexts = () => {
     document.getElementById('label-total-moves')!.textContent = localization.getUIText('totalMoves');
     document.getElementById('label-total-time')!.textContent = localization.getUIText('totalTime');
     document.getElementById('restart-btn')!.textContent = localization.getUIText('playAgain');
-    document.getElementById('label-force-jump')!.textContent = localization.getUIText('forceJump');
 
     const labelPlayer1Score = document.getElementById('label-player1-score');
     if (labelPlayer1Score) {
@@ -277,48 +276,6 @@ const setupEventListeners = () => {
         game.restart();
     });
 };
-
-// Difficulty selection
-document.querySelectorAll('.mode-btn[data-difficulty]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        const target = e.target as HTMLButtonElement;
-        const difficulty = target.dataset.difficulty as Difficulty;
-
-        document.querySelectorAll('.mode-btn[data-difficulty]').forEach(b => b.classList.remove('active'));
-        target.classList.add('active');
-
-        game.setDifficulty(difficulty);
-    });
-});
-
-// Pit count selection
-document.querySelectorAll('.pit-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        const target = e.target as HTMLButtonElement;
-        const pits = parseInt(target.dataset.pits || '6') as PitCount;
-
-        document.querySelectorAll('.pit-btn').forEach(b => b.classList.remove('active'));
-        target.classList.add('active');
-
-        game.setPitCount(pits);
-    });
-});
-
-// Start game
-document.getElementById('start-btn')?.addEventListener('click', () => {
-    saveSetup();
-    game.start();
-});
-
-// New Game (during gameplay)
-document.getElementById('new-game-btn')?.addEventListener('click', () => {
-    game.restart();
-});
-
-// Restart game
-document.getElementById('restart-btn')?.addEventListener('click', () => {
-    game.restart();
-});
 
 // --- Board Rendering ---
 

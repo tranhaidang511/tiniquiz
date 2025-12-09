@@ -6,6 +6,7 @@ export default {
         twoPlayers: "二人対戦",
         vsAI: "AI対戦",
         comingSoon: "近日公開",
+        difficulty: "難易度",
         easy: "簡単",
         medium: "普通",
         hard: "難しい",

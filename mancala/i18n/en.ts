@@ -6,6 +6,7 @@ export default {
         twoPlayers: "2 Players",
         vsAI: "vs AI",
         comingSoon: "Coming Soon",
+        difficulty: "Difficulty",
         easy: "Easy",
         medium: "Medium",
         hard: "Hard",

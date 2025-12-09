@@ -6,6 +6,7 @@ export default {
         twoPlayers: "2 Người chơi",
         vsAI: "Đấu với AI",
         comingSoon: "Sắp ra mắt",
+        difficulty: "Độ khó",
         easy: "Dễ",
         medium: "Trung bình",
         hard: "Khó",
