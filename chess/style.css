@@ -1,8 +1,6 @@
 /* Import common styles */
 @import url('../common/style.css');
 
-@import url('./promotion.css');
-
 :root {
     --bg-primary: #0a0e27;
     --bg-secondary: #151b3d;
@@ -529,4 +527,83 @@ button.primary:active {
 }
 #high-scores-table tbody tr.current-run:hover {
     background: rgba(129, 182, 76, 0.3);
+}
+
+/* Promotion Modal */
+.promotion-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.promotion-content {
+    background: linear-gradient(135deg, rgba(30, 39, 73, 0.95), rgba(21, 27, 61, 0.95));
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(74, 144, 226, 0.3);
+    text-align: center;
+}
+
+.promotion-content h3 {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.promotion-pieces {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.promotion-piece {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.promotion-piece:hover {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
+}
+
+.promotion-piece svg {
+    width: 60px;
+    height: 60px;
+}
+
+.promotion-piece .piece-icon {
+    fill: var(--text-primary);
+    stroke: var(--text-secondary);
+    stroke-width: 2;
+}
+
+.promotion-piece span {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+    .promotion-pieces {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
