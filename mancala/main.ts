@@ -515,30 +515,11 @@ const saveHighScore = () => {
     const newScore: HighScore = { score, moves, time, date };
     const key = `mancala_highscores_${difficulty}_${pitCount}_${initialStones}`;
 
-    try {
-        const existing = localStorage.getItem(key);
-        let scores: HighScore[] = existing ? JSON.parse(existing) : [];
-
-        scores.push(newScore);
-
-        // Sort: Higher score first, then fewer moves, then faster time
-        scores.sort((a, b) => {
-            if (a.score !== b.score) {
-                return b.score - a.score; // Descending score
-            }
-            if (a.moves !== b.moves) {
-                return a.moves - b.moves; // Ascending moves
-            }
-            return a.time - b.time; // Ascending time
-        });
-
-        // Keep top 5
-        scores = scores.slice(0, 5);
-
-        localStorage.setItem(key, JSON.stringify(scores));
-    } catch (e) {
-        console.error('Failed to save high score:', e);
-    }
+    util.saveHighScore(key, newScore, (a, b) => {
+        if (a.score !== b.score) return b.score - a.score; // Descending score
+        if (a.moves !== b.moves) return a.moves - b.moves; // Ascending moves
+        return a.time - b.time; // Ascending time
+    });
 };
 
 const getHighScores = (): HighScore[] => {
@@ -548,12 +529,7 @@ const getHighScores = (): HighScore[] => {
     const difficulty = game.getDifficulty();
     const initialStones = game.getInitialStones();
     const key = `mancala_highscores_${difficulty}_${pitCount}_${initialStones}`;
-    try {
-        const existing = localStorage.getItem(key);
-        return existing ? JSON.parse(existing) : [];
-    } catch (e) {
-        return [];
-    }
+    return util.getHighScores<HighScore>(key);
 };
 
 const displayResult = () => {

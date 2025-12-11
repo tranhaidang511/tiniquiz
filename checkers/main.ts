@@ -506,7 +506,7 @@ game.onStateChange((state: GameState) => {
         saveHighScore();
         displayResult();
     }
-});formatTime
+});
 
 game.onMove(() => {
     renderBoard();
@@ -554,27 +554,10 @@ const saveHighScore = () => {
     const newScore: HighScore = { moves, time, date };
     const key = `checkers_highscores_${difficulty}_${boardSize}_${forceJump}`;
 
-    try {
-        const existing = localStorage.getItem(key);
-        let scores: HighScore[] = existing ? JSON.parse(existing) : [];
-
-        scores.push(newScore);
-
-        // Sort: Fewer moves first, then faster time
-        scores.sort((a, b) => {
-            if (a.moves !== b.moves) {
-                return a.moves - b.moves;
-            }
-            return a.time - b.time;
-        });
-
-        // Keep top 5
-        scores = scores.slice(0, 5);
-
-        localStorage.setItem(key, JSON.stringify(scores));
-    } catch (e) {
-        console.error('Failed to save high score:', e);
-    }
+    util.saveHighScore(key, newScore, (a, b) => {
+        if (a.moves !== b.moves) return a.moves - b.moves;
+        return a.time - b.time;
+    });
 };
 
 const getHighScores = (): HighScore[] => {
@@ -585,12 +568,7 @@ const getHighScores = (): HighScore[] => {
     const forceJump = game.getForceJump();
     const difficulty = game.getDifficulty();
     const key = `checkers_highscores_${difficulty}_${boardSize}_${forceJump}`;
-    try {
-        const existing = localStorage.getItem(key);
-        return existing ? JSON.parse(existing) : [];
-    } catch (e) {
-        return [];
-    }
+    return util.getHighScores<HighScore>(key);
 };
 
 const displayResult = () => {

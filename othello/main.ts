@@ -563,28 +563,10 @@ const saveHighScore = () => {
         date: Date.now()
     };
 
-    try {
-        const existing = localStorage.getItem(key);
-        let scores: HighScore[] = existing ? JSON.parse(existing) : [];
-
-        scores.push(newScore);
-
-        // Fewer moves, then faster time.
-
-        scores.sort((a, b) => {
-            if (a.moves !== b.moves) {
-                return a.moves - b.moves;
-            }
-            return a.time - b.time;
-        });
-
-        // Keep top 5
-        scores = scores.slice(0, 5);
-
-        localStorage.setItem(key, JSON.stringify(scores));
-    } catch (e) {
-        console.error('Failed to save high score:', e);
-    }
+    util.saveHighScore(key, newScore, (a, b) => {
+        if (a.moves !== b.moves) return a.moves - b.moves;
+        return a.time - b.time;
+    });
 };
 
 const getHighScores = (): HighScore[] => {
@@ -592,12 +574,7 @@ const getHighScores = (): HighScore[] => {
 
     const difficulty = game.getDifficulty();
     const key = `othello_highscores_${difficulty}`;
-    try {
-        const existing = localStorage.getItem(key);
-        return existing ? JSON.parse(existing) : [];
-    } catch (e) {
-        return [];
-    }
+    return util.getHighScores<HighScore>(key);
 };
 
 // Subscribe to language changes
