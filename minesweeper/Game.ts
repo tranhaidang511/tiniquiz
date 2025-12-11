@@ -253,7 +253,7 @@ export class Game {
         this.stopTimer();
         this.timerInterval = window.setInterval(() => {
             if (this.state === 'PLAYING') {
-                this.elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+                this.elapsedTime = Date.now() - this.startTime;
                 this.emitTimerUpdate();
             }
         }, 1000);
@@ -311,11 +311,6 @@ export class Game {
         this.minesListeners.forEach(l => l(this.getRemainingMines()));
     }
 
-    formatTime(seconds: number): string {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
 }
 
 export const game = new Game();

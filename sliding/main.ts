@@ -7,6 +7,7 @@ import en from './i18n/en';
 import ja from './i18n/ja';
 import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
+import { util } from '../common/util';
 
 // Initialize Consent Banner
 new Consent();
@@ -208,7 +209,7 @@ const animateTileMove = (tile: HTMLElement) => {
 const updateGameInfo = () => {
     const timeDisplay = document.getElementById('time-display');
     if (timeDisplay) {
-        timeDisplay.textContent = game.formatTime(game.getElapsedTime());
+        timeDisplay.textContent = util.formatTime(game.getElapsedTime());
     }
 
     const movesDisplay = document.getElementById('moves-display');
@@ -328,7 +329,7 @@ const displayResult = () => {
     const finalMoves = document.getElementById('final-moves');
 
     if (finalTime) {
-        finalTime.textContent = game.formatTime(game.getElapsedTime());
+        finalTime.textContent = util.formatTime(game.getElapsedTime());
     }
 
     if (finalMoves) {
@@ -354,19 +355,13 @@ const displayResult = () => {
                 tr.classList.add('current-run');
             }
 
-            let dateStr = '';
-            if (typeof s.date === 'number') {
-                const lang = localization.language;
-                const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
-                dateStr = new Date(s.date).toLocaleDateString(locale);
-            } else {
-                dateStr = s.date as string;
-            }
+
+            const dateStr = util.formatDate(s.date, localization.language);
 
             tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${s.moves}</td>
-                <td>${game.formatTime(s.time)}</td>
+                <td>${util.formatTime(s.time)}</td>
                 <td>${dateStr}</td>
             `;
             tbody.appendChild(tr);

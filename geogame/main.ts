@@ -6,6 +6,7 @@ import type { Language } from '../common/Localization';
 import type { Country } from './data/countries';
 import type { Province } from './data/provinces';
 import { Consent } from '../common/Consent';
+import { util } from '../common/util';
 
 // Initialize Consent Banner
 new Consent();
@@ -294,7 +295,7 @@ game.onStateChange((state: GameState) => {
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = window.setInterval(() => {
       const elapsed = game.getElapsedTime();
-      const formatted = game.formatTime(elapsed);
+      const formatted = util.formatTime(elapsed);
       const timerEl = document.getElementById('game-timer');
       if (timerEl) timerEl.textContent = formatted;
     }, 1000);
@@ -469,7 +470,7 @@ const displayResult = () => {
 
   // Display elapsed time
   const elapsedSeconds = game.getElapsedTime();
-  const formattedTime = game.formatTime(elapsedSeconds);
+  const formattedTime = util.formatTime(elapsedSeconds);
   document.getElementById('elapsed-time')!.textContent = formattedTime;
 
   // Render High Scores
@@ -489,19 +490,12 @@ const displayResult = () => {
         tr.classList.add('current-run');
       }
 
-      let dateStr = '';
-      if (typeof s.date === 'number') {
-        const lang = localization.language;
-        const locale = lang === 'vi' ? 'vi-VN' : 'en-US'; // Use vi-VN for Vietnamese, en-US (or default) for others
-        dateStr = new Date(s.date).toLocaleDateString(locale);
-      } else {
-        dateStr = s.date as string; // Legacy string support
-      }
+      const dateStr = util.formatDate(s.date, localization.language);
 
       tr.innerHTML = `
           <td>${index + 1}</td>
           <td>${s.score}/${s.total}</td>
-          <td>${game.formatTime(s.time)}</td>
+          <td>${util.formatTime(s.time)}</td>
           <td>${dateStr}</td>
         `;
       tbody.appendChild(tr);

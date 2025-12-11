@@ -115,7 +115,7 @@ class ChessGame {
         this.startTime = Date.now();
         this.elapsedTime = 0;
         this.timerInterval = window.setInterval(() => {
-            this.elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+            this.elapsedTime = Date.now() - this.startTime;
         }, 1000);
     }
 
@@ -239,7 +239,7 @@ class ChessGame {
         this.notifyBoardUpdate();
 
         // Trigger AI move if in PvE mode and it's AI's turn
-        if (this.gameMode === 'pve' && this.aiPlayer === this.currentPlayer && 
+        if (this.gameMode === 'pve' && this.aiPlayer === this.currentPlayer &&
             (this.gameState === 'PLAYING' || this.gameState === 'CHECK')) {
             setTimeout(() => this.makeAIMove(), 500);
         }
@@ -677,14 +677,14 @@ class ChessGame {
         this.notifyBoardUpdate();
 
         // Trigger AI move if in PvE mode and it's AI's turn
-        if (this.gameMode === 'pve' && this.aiPlayer === this.currentPlayer && 
+        if (this.gameMode === 'pve' && this.aiPlayer === this.currentPlayer &&
             (this.gameState === 'PLAYING' || this.gameState === 'CHECK')) {
             setTimeout(() => this.makeAIMove(), 500);
         }
     }
 
     private makeAIMove() {
-        if ((this.gameState !== 'PLAYING' && this.gameState !== 'CHECK') || 
+        if ((this.gameState !== 'PLAYING' && this.gameState !== 'CHECK') ||
             this.gameMode !== 'pve' || this.aiPlayer !== this.currentPlayer) {
             return;
         }

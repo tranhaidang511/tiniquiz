@@ -7,6 +7,7 @@ import en from './i18n/en';
 import ja from './i18n/ja';
 import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
+import { util } from '../common/util';
 
 
 interface HighScore {
@@ -431,7 +432,7 @@ game.onStateChange((state: GameState) => {
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = window.setInterval(() => {
             const elapsed = game.getElapsedTime();
-            const formatted = game.formatTime(elapsed);
+            const formatted = util.formatTime(elapsed);
             const timerEl = document.getElementById('game-timer');
             if (timerEl) timerEl.textContent = formatted;
         }, 1000);
@@ -472,7 +473,7 @@ const displayResult = () => {
     }
 
     if (totalTime) {
-        totalTime.textContent = game.formatTime(game.getElapsedTime());
+        totalTime.textContent = util.formatTime(game.getElapsedTime());
     }
 
     if (finalBlack) {
@@ -535,19 +536,13 @@ const displayResult = () => {
                     tr.classList.add('current-run');
                 }
 
-                let dateStr = '';
-                if (typeof s.date === 'number') {
-                    const lang = localization.language;
-                    const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
-                    dateStr = new Date(s.date).toLocaleDateString(locale);
-                } else {
-                    dateStr = s.date as string;
-                }
+
+                const dateStr = util.formatDate(s.date, localization.language);
 
                 tr.innerHTML = `
                     <td>${index + 1}</td>
                     <td>${s.moves}</td>
-                    <td>${game.formatTime(s.time)}</td>
+                    <td>${util.formatTime(s.time)}</td>
                     <td>${dateStr}</td>
                 `;
                 tbody.appendChild(tr);

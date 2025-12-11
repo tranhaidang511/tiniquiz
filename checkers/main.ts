@@ -7,6 +7,7 @@ import en from './i18n/en';
 import ja from './i18n/ja';
 import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
+import { util } from '../common/util';
 
 // Initialize Consent Banner
 new Consent();
@@ -491,7 +492,7 @@ game.onStateChange((state: GameState) => {
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = window.setInterval(() => {
             const elapsed = game.getElapsedTime();
-            const formatted = game.formatTime(elapsed);
+            const formatted = util.formatTime(elapsed);
             const timerEl = document.getElementById('game-timer');
             if (timerEl) timerEl.textContent = formatted;
         }, 1000);
@@ -505,7 +506,7 @@ game.onStateChange((state: GameState) => {
         saveHighScore();
         displayResult();
     }
-});
+});formatTime
 
 game.onMove(() => {
     renderBoard();
@@ -604,7 +605,7 @@ const displayResult = () => {
     }
 
     if (totalTime) {
-        totalTime.textContent = game.formatTime(game.getElapsedTime());
+        totalTime.textContent = util.formatTime(game.getElapsedTime());
     }
 
     if (winner) {
@@ -649,19 +650,12 @@ const displayResult = () => {
                     tr.classList.add('current-run');
                 }
 
-                let dateStr = '';
-                if (typeof s.date === 'number') {
-                    const lang = localization.language;
-                    const locale = lang === 'vi' ? 'vi-VN' : 'en-US';
-                    dateStr = new Date(s.date).toLocaleDateString(locale);
-                } else {
-                    dateStr = s.date as string;
-                }
+                const dateStr = util.formatDate(s.date, localization.language);
 
                 tr.innerHTML = `
                     <td>${index + 1}</td>
                     <td>${s.moves}</td>
-                    <td>${game.formatTime(s.time)}</td>
+                    <td>${util.formatTime(s.time)}</td>
                     <td>${dateStr}</td>
                 `;
                 tbody.appendChild(tr);

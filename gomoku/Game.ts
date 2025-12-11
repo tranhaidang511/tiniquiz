@@ -298,14 +298,9 @@ export class Game {
     getElapsedTime(): number {
         if (!this.startTime) return 0;
         const end = this.endTime || Date.now();
-        return Math.floor((end - this.startTime) / 1000); // seconds
+        return end - this.startTime; // milliseconds
     }
 
-    formatTime(seconds: number): string {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
 }
 
 export const game = new Game();

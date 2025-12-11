@@ -42,7 +42,7 @@ function renderApp() {
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
     });
-    
+
     loadSetup();
 }
 
@@ -79,7 +79,7 @@ const loadSetup = () => {
                         btn.classList.remove('active');
                     }
                 });
-                
+
                 // Show/hide difficulty and side sections based on mode
                 const diffSection = document.getElementById('difficulty-section');
                 const sideSection = document.getElementById('side-section');
@@ -198,24 +198,24 @@ function setupEventListeners() {
         saveSetup();
         const modeBtn = document.querySelector('.mode-btn.active');
         const mode = modeBtn?.getAttribute('data-mode') as 'pvp' | 'pve' || 'pvp';
-        
+
         let aiSide: 'WHITE' | 'BLACK' | null = null;
         let difficulty: 'easy' | 'medium' | 'hard' = 'medium';
-        
+
         if (mode === 'pve') {
             const sideBtn = document.querySelector('.side-btn.active');
             const selectedSide = sideBtn?.getAttribute('data-side');
             aiSide = selectedSide === 'white' ? 'BLACK' : 'WHITE'; // AI plays opposite
-            
+
             const diffBtn = document.querySelector('.difficulty-btn.active');
             difficulty = (diffBtn?.getAttribute('data-difficulty') as 'easy' | 'medium' | 'hard') || 'medium';
         }
-        
+
         // Store current settings
         currentGameMode = mode;
         currentDifficulty = difficulty;
         currentAISide = aiSide;
-        
+
         game.start(mode, aiSide, difficulty);
     });
 }
@@ -514,10 +514,7 @@ function updateGameInfo() {
     // Update timer
     const timer = document.getElementById('game-timer');
     if (timer) {
-        const elapsed = game.getElapsedTime();
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
-        timer.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        timer.textContent = util.formatTime(game.getElapsedTime());
     }
 
     // Update move count
@@ -646,27 +643,27 @@ function showPromotionModal() {
 const saveHighScore = () => {
     const finalState = game.getFinalGameState();
     if (finalState !== 'CHECKMATE') return;
-    
+
     const winner = game.getWinner();
     if (!winner) return;
-    
+
     // Only save for PvE mode when White (human) wins
     if (currentGameMode !== 'pve') return;
     if (winner !== 'WHITE') return;
-    
+
     const moves = game.getMoveCount();
     const time = game.getElapsedTime();
     const date = Date.now();
-    
+
     const newScore: HighScore = { moves, time, date };
     const key = `chess_highscores_${currentDifficulty}`;
-    
+
     try {
         const existing = localStorage.getItem(key);
         let scores: HighScore[] = existing ? JSON.parse(existing) : [];
-        
+
         scores.push(newScore);
-        
+
         // Sort: Fewer moves first, then faster time
         scores.sort((a, b) => {
             if (a.moves !== b.moves) {
@@ -674,10 +671,10 @@ const saveHighScore = () => {
             }
             return a.time - b.time;
         });
-        
+
         // Keep top 5
         scores = scores.slice(0, 5);
-        
+
         localStorage.setItem(key, JSON.stringify(scores));
     } catch (e) {
         console.error('Failed to save high score:', e);
@@ -686,7 +683,7 @@ const saveHighScore = () => {
 
 const getHighScores = (): HighScore[] => {
     if (currentGameMode !== 'pve') return [];
-    
+
     const key = `chess_highscores_${currentDifficulty}`;
     try {
         const existing = localStorage.getItem(key);
@@ -726,10 +723,7 @@ function displayResult() {
         winnerDisplay.innerHTML = resultHTML;
 
         // Update stats
-        const elapsed = game.getElapsedTime();
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
-        totalTime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        totalTime.textContent = util.formatTime(game.getElapsedTime());
         totalMoves.textContent = game.getMoveCount().toString();
     }
 
@@ -737,7 +731,7 @@ function displayResult() {
     const scores = getHighScores();
     const tbody = document.getElementById('high-scores-body');
     const container = document.querySelector('.high-scores-container');
-    
+
     const mode = 'pve'; // Get from your stored mode value
     if (mode === 'pve') {
         if (container) container.classList.remove('hidden');
@@ -745,28 +739,22 @@ function displayResult() {
             tbody.innerHTML = '';
             scores.forEach((s, index) => {
                 const tr = document.createElement('tr');
-                
+
                 // Highlight current run if it matches
                 const currentMoves = game.getMoveCount();
                 const currentTime = game.getElapsedTime();
                 const winner = game.getWinner();
-                
+
                 if (winner === 'WHITE' &&
                     s.moves === currentMoves &&
                     s.time === currentTime &&
                     (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
                     tr.classList.add('current-run');
                 }
-                
-                let dateStr = '';
-                if (typeof s.date === 'number') {
-                    const lang = localization.language;
-                    const locale = lang === 'vi' ? 'vi-VN' : lang === 'ja' ? 'ja-JP' : 'en-US';
-                    dateStr = new Date(s.date).toLocaleDateString(locale);
-                } else {
-                    dateStr = s.date as string;
-                }
-                
+
+
+                const dateStr = util.formatDate(s.date, localization.language);
+
                 tr.innerHTML = `
                     <td>${index + 1}</td>
                     <td>${s.moves}</td>
