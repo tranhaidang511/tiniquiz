@@ -224,12 +224,6 @@ export class ChessAI {
         return score;
     }
 
-    private static getPieceValue(piece: Piece, row: number, col: number, isEndgame: boolean): number {
-        const baseValue = PIECE_VALUES[piece.type];
-        const positionalValue = this.getPositionalValue(piece, row, col, isEndgame);
-        return baseValue + positionalValue;
-    }
-
     private static getPositionalValue(piece: Piece, row: number, col: number, isEndgame: boolean): number {
         // Flip row for white pieces (tables are from black's perspective)
         const tableRow = piece.player === 'WHITE' ? 7 - row : row;
