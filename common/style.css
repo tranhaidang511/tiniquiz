@@ -15,6 +15,38 @@ body {
     padding: 1rem;
 }
 
+:root {
+    --bg-primary: #0f1419;
+    --bg-secondary: #1a1f29;
+    --bg-card: #1e2633;
+    --text-primary: #e8eaed;
+    --text-secondary: #9aa0a6;
+    --accent-primary: #8ab4f8;
+    --accent-secondary: #f28b82;
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px rgba(138, 180, 248, 0.3);
+}
+
+#app {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: var(--shadow-sm);
+}
+
 /* Header */
 .header-controls {
     display: flex;
@@ -179,12 +211,43 @@ body {
     font-weight: 500;
 }
 
+.setup-btn {
+    flex: 1;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.setup-btn:hover {
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-md);
+}
+
+.setup-btn.active {
+    background: var(--accent-primary);
+    border-color: transparent;
+    color: white;
+    box-shadow: var(--shadow-glow);
+}
+
+.setup-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 button.primary {
     width: 100%;
     padding: 1rem 2rem;
     font-size: 1.1rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-red), var(--accent-secondary));
+    background: var(--accent-primary);
     color: white;
     border: none;
     border-radius: 0.5rem;
@@ -215,7 +278,7 @@ button.primary:hover {
 #result-view h2 {
     font-size: 2.5rem;
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, var(--accent-red), var(--accent-secondary));
+    background: var(--accent-secondary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -270,11 +333,11 @@ button.primary:hover {
 
 #high-scores-table tr.current-run {
     background: rgba(239, 68, 68, 0.15);
-    border-left: 3px solid var(--accent-red);
+    border-left: 3px solid var(--accent-secondary);
 }
 
 #high-scores-table tr.current-run td {
-    color: var(--accent-red);
+    color: var(--accent-secondary);
     font-weight: 600;
 }
 

@@ -4,38 +4,12 @@
 @import url('../common/style.css');
 
 :root {
-    --bg-primary: #0f1419;
-    --bg-secondary: #1a1f29;
-    --bg-card: #1e2633;
-    --text-primary: #e8eaed;
-    --text-secondary: #9aa0a6;
-    --accent-primary: #8ab4f8;
-    --accent-secondary: #f28b82;
-    --accent-red: #ef4444;
-    --accent-black: #1f2937;
     --board-light: #f0d9b5;
     --board-dark: #b58863;
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 20px rgba(138, 180, 248, 0.3);
 }
 
 #app {
-    width: 100%;
     max-width: 700px;
-    margin: 0 auto;
-}
-
-h1 {
-    text-align: center;
-    font-size: 3rem;
-    font-weight: 800;
-    margin-bottom: 0;
-    background: linear-gradient(135deg, var(--accent-red), var(--accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 /* Game View */
@@ -280,40 +254,4 @@ h1 {
     .winner-display span {
         font-size: 1.2rem;
     }
-}
-
-/* Mode Buttons */
-/* Mode and Difficulty Buttons */
-.mode-btn,
-.difficulty-btn {
-    flex: 1;
-    padding: 0.75rem;
-    background: var(--bg-secondary);
-    border: 2px solid transparent;
-    border-radius: 0.5rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    font-size: 1rem;
-}
-
-.mode-btn:hover,
-.difficulty-btn:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
-}
-
-.mode-btn.active,
-.difficulty-btn.active {
-    background: var(--accent-primary);
-    color: white;
-    box-shadow: var(--shadow-sm);
-    border-color: var(--accent-primary);
-}
-
-.mode-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
 }

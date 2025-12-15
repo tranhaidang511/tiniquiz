@@ -35,13 +35,13 @@ const renderApp = () => {
 
 const saveSetup = () => {
     const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
-    const sizeInput = document.querySelector('input[name="board-size"]:checked') as HTMLInputElement;
+    const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
     const forceJumpInput = document.getElementById('force-jump') as HTMLInputElement;
 
-    if (modeBtn && sizeInput && forceJumpInput) {
+    if (modeBtn && sizeBtn && forceJumpInput) {
         const setup = {
             mode: modeBtn.dataset.mode,
-            size: sizeInput.value,
+            size: sizeBtn?.dataset.size || '8',
             forceJump: forceJumpInput.checked,
             difficulty: (document.querySelector('.difficulty-btn.active') as HTMLElement)?.dataset.difficulty || 'MEDIUM'
         };
@@ -70,11 +70,15 @@ const loadSetup = () => {
 
             // Restore Size
             if (size) {
-                const radio = document.querySelector(`input[name="board-size"][value="${size}"]`) as HTMLInputElement;
-                if (radio) {
-                    radio.checked = true;
-                    game.setBoardSize(parseInt(size) as BoardSize);
-                }
+                document.querySelectorAll('.size-btn').forEach(btn => {
+                    const btnSize = (btn as HTMLElement).dataset.size;
+                    if (btnSize === size) {
+                        btn.classList.add('active');
+                        game.setBoardSize(parseInt(size) as BoardSize);
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
             }
 
             // Restore Force Jump
@@ -176,13 +180,22 @@ const setupEventListeners = () => {
         });
     });
 
+    // Board Size Selection
+    document.querySelectorAll('.size-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+        });
+    });
+
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
         saveSetup();
 
         // Get board size
-        const sizeInput = document.querySelector('input[name="board-size"]:checked') as HTMLInputElement;
-        const size = parseInt(sizeInput?.value || '8') as BoardSize;
+        const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
+        const size = parseInt(sizeBtn?.dataset.size || '8') as BoardSize;
 
         // Get force jump setting
         const forceJumpInput = document.getElementById('force-jump') as HTMLInputElement;

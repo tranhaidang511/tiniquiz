@@ -4,104 +4,13 @@
 @import url('../common/style.css');
 
 :root {
-    --bg-primary: #0f1419;
-    --bg-secondary: #1a1f29;
-    --bg-card: #1e2633;
-    --text-primary: #e8eaed;
-    --text-secondary: #9aa0a6;
-    --accent-primary: #8ab4f8;
-    --accent-secondary: #f28b82;
     --wood-brown: #8b4513;
     --pit-bg: #654321;
     --stone-color: #d4af37;
-    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 20px rgba(138, 180, 248, 0.3);
 }
 
 #app {
-    width: 100%;
     max-width: 1000px;
-    margin: 0 auto;
-}
-
-h1 {
-    text-align: center;
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 0;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: var(--shadow-sm);
-}
-
-/* --- Menu View --- */
-.mode-btn,
-.pit-btn,
-.stones-btn {
-    flex: 1;
-    padding: 1rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.mode-btn:hover,
-.pit-btn:hover,
-.stones-btn:hover {
-    border-color: var(--accent-primary);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.mode-btn.active,
-.pit-btn.active,
-.stones-btn.active {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    border-color: transparent;
-    color: white;
-    box-shadow: var(--shadow-glow);
-}
-
-.mode-btn.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.mode-btn.disabled:hover {
-    transform: none;
-}
-
-button.primary {
-    width: 100%;
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow-md);
-    margin-top: 1rem;
-}
-
-button.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
-
-button.primary:active {
-    transform: translateY(0);
 }
 
 /* --- Game View --- */
