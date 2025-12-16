@@ -253,3 +253,10 @@
     cursor: crosshair;
     filter: drop-shadow(var(--shadow-md));
 }
+
+.last-move {
+    stroke: #ef4444 !important;
+    /* Red border */
+    stroke-width: 3px !important;
+    filter: drop-shadow(0 0 4px #ef4444);
+}

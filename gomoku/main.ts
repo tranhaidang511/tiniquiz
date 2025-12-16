@@ -432,6 +432,16 @@ const addStone = (stone: Stone) => {
     circle.setAttribute('stroke', stone.player === 'BLACK' ? '#0d131a' : '#e2e8f0');
     circle.setAttribute('stroke-width', '2');
     circle.classList.add('stone-animate');
+
+    // Manage Last Move Highlight
+    // Remove from previous
+    const previousLast = svg.querySelector('.last-move');
+    if (previousLast) {
+        previousLast.classList.remove('last-move');
+    }
+    // Add to current
+    circle.classList.add('last-move');
+
     stonesGroup.appendChild(circle);
 };
 

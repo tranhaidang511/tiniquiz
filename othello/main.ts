@@ -380,6 +380,22 @@ const renderDiscs = () => {
                 group.appendChild(circle);
 
                 svg.appendChild(group);
+
+                // Add last move marker if applicable
+                const moves = game.getMoves();
+                const lastMove = moves.length > 0 ? moves[moves.length - 1] : null;
+                const isLast = lastMove && lastMove.position.row === rowIndex && lastMove.position.col === colIndex;
+
+                if (isLast) {
+                    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    marker.classList.add('last-move-marker');
+                    marker.setAttribute('cx', cx.toString());
+                    marker.setAttribute('cy', cy.toString());
+                    marker.setAttribute('r', (discRadius * 0.3).toString()); // Smaller red dot
+                    marker.setAttribute('fill', '#ef4444'); // Red dot
+                    marker.style.pointerEvents = 'none'; // Ensure it doesn't interfere with clicks
+                    svg.appendChild(marker);
+                }
             }
         });
     });

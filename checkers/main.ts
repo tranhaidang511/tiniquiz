@@ -290,7 +290,23 @@ const renderBoard = () => {
             rect.dataset.col = col.toString();
 
             svg.appendChild(rect);
+            svg.appendChild(rect);
         }
+    }
+
+    // Highlight last move
+    const moves = game.getMoves();
+    if (moves.length > 0) {
+        const lastMove = moves[moves.length - 1];
+        const highlightSquares = [lastMove.from, lastMove.to];
+
+        highlightSquares.forEach(pos => {
+            // Find the rect for this position
+            const rect = svg.querySelector(`rect[data-row="${pos.row}"][data-col="${pos.col}"]`);
+            if (rect) {
+                rect.classList.add('last-move');
+            }
+        });
     }
 
     // Draw pieces

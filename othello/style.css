@@ -31,6 +31,7 @@
     gap: 1rem;
     padding: 1rem;
     background: var(--bg-secondary);
+    width: 100%;
     border-radius: 0.5rem;
 }
 
@@ -127,6 +128,22 @@
 
 .valid-move-indicator {
     transition: opacity 0.3s ease;
+}
+
+.last-move::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20%;
+    height: 20%;
+    background-color: #ef4444;
+    /* Red dot for visibility on both colors */
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    z-index: 10;
 }
 
 /* Result View */
