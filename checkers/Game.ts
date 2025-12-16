@@ -42,6 +42,7 @@ class CheckersGame {
     private timerInterval: number | null = null;
     private winner: Player | null = null;
     private ai: CheckersAI;
+    private aiSide: Player | null = null;
     private isAIThinking: boolean = false;
 
     private stateChangeListeners: ((state: GameState) => void)[] = [];
@@ -107,6 +108,10 @@ class CheckersGame {
         this.ai.setDifficulty(difficulty);
     }
 
+    setAISide(side: Player | null) {
+        this.aiSide = side;
+    }
+
     getForceJump(): boolean {
         return this.forceJump;
     }
@@ -138,6 +143,11 @@ class CheckersGame {
         this.gameState = 'PLAYING';
         this.notifyStateChange();
         this.startTimer();
+
+        // If AI plays RED (first), trigger move
+        if (this.gameMode === 'VS_AI' && this.aiSide === 'RED') {
+            this.makeAIMove();
+        }
     }
 
     restart() {
@@ -166,8 +176,8 @@ class CheckersGame {
         if (this.gameState !== 'PLAYING') return false;
         if (this.isAIThinking) return false;
 
-        // In VS_AI mode, only allow RED (Player) to select pieces
-        if (this.gameMode === 'VS_AI' && this.currentPlayer !== 'RED') return false;
+        // In VS_AI mode, only allow player to select pieces
+        if (this.gameMode === 'VS_AI' && this.currentPlayer === this.aiSide) return false;
 
         const piece = this.board[row][col];
 
@@ -231,7 +241,7 @@ class CheckersGame {
         this.notifyBoardUpdate();
 
         // Trigger AI move if applicable
-        if (this.gameState === 'PLAYING' && this.gameMode === 'VS_AI' && this.currentPlayer === 'BLACK') {
+        if (this.gameState === 'PLAYING' && this.gameMode === 'VS_AI' && this.currentPlayer === this.aiSide) {
             this.makeAIMove();
         }
 
@@ -244,7 +254,7 @@ class CheckersGame {
 
         // Small delay for UX
         setTimeout(() => {
-            const move = this.ai.getBestMove(this.board, 'BLACK');
+            const move = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
 
             if (move) {
                 this.executeAIMoveSequence(move);
@@ -281,7 +291,7 @@ class CheckersGame {
                         // Let's just pick the first one for now as mandatory capture rule usually implies any capture is fine, 
                         // though strategy differs.
                         // Actually, let's ask AI for the best move from this specific state where it MUST capture with this piece
-                        const nextMove = this.ai.getBestMove(this.board, 'BLACK');
+                        const nextMove = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
                         if (nextMove) {
                             this.executeAIMoveSequence(nextMove);
                         } else {

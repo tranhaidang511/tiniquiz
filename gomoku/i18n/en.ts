@@ -31,6 +31,9 @@ export default {
         rank: "Rank",
         moves: "Moves",
         time: "Time",
-        date: "Date"
+        date: "Date",
+        labelSide: "Play As",
+        sideBlack: "Black (First)",
+        sideWhite: "White (Second)"
     }
 };

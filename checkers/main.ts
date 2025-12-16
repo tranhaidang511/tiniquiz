@@ -43,7 +43,8 @@ const saveSetup = () => {
             mode: modeBtn.dataset.mode,
             size: sizeBtn?.dataset.size || '8',
             forceJump: forceJumpInput.checked,
-            difficulty: (document.querySelector('.difficulty-btn.active') as HTMLElement)?.dataset.difficulty || 'MEDIUM'
+            difficulty: (document.querySelector('.difficulty-btn.active') as HTMLElement)?.dataset.difficulty || 'MEDIUM',
+            side: (document.querySelector('.side-btn.active') as HTMLElement)?.dataset.side || 'RED'
         };
         localStorage.setItem('checkers_setup', JSON.stringify(setup));
     }
@@ -101,6 +102,21 @@ const loadSetup = () => {
                     }
                 });
             }
+
+            // Restore Side
+            if ('side' in JSON.parse(saved)) {
+                const { side } = JSON.parse(saved);
+                if (side) {
+                    document.querySelectorAll('.side-btn').forEach(btn => {
+                        const btnSide = (btn as HTMLElement).dataset.side;
+                        if (btnSide === side) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            }
         }
     } catch (e) {
         console.error('Failed to load Checkers setup:', e);
@@ -134,6 +150,10 @@ const updateTexts = () => {
     document.getElementById('diff-easy')!.textContent = localization.getUIText('easy');
     document.getElementById('diff-medium')!.textContent = localization.getUIText('medium');
     document.getElementById('diff-hard')!.textContent = localization.getUIText('hard');
+    document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
+    document.getElementById('side-red')!.textContent = localization.getUIText('sideRed');
+    document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
+
 
     updateGameInfo();
 };
@@ -180,6 +200,15 @@ const setupEventListeners = () => {
         });
     });
 
+    // Side Selection
+    document.querySelectorAll('.side-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+        });
+    });
+
     // Board Size Selection
     document.querySelectorAll('.size-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -208,6 +237,16 @@ const setupEventListeners = () => {
         const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
         const difficulty = (diffBtn?.dataset.difficulty || 'MEDIUM') as Difficulty;
         game.setDifficulty(difficulty);
+
+        // Set AI Side
+        const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+        if (modeBtn && modeBtn.dataset.mode === 'VS_AI') {
+            const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
+            const userSide = sideBtn?.dataset.side || 'RED';
+            game.setAISide(userSide === 'RED' ? 'BLACK' : 'RED');
+        } else {
+            game.setAISide(null);
+        }
 
         game.start();
     });
@@ -668,12 +707,15 @@ localization.subscribe(() => {
 // --- Helper Functions ---
 
 const toggleDifficultySelector = (mode: GameMode) => {
-    const section = document.getElementById('difficulty-section');
-    if (section) {
+    const diffSection = document.getElementById('difficulty-section');
+    const sideSection = document.getElementById('side-section');
+    if (diffSection && sideSection) {
         if (mode === 'VS_AI') {
-            section.classList.remove('hidden');
+            diffSection.classList.remove('hidden');
+            sideSection.classList.remove('hidden');
         } else {
-            section.classList.add('hidden');
+            diffSection.classList.add('hidden');
+            sideSection.classList.add('hidden');
         }
     }
 };

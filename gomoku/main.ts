@@ -18,6 +18,18 @@ const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 
 // --- UI Templates ---
 
+const toggleSideSelector = () => {
+    const mode = game.getGameMode();
+    const sideSection = document.getElementById('side-section');
+    if (sideSection) {
+        if (mode === 'VS_AI') {
+            sideSection.classList.remove('hidden');
+        } else {
+            sideSection.classList.add('hidden');
+        }
+    }
+};
+
 const renderApp = () => {
     setupEventListeners();
     updateTexts();
@@ -29,6 +41,7 @@ const renderApp = () => {
 
     // Load saved setup
     loadSetup();
+    toggleSideSelector();
 };
 
 // --- Setup Persistence ---
@@ -40,7 +53,8 @@ const saveSetup = () => {
     if (modeBtn && sizeBtn) {
         const setup = {
             mode: modeBtn.dataset.mode,
-            size: sizeBtn.dataset.size
+            size: sizeBtn.dataset.size,
+            side: (document.querySelector('.side-btn.active') as HTMLElement)?.dataset.side || 'BLACK'
         };
         localStorage.setItem('gomoku_setup', JSON.stringify(setup));
     }
@@ -77,6 +91,23 @@ const loadSetup = () => {
                     }
                 });
             }
+
+            // Restore Side
+            if ('side' in JSON.parse(saved)) {
+                const { side } = JSON.parse(saved);
+                if (side) {
+                    document.querySelectorAll('.side-btn').forEach(btn => {
+                        const btnSide = (btn as HTMLElement).dataset.side;
+                        if (btnSide === side) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            }
+
+            toggleSideSelector();
         }
     } catch (e) {
         console.error('Failed to load Gomoku setup:', e);
@@ -94,6 +125,9 @@ const updateTexts = () => {
     document.getElementById('mode-two-player')!.textContent = localization.getUIText('twoPlayers');
     document.getElementById('mode-vs-ai')!.textContent = localization.getUIText('vsAI');
     document.getElementById('label-board-size')!.textContent = localization.getUIText('boardSize');
+    document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
+    document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
+    document.getElementById('side-white')!.textContent = localization.getUIText('sideWhite');
     document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
     // Game view
     document.getElementById('label-move')!.textContent = localization.getUIText('move');
@@ -143,6 +177,16 @@ const setupEventListeners = () => {
             target.classList.add('active');
 
             game.setGameMode(mode);
+            toggleSideSelector();
+        });
+    });
+
+    // Side Selection
+    document.querySelectorAll('.side-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            document.querySelectorAll('.side-btn').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
         });
     });
 
@@ -162,6 +206,17 @@ const setupEventListeners = () => {
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
         saveSetup();
+
+        // Set AI Side
+        if (game.getGameMode() === 'VS_AI') {
+            const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
+            const userSide = sideBtn?.dataset.side || 'BLACK';
+            // User BLACK -> AI WHITE (Second). User WHITE -> AI BLACK (First).
+            game.setAISide(userSide === 'BLACK' ? 'WHITE' : 'BLACK');
+        } else {
+            game.setAISide(null);
+        }
+
         game.start();
     });
 

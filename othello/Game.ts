@@ -29,6 +29,7 @@ class OthelloGame {
     private timerInterval: number | null = null;
     private winner: Player | null = null;
     private ai: OthelloAI;
+    private aiSide: Player | null = null;
 
     private stateChangeListeners: ((state: GameState) => void)[] = [];
     private moveListeners: ((move: Move) => void)[] = [];
@@ -61,6 +62,10 @@ class OthelloGame {
         this.ai.setDifficulty(difficulty);
     }
 
+    setAISide(side: Player | null) {
+        this.aiSide = side;
+    }
+
     getGameMode(): GameMode {
         return this.gameMode;
     }
@@ -80,6 +85,11 @@ class OthelloGame {
         this.notifyStateChange();
         this.startTimer();
         this.notifyBoardUpdate();
+
+        // If AI plays BLACK (first), trigger move
+        if (this.gameMode === 'VS_AI' && this.aiSide === 'BLACK') {
+            this.makeAIMove();
+        }
     }
 
     restart() {
@@ -104,8 +114,12 @@ class OthelloGame {
         }
     }
 
-    makeMove(row: number, col: number): boolean {
+    makeMove(row: number, col: number, isAI: boolean = false): boolean {
         if (this.gameState !== 'PLAYING') return false;
+
+        // Block player if it's AI turn (unless this IS the AI moving)
+        if (this.gameMode === 'VS_AI' && this.currentPlayer === this.aiSide && !isAI) return false;
+
         if (this.board[row][col] !== null) return false;
 
         const flipped = this.getFlippedDiscs(row, col, this.currentPlayer);
@@ -153,14 +167,14 @@ class OthelloGame {
     makeAIMove(): void {
         if (this.gameState !== 'PLAYING') return;
         if (this.gameMode !== 'VS_AI') return;
-        if (this.currentPlayer !== 'WHITE') return; // AI is always WHITE
+        if (this.currentPlayer !== this.aiSide) return;
 
-        const aiMove = this.ai.getBestMove(this.board, 'WHITE');
+        const aiMove = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
 
         if (aiMove) {
             // Add slight delay for better UX
             setTimeout(() => {
-                this.makeMove(aiMove.row, aiMove.col);
+                this.makeMove(aiMove.row, aiMove.col, true);
             }, 500);
         }
     }

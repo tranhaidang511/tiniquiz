@@ -25,6 +25,9 @@ export default {
         difficulty: "Difficulty",
         easy: "Easy",
         medium: "Medium",
-        hard: "Hard"
+        hard: "Hard",
+        labelSide: "Play As",
+        sideBlack: "Black (First)",
+        sideWhite: "White (Second)"
     }
 };

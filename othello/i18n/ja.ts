@@ -25,6 +25,9 @@ export default {
         difficulty: "難易度",
         easy: "簡単",
         medium: "普通",
-        hard: "難しい"
+        hard: "難しい",
+        labelSide: "サイド選択",
+        sideBlack: "黒 (先攻)",
+        sideWhite: "白 (後攻)"
     }
 };

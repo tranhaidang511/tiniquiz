@@ -25,6 +25,7 @@ export class Game {
     private winner: Player | null = null;
     private winningLine: Position[] | null = null;
     private ai: GomokuAI;
+    private aiSide: Player | null = null;
     private isAIThinking: boolean = false;
     private startTime: number | null = null;
     private endTime: number | null = null;
@@ -38,6 +39,10 @@ export class Game {
     constructor() {
         this.ai = new GomokuAI(this.boardSize);
         this.initializeBoard();
+    }
+
+    setAISide(side: Player | null) {
+        this.aiSide = side;
     }
 
     // --- Setup ---
@@ -82,6 +87,11 @@ export class Game {
         this.endTime = null;
         this.setState('PLAYING');
         this.emitBoard();
+
+        // If AI plays BLACK (first), trigger move
+        if (this.mode === 'VS_AI' && this.aiSide === 'BLACK') {
+            this.makeAIMove();
+        }
     }
 
     makeMove(row: number, col: number): boolean {
@@ -90,8 +100,8 @@ export class Game {
         if (row < 0 || row >= this.boardSize || col < 0 || col >= this.boardSize) return false;
         if (this.board[row][col] !== null) return false;
 
-        // In VS_AI mode, only allow player (BLACK) to make moves via this method
-        if (this.mode === 'VS_AI' && this.currentPlayer !== 'BLACK') return false;
+        // In VS_AI mode, only allow player (non-AI) to make moves
+        if (this.mode === 'VS_AI' && this.currentPlayer === this.aiSide) return false;
 
         // Place stone
         const stone: Stone = { row, col, player: this.currentPlayer };
@@ -120,7 +130,7 @@ export class Game {
         this.emitMove(stone); // Emit after turn switch
 
         // If VS_AI mode and now it's AI's turn, trigger AI move
-        if (this.mode === 'VS_AI' && this.currentPlayer === 'WHITE') {
+        if (this.mode === 'VS_AI' && this.currentPlayer === this.aiSide) {
             this.makeAIMove();
         }
 
@@ -133,17 +143,18 @@ export class Game {
         this.emitAIThinking(true);
 
         setTimeout(() => {
-            const aiMove = this.ai.getBestMove(this.board, 'WHITE');
+            const aiSide = this.aiSide || 'WHITE';
+            const aiMove = this.ai.getBestMove(this.board, aiSide);
 
             if (aiMove) {
                 // Place AI's stone
-                const stone: Stone = { row: aiMove.row, col: aiMove.col, player: 'WHITE' };
-                this.board[aiMove.row][aiMove.col] = 'WHITE';
+                const stone: Stone = { row: aiMove.row, col: aiMove.col, player: aiSide };
+                this.board[aiMove.row][aiMove.col] = aiSide;
                 this.moves.push(stone);
 
                 // Check for win
                 if (this.checkWin(aiMove.row, aiMove.col)) {
-                    this.winner = 'WHITE';
+                    this.winner = aiSide;
                     this.endTime = Date.now();
                     this.emitMove(stone); // Emit before ending
                     this.setState('RESULT');
@@ -163,7 +174,7 @@ export class Game {
                 }
 
                 // Switch back to player BEFORE emitting
-                this.currentPlayer = 'BLACK';
+                this.currentPlayer = aiSide === 'BLACK' ? 'WHITE' : 'BLACK';
                 this.emitMove(stone); // Emit after turn switch
             }
 
@@ -258,7 +269,7 @@ export class Game {
     }
 
     isAITurn(): boolean {
-        return this.mode === 'VS_AI' && this.currentPlayer === 'WHITE';
+        return this.mode === 'VS_AI' && this.currentPlayer === this.aiSide;
     }
 
     getAIThinking(): boolean {

@@ -30,5 +30,8 @@ export default {
         gameMode: "Game Mode",
         twoPlayers: "2 Players",
         vsAI: "vs AI",
+        labelSide: "Play As",
+        sideRed: "Red (First)",
+        sideBlack: "Black (Second)",
     }
 };

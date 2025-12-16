@@ -31,6 +31,9 @@ export default {
         rank: "順位",
         moves: "手数",
         time: "時間",
-        date: "日付"
+        date: "日付",
+        labelSide: "サイド選択",
+        sideBlack: "黒 (先攻)",
+        sideWhite: "白 (後攻)"
     }
 };

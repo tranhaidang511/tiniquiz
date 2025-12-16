@@ -30,5 +30,8 @@ export default {
         gameMode: "ゲームモード",
         twoPlayers: "二人対戦",
         vsAI: "AI対戦",
+        labelSide: "サイド選択",
+        sideRed: "赤 (先攻)",
+        sideBlack: "黒 (後攻)",
     }
 };

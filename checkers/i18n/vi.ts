@@ -30,5 +30,8 @@ export default {
         gameMode: "Chế độ chơi",
         twoPlayers: "2 Người chơi",
         vsAI: "Đấu với AI",
+        labelSide: "Chọn quân",
+        sideRed: "Đỏ (Đi trước)",
+        sideBlack: "Đen (Đi sau)",
     }
 };

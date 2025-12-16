@@ -25,6 +25,9 @@ export default {
         difficulty: "Độ khó",
         easy: "Dễ",
         medium: "Trung bình",
-        hard: "Khó"
+        hard: "Khó",
+        labelSide: "Chọn quân",
+        sideBlack: "Đen (Đi trước)",
+        sideWhite: "Trắng (Đi sau)"
     }
 };

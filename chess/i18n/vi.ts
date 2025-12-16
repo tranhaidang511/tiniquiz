@@ -45,7 +45,7 @@ export const vi = {
         difficultyEasy: 'Dễ',
         difficultyMedium: 'Trung bình',
         difficultyHard: 'Khó',
-        labelSide: 'Chơi với',
+        labelSide: 'Chọn quân',
         sideWhite: 'Trắng',
         sideBlack: 'Đen',
         aiThinking: 'AI đang suy nghĩ...',

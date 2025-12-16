@@ -45,7 +45,7 @@ export const ja = {
         difficultyEasy: '簡単',
         difficultyMedium: '普通',
         difficultyHard: '難しい',
-        labelSide: 'プレイヤー',
+        labelSide: 'サイド選択',
         sideWhite: '白',
         sideBlack: '黒',
         aiThinking: 'AIが考え中...',

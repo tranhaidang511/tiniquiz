@@ -31,6 +31,9 @@ export default {
         rank: "Hạng",
         moves: "Số nước",
         time: "Thời gian",
-        date: "Ngày"
+        date: "Ngày",
+        labelSide: "Chọn quân",
+        sideBlack: "Đen (Đi trước)",
+        sideWhite: "Trắng (Đi sau)"
     }
 };

@@ -28,11 +28,14 @@ const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 const toggleDifficultySelector = () => {
     const mode = game.getGameMode();
     const difficultySection = document.querySelector('.difficulty-section');
-    if (difficultySection) {
+    const sideSection = document.querySelector('.side-section');
+    if (difficultySection && sideSection) {
         if (mode === 'VS_AI') {
             difficultySection.classList.remove('hidden');
+            sideSection.classList.remove('hidden');
         } else {
             difficultySection.classList.add('hidden');
+            sideSection.classList.add('hidden');
         }
     }
 };
@@ -60,7 +63,8 @@ const saveSetup = () => {
     if (modeBtn) {
         const setup = {
             mode: modeBtn.dataset.mode,
-            difficulty: diffBtn ? diffBtn.dataset.difficulty : 'MEDIUM'
+            difficulty: diffBtn ? diffBtn.dataset.difficulty : 'MEDIUM',
+            side: (document.querySelector('.mode-btn[data-side].active') as HTMLElement)?.dataset.side || 'BLACK'
         };
         localStorage.setItem('othello_setup', JSON.stringify(setup));
     }
@@ -98,6 +102,21 @@ const loadSetup = () => {
                 });
             }
 
+            // Restore Side
+            if ('side' in JSON.parse(saved)) {
+                const { side } = JSON.parse(saved);
+                if (side) {
+                    document.querySelectorAll('.mode-btn[data-side]').forEach(btn => {
+                        const btnSide = (btn as HTMLElement).dataset.side;
+                        if (btnSide === side) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            }
+
             toggleDifficultySelector();
         }
     } catch (e) {
@@ -131,6 +150,10 @@ const updateTexts = () => {
     document.getElementById('label-rank')!.textContent = localization.getUIText('rank');
     document.getElementById('label-moves')!.textContent = localization.getUIText('moves');
     document.getElementById('label-date')!.textContent = localization.getUIText('date');
+    document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
+    document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
+    document.getElementById('side-white')!.textContent = localization.getUIText('sideWhite');
+
 
     updateGameInfo();
 };
@@ -181,9 +204,29 @@ const setupEventListeners = () => {
         });
     });
 
+    // Side Selection
+    document.querySelectorAll('.mode-btn[data-side]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            document.querySelectorAll('.mode-btn[data-side]').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+        });
+    });
+
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
         saveSetup();
+
+        // Set AI Side
+        if (game.getGameMode() === 'VS_AI') {
+            const sideBtn = document.querySelector('.mode-btn[data-side].active') as HTMLElement;
+            const userSide = sideBtn?.dataset.side || 'BLACK';
+            // User BLACK -> AI WHITE. User WHITE -> AI BLACK.
+            game.setAISide(userSide === 'BLACK' ? 'WHITE' : 'BLACK');
+        } else {
+            game.setAISide(null);
+        }
+
         game.start();
     });
 
