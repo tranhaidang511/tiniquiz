@@ -274,12 +274,26 @@ const renderBoard = () => {
     const totalSize = 600; // SVG viewBox size
     const squareSize = totalSize / boardSize;
 
+    // Check if we need to flip the board (User is BLACK)
+    const isFlipped = game.getGameMode() === 'VS_AI' && game.getAISide() === 'RED';
+
+    const getVisualPos = (row: number, col: number) => {
+        if (isFlipped) {
+            return {
+                row: boardSize - 1 - row,
+                col: boardSize - 1 - col
+            };
+        }
+        return { row, col };
+    };
+
     // Draw checkerboard
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
+            const visual = getVisualPos(row, col);
             const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', (col * squareSize).toString());
-            rect.setAttribute('y', (row * squareSize).toString());
+            rect.setAttribute('x', (visual.col * squareSize).toString());
+            rect.setAttribute('y', (visual.row * squareSize).toString());
             rect.setAttribute('width', squareSize.toString());
             rect.setAttribute('height', squareSize.toString());
 
@@ -289,7 +303,6 @@ const renderBoard = () => {
             rect.dataset.row = row.toString();
             rect.dataset.col = col.toString();
 
-            svg.appendChild(rect);
             svg.appendChild(rect);
         }
     }
@@ -301,7 +314,7 @@ const renderBoard = () => {
         const highlightSquares = [lastMove.from, lastMove.to];
 
         highlightSquares.forEach(pos => {
-            // Find the rect for this position
+            // Find the rect by logical position
             const rect = svg.querySelector(`rect[data-row="${pos.row}"][data-col="${pos.col}"]`);
             if (rect) {
                 rect.classList.add('last-move');
@@ -315,22 +328,32 @@ const renderBoard = () => {
         for (let col = 0; col < boardSize; col++) {
             const piece = board[row][col];
             if (piece) {
-                drawPiece(svg, piece, squareSize);
+                // Pass isFlipped to drawPiece
+                drawPiece(svg, piece, squareSize, isFlipped, boardSize);
             }
         }
     }
 
     // Highlight selected piece and valid moves
-    highlightMoves();
+    highlightMoves(isFlipped, boardSize);
 
     // Add single click handler to SVG
-    svg.onclick = handleBoardClick;
+    svg.onclick = (e) => handleBoardClick(e);
 };
 
-const drawPiece = (svg: SVGSVGElement, piece: Piece, squareSize: number) => {
+const drawPiece = (svg: SVGSVGElement, piece: Piece, squareSize: number, isFlipped: boolean, boardSize: number) => {
     const pieceRadius = squareSize * 0.37; // Scale radius relative to square size
-    const cx = piece.col * squareSize + squareSize / 2;
-    const cy = piece.row * squareSize + squareSize / 2;
+
+    // Calculate visual position
+    let visualRow = piece.row;
+    let visualCol = piece.col;
+    if (isFlipped) {
+        visualRow = boardSize - 1 - piece.row;
+        visualCol = boardSize - 1 - piece.col;
+    }
+
+    const cx = visualCol * squareSize + squareSize / 2;
+    const cy = visualRow * squareSize + squareSize / 2;
 
     // Piece group
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -401,7 +424,7 @@ const drawPiece = (svg: SVGSVGElement, piece: Piece, squareSize: number) => {
     svg.appendChild(group);
 };
 
-const highlightMoves = () => {
+const highlightMoves = (isFlipped: boolean, boardSize: number) => {
     const svg = document.getElementById('board') as unknown as SVGSVGElement;
     if (!svg) return;
 
@@ -441,11 +464,18 @@ const highlightMoves = () => {
         square?.classList.add('valid-move');
 
         // Draw move indicator
-        const boardSize = game.getBoardSize();
         const totalSize = 600;
         const squareSize = totalSize / boardSize;
-        const cx = move.to.col * squareSize + squareSize / 2;
-        const cy = move.to.row * squareSize + squareSize / 2;
+
+        let visualRow = move.to.row;
+        let visualCol = move.to.col;
+        if (isFlipped) {
+            visualRow = boardSize - 1 - move.to.row;
+            visualCol = boardSize - 1 - move.to.col;
+        }
+
+        const cx = visualCol * squareSize + squareSize / 2;
+        const cy = visualRow * squareSize + squareSize / 2;
 
         const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
         indicator.classList.add('move-indicator');

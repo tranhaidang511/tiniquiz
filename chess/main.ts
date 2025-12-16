@@ -230,16 +230,33 @@ function renderBoard() {
     const squareSize = 100;
     const padding = 40; // Padding for coordinates
 
+    // Check if we need to flip the board (User is BLACK)
+    // In PvE, if AI is WHITE (first), then User is BLACK (second).
+    // Or generally, if User is playing Black, we flip.
+    // game.getAIPlayer() returns the AI's side.
+    const isFlipped = currentGameMode === 'pve' && game.getAIPlayer() === 'WHITE';
+
     // Set viewBox to include padding
     // Board is 800x800, plus 40px padding on all sides = 880x880
     svg.setAttribute('viewBox', '0 0 880 880');
 
+    const getVisualPos = (row: number, col: number) => {
+        if (isFlipped) {
+            return {
+                row: 7 - row,
+                col: 7 - col
+            };
+        }
+        return { row, col };
+    };
+
     // Draw squares
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
+            const visual = getVisualPos(row, col);
             const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', (col * squareSize + padding).toString());
-            rect.setAttribute('y', (row * squareSize + padding).toString());
+            rect.setAttribute('x', (visual.col * squareSize + padding).toString());
+            rect.setAttribute('y', (visual.row * squareSize + padding).toString());
             rect.setAttribute('width', squareSize.toString());
             rect.setAttribute('height', squareSize.toString());
 
@@ -257,13 +274,22 @@ function renderBoard() {
     // Draw coordinates
     // Column labels (a-h)
     for (let i = 0; i < 8; i++) {
+        // If flipped, labels are h-a (7-0). i goes 0-7.
+        // Standard: i=0 -> 'a'. Flipped: i=0 -> 'h' (which is charCode 104) -> wait.
+        // The visual column 'i' should display the correct file char.
+        // Visual column 0 (leftmost) corresponds to:
+        // Normal: File 'a' (col 0).
+        // Flipped: File 'h' (col 7).
+
+        const displayChar = isFlipped ? String.fromCharCode(104 - i) : String.fromCharCode(97 + i);
+
         const colLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         // Center in the square column, in the top margin
         colLabel.setAttribute('x', (i * squareSize + squareSize / 2 + padding).toString());
         colLabel.setAttribute('y', (padding - 10).toString()); // 10px above board
         colLabel.classList.add('coord-label');
         colLabel.setAttribute('text-anchor', 'middle');
-        colLabel.textContent = String.fromCharCode(97 + i); // a-h
+        colLabel.textContent = displayChar;
         svg.appendChild(colLabel);
 
         // Bottom labels
@@ -274,13 +300,18 @@ function renderBoard() {
 
     // Row labels (1-8)
     for (let i = 0; i < 8; i++) {
+        // Visual row 'i' (0 is top).
+        // Standard: Row 0 is Rank 8. So '8 - i'.
+        // Flipped: Row 0 is Rank 1. So '1 + i'.
+        const displayNum = isFlipped ? (1 + i).toString() : (8 - i).toString();
+
         const rowLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         // Center in the square row, in the left margin
         rowLabel.setAttribute('x', (padding - 10).toString()); // 10px left of board
         rowLabel.setAttribute('y', (i * squareSize + squareSize / 2 + padding + 5).toString()); // +5 for vertical centering
         rowLabel.classList.add('coord-label');
         rowLabel.setAttribute('text-anchor', 'end');
-        rowLabel.textContent = (8 - i).toString();
+        rowLabel.textContent = displayNum;
         svg.appendChild(rowLabel);
 
         // Right labels
@@ -293,9 +324,10 @@ function renderBoard() {
     // Highlight selected piece
     const selectedPiece = game.getSelectedPiece();
     if (selectedPiece) {
+        const visual = getVisualPos(selectedPiece.row, selectedPiece.col);
         const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', (selectedPiece.col * squareSize + padding).toString());
-        rect.setAttribute('y', (selectedPiece.row * squareSize + padding).toString());
+        rect.setAttribute('x', (visual.col * squareSize + padding).toString());
+        rect.setAttribute('y', (visual.row * squareSize + padding).toString());
         rect.setAttribute('width', squareSize.toString());
         rect.setAttribute('height', squareSize.toString());
         rect.setAttribute('class', 'square selected');
@@ -306,9 +338,10 @@ function renderBoard() {
     const lastMove = game.getLastMove();
     if (lastMove) {
         [lastMove.from, lastMove.to].forEach(pos => {
+            const visual = getVisualPos(pos.row, pos.col);
             const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', (pos.col * squareSize + padding).toString());
-            rect.setAttribute('y', (pos.row * squareSize + padding).toString());
+            rect.setAttribute('x', (visual.col * squareSize + padding).toString());
+            rect.setAttribute('y', (visual.row * squareSize + padding).toString());
             rect.setAttribute('width', squareSize.toString());
             rect.setAttribute('height', squareSize.toString());
             rect.setAttribute('class', 'square last-move');
@@ -321,7 +354,7 @@ function renderBoard() {
     board.forEach(row => {
         row.forEach(piece => {
             if (piece) {
-                drawPiece(svg, piece, squareSize, padding);
+                drawPiece(svg, piece, squareSize, padding, isFlipped);
             }
         });
     });
@@ -330,9 +363,10 @@ function renderBoard() {
     const validMoves = game.getValidMovesForSelected();
     validMoves.forEach(move => {
         const hasTarget = board[move.row][move.col] !== null;
+        const visual = getVisualPos(move.row, move.col);
         const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        indicator.setAttribute('cx', (move.col * squareSize + squareSize / 2 + padding).toString());
-        indicator.setAttribute('cy', (move.row * squareSize + squareSize / 2 + padding).toString());
+        indicator.setAttribute('cx', (visual.col * squareSize + squareSize / 2 + padding).toString());
+        indicator.setAttribute('cy', (visual.row * squareSize + squareSize / 2 + padding).toString());
         indicator.setAttribute('r', hasTarget ? '40' : '15');
         indicator.classList.add('move-indicator');
         if (hasTarget) {
@@ -344,10 +378,18 @@ function renderBoard() {
     });
 }
 
-function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding: number) {
+function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding: number, isFlipped: boolean) {
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    const x = piece.col * squareSize + squareSize / 2 + padding;
-    const y = piece.row * squareSize + squareSize / 2 + padding;
+
+    let visualRow = piece.row;
+    let visualCol = piece.col;
+    if (isFlipped) {
+        visualRow = 7 - piece.row;
+        visualCol = 7 - piece.col;
+    }
+
+    const x = visualCol * squareSize + squareSize / 2 + padding;
+    const y = visualRow * squareSize + squareSize / 2 + padding;
     const scale = 1; // Can adjust if needed
 
     group.setAttribute('class', `piece ${piece.player.toLowerCase()}`);
@@ -486,8 +528,16 @@ function handleBoardClick(e: MouseEvent) {
 
     const squareSize = 100;
 
-    const col = Math.floor(boardX / squareSize);
-    const row = Math.floor(boardY / squareSize);
+    // Check if we need to flip the board (User is BLACK)
+    const isFlipped = currentGameMode === 'pve' && game.getAIPlayer() === 'WHITE';
+
+    let col = Math.floor(boardX / squareSize);
+    let row = Math.floor(boardY / squareSize);
+
+    if (isFlipped) {
+        col = 7 - col;
+        row = 7 - row;
+    }
 
     // Check if click is within the board grid
     if (row >= 0 && row < 8 && col >= 0 && col < 8) {

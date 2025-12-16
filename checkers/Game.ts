@@ -112,6 +112,10 @@ class CheckersGame {
         this.aiSide = side;
     }
 
+    getAISide(): Player | null {
+        return this.aiSide;
+    }
+
     getForceJump(): boolean {
         return this.forceJump;
     }

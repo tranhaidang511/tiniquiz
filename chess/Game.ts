@@ -604,6 +604,10 @@ class ChessGame {
     }
 
     // Getters
+    getAIPlayer(): Player | null {
+        return this.aiPlayer;
+    }
+
     getBoard(): (Piece | null)[][] {
         return this.board;
     }
