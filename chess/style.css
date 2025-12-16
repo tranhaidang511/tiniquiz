@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 /* Import common styles */
 @import url('../common/style.css');
 
@@ -9,7 +11,6 @@
     --text-secondary: #a8b2d1;
     --accent-primary: #4a90e2;
     --accent-secondary: #357abd;
-    --accent-hover: #5ba3f5;
     --border-color: rgba(255, 255, 255, 0.1);
     --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 
@@ -26,153 +27,16 @@
     --piece-outline: #000000;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-    color: var(--text-primary);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
 #app {
-    width: 100%;
     max-width: 900px;
-    position: relative;
-}
-
-/* Header */
-.header-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    margin-bottom: 30px;
-    min-height: 48px;
-}
-
-/* Position the home button absolutely to the left */
-.header-controls #home-btn {
-    position: absolute;
-    left: 0;
-}
-
-#game-title {
-    font-size: 3rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-/* Icon Button */
-.icon-btn {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.icon-btn:hover {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-    transform: translateY(-2px);
-}
-
-.icon-btn svg {
-    width: 24px;
-    height: 24px;
-    color: var(--text-primary);
-}
-
-/* Language Switcher */
-.lang-switcher {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-}
-
-.lang-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    border: 2px solid rgba(138, 180, 248, 0.3);
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
-    border-radius: 0.375rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    min-width: 3rem;
-}
-
-.lang-btn:hover {
-    border-color: var(--accent-primary);
-}
-
-.lang-btn.active {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-    color: white;
 }
 
 /* Card */
-.card {
-    background: var(--bg-card);
-    border-radius: 20px;
-    padding: 40px;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border-color);
-}
-
 .card h2 {
     font-size: 2rem;
     margin-bottom: 30px;
     text-align: center;
     color: var(--text-primary);
-}
-
-/* Buttons */
-button.primary {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    border: none;
-    color: white;
-    padding: 14px 32px;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-    display: block;
-    margin: 0 auto;
-}
-
-button.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
-}
-
-button.primary:active {
-    transform: translateY(0);
-}
-
-#new-game-btn {
-    margin-bottom: 20px;
 }
 
 /* Game Header */
@@ -423,110 +287,6 @@ button.primary:active {
         padding: 12px 24px;
         font-size: 1rem;
     }
-}
-
-/* Setup Groups */
-.setup-group {
-    margin-bottom: 24px;
-}
-.setup-group h3 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 12px;
-    text-align: center;
-}
-.radio-group {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-}
-/* Mode/Difficulty/Side Buttons */
-.mode-btn,
-.difficulty-btn,
-.side-btn {
-    padding: 12px 24px;
-    border: 2px solid var(--border-color);
-    background: var(--bg-secondary);
-    color: var(--text-secondary);
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    flex: 1;
-    min-width: 100px;
-}
-.mode-btn:hover,
-.difficulty-btn:hover,
-.side-btn:hover {
-    background: var(--bg-hover);
-    border-color: var(--primary-color);
-}
-.mode-btn.active,
-.difficulty-btn.active,
-.side-btn.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-.mode-btn.active:hover,
-.difficulty-btn.active:hover,
-.side-btn.active:hover {
-    opacity: 0.9;
-}
-
-/* High Scores Table */
-.high-scores-container {
-    margin-top: 32px;
-    margin-bottom: 24px;
-    width: 100%;
-}
-.high-scores-container h3 {
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 16px;
-    text-align: center;
-}
-.high-scores-container.hidden {
-    display: none;
-}
-#high-scores-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--bg-secondary);
-    border-radius: 8px;
-    overflow: hidden;
-}
-#high-scores-table thead {
-    background: var(--primary-color);
-}
-#high-scores-table th {
-    padding: 12px;
-    color: white;
-    font-weight: 600;
-    font-size: 14px;
-    text-align: left;
-}
-#high-scores-table td {
-    padding: 12px;
-    color: var(--text-primary);
-    font-size: 14px;
-    border-bottom: 1px solid var(--border-color);
-}
-#high-scores-table tbody tr:last-child td {
-    border-bottom: none;
-}
-#high-scores-table tbody tr:hover {
-    background: var(--bg-hover);
-}
-#high-scores-table tbody tr.current-run {
-    background: rgba(129, 182, 76, 0.2);
-    font-weight: 600;
-}
-#high-scores-table tbody tr.current-run:hover {
-    background: rgba(129, 182, 76, 0.3);
 }
 
 /* Promotion Modal */

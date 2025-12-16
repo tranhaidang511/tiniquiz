@@ -1,34 +1,34 @@
 export const vi = {
     ui: {
         // Title
-        gameTitle: 'Cờ Vua',
+        gameTitle: 'Cờ vua',
 
         // Menu
-        menuTitle: 'Thiết Lập Trò Chơi',
-        startGame: 'Bắt Đầu',
+        menuTitle: 'Thiết lập trò chơi',
+        startGame: 'Bắt đầu',
 
         // Game
-        newGame: 'Ván Mới',
-        whiteTurn: 'Lượt Trắng',
-        blackTurn: 'Lượt Đen',
+        newGame: 'Ván mới',
+        whiteTurn: 'Lượt trắng',
+        blackTurn: 'Lượt đen',
 
         // Stats
-        time: 'Thời Gian',
-        moves: 'Nước Đi',
-        totalTime: 'Thời Gian',
-        totalMoves: 'Tổng Nước Đi',
+        time: 'Thời gian',
+        moves: 'Nước đi',
+        totalTime: 'Thời gian',
+        totalMoves: 'Tổng nước đi',
 
         // Game States
         check: 'Chiếu!',
-        checkmate: 'Chiếu Hết!',
+        checkmate: 'Chiếu hết!',
         stalemate: 'Hòa!',
 
         // Result
-        gameOver: 'Kết Thúc',
-        whiteWins: 'Trắng Thắng!',
-        blackWins: 'Đen Thắng!',
+        gameOver: 'Kết thúc',
+        whiteWins: 'Trắng thắng!',
+        blackWins: 'Đen thắng!',
         draw: 'Hòa!',
-        playAgain: 'Chơi Lại',
+        playAgain: 'Chơi lại',
 
         // Promotion
         promotion: 'Phong cấp',
@@ -38,19 +38,19 @@ export const vi = {
         knight: 'Mã',
 
         // Game Mode
-        labelMode: 'Chế Độ',
-        modePvP: '2 Người Chơi',
+        labelMode: 'Chế độ chơi',
+        modePvP: '2 Người chơi',
         modePvE: 'vs AI',
-        labelDifficulty: 'Độ Khó',
+        labelDifficulty: 'Độ khó',
         difficultyEasy: 'Dễ',
-        difficultyMedium: 'Trung Bình',
+        difficultyMedium: 'Trung bình',
         difficultyHard: 'Khó',
-        labelSide: 'Chơi Với',
+        labelSide: 'Chơi với',
         sideWhite: 'Trắng',
         sideBlack: 'Đen',
         aiThinking: 'AI đang suy nghĩ...',
 
-        highScores: 'Điểm Cao',
+        highScores: 'Điểm cao',
         rank: 'Hạng',
         date: 'Ngày',
     }

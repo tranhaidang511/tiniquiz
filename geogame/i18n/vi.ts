@@ -1,6 +1,6 @@
 export default {
     ui: {
-        gameSetup: "Cài đặt",
+        gameSetup: "Thiết lập trò chơi",
         filterByRegion: "Lọc theo khu vực",
         numberOfQuestions: "Số lượng câu hỏi",
         allWorld: "Toàn thế giới",
