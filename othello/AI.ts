@@ -1,4 +1,6 @@
-import type { Player, Position, Difficulty } from './Game';
+import type { Player, Position } from './Game';
+
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export class OthelloAI {
     private maxDepth: number = 4;

@@ -1,6 +1,6 @@
 import type { Piece, Player, Position } from './Game';
 
-export type Difficulty = 'easy' | 'medium' | 'hard';
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 // Piece values for evaluation
 const PIECE_VALUES: Record<string, number> = {
@@ -87,9 +87,9 @@ const QUEEN_TABLE = [
 export class ChessAI {
     private static getSearchDepth(difficulty: Difficulty): number {
         switch (difficulty) {
-            case 'easy': return 2;
-            case 'medium': return 4;
-            case 'hard': return 5;
+            case 'EASY': return 2;
+            case 'MEDIUM': return 4;
+            case 'HARD': return 5;
         }
     }
 

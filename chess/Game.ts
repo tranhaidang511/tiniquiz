@@ -21,8 +21,8 @@ export interface Move {
     from: Position;
     to: Position;
     captured?: Piece;
-    special?: 'castling' | 'en-passant' | 'promotion';
-    castlingSide?: 'kingside' | 'queenside';
+    special?: 'CASTLING' | 'EN_PASSANT' | 'PROMOTION';
+    castlingSide?: 'KINGSIDE' | 'QUEENSIDE';
 }
 
 class ChessGame {
@@ -39,9 +39,9 @@ class ChessGame {
     private finalGameState: 'CHECKMATE' | 'STALEMATE' | null = null;
 
     // AI properties
-    private gameMode: 'pvp' | 'pve' = 'pvp';
+    private gameMode: 'TWO_PLAYER' | 'VS_AI' = 'TWO_PLAYER';
     private aiPlayer: Player | null = null;
-    private aiDifficulty: Difficulty = 'medium';
+    private aiDifficulty: Difficulty = 'MEDIUM';
 
     // Timer
     private startTime: number = 0;
@@ -78,7 +78,7 @@ class ChessGame {
         }
     }
 
-    start(mode: 'pvp' | 'pve' = 'pvp', aiSide: Player | null = null, difficulty: Difficulty = 'medium') {
+    start(mode: 'TWO_PLAYER' | 'VS_AI' = 'TWO_PLAYER', aiSide: Player | null = null, difficulty: Difficulty = 'MEDIUM') {
         this.initializeBoard();
         this.currentPlayer = 'WHITE';
         this.gameState = 'PLAYING';
@@ -92,7 +92,7 @@ class ChessGame {
 
         // Set game mode and AI properties
         this.gameMode = mode;
-        this.aiPlayer = mode === 'pve' ? aiSide : null;
+        this.aiPlayer = mode === 'VS_AI' ? aiSide : null;
         this.aiDifficulty = difficulty;
 
         this.startTimer();
@@ -100,7 +100,7 @@ class ChessGame {
         this.notifyBoardUpdate();
 
         // If AI plays first (as White), make AI move
-        if (this.gameMode === 'pve' && this.aiPlayer === 'WHITE') {
+        if (this.gameMode === 'VS_AI' && this.aiPlayer === 'WHITE') {
             setTimeout(() => this.makeAIMove(), 500);
         }
     }
@@ -175,7 +175,7 @@ class ChessGame {
             const capturedPawn = this.board[capturedRow][toCol];
             if (capturedPawn) {
                 move.captured = capturedPawn;
-                move.special = 'en-passant';
+                move.special = 'EN_PASSANT';
                 this.capturedPieces.push(capturedPawn);
                 this.board[capturedRow][toCol] = null;
             }
@@ -183,9 +183,9 @@ class ChessGame {
 
         // Handle castling
         if (this.selectedPiece.type === 'KING' && Math.abs(toCol - from.col) === 2) {
-            move.special = 'castling';
+            move.special = 'CASTLING';
             const isKingside = toCol > from.col;
-            move.castlingSide = isKingside ? 'kingside' : 'queenside';
+            move.castlingSide = isKingside ? 'KINGSIDE' : 'QUEENSIDE';
 
             // Move the rook
             const rookCol = isKingside ? 7 : 0;
@@ -208,7 +208,7 @@ class ChessGame {
 
         // Check for pawn promotion
         if (this.selectedPiece.type === 'PAWN' && (toRow === 0 || toRow === 7)) {
-            move.special = 'promotion';
+            move.special = 'PROMOTION';
             // Store pending promotion and wait for user choice
             this.pendingPromotion = { row: toRow, col: toCol, move };
             this.notifyPromotion(toRow, toCol);
@@ -238,8 +238,8 @@ class ChessGame {
         this.notifyMove(move);
         this.notifyBoardUpdate();
 
-        // Trigger AI move if in PvE mode and it's AI's turn
-        if (this.gameMode === 'pve' && this.aiPlayer === this.currentPlayer &&
+        // Trigger AI move if in VS_AI mode and it's AI's turn
+        if (this.gameMode === 'VS_AI' && this.aiPlayer === this.currentPlayer &&
             (this.gameState === 'PLAYING' || this.gameState === 'CHECK')) {
             setTimeout(() => this.makeAIMove(), 500);
         }
@@ -680,8 +680,8 @@ class ChessGame {
         this.notifyMove(move);
         this.notifyBoardUpdate();
 
-        // Trigger AI move if in PvE mode and it's AI's turn
-        if (this.gameMode === 'pve' && this.aiPlayer === this.currentPlayer &&
+        // Trigger AI move if in VS_AI mode and it's AI's turn
+        if (this.gameMode === 'VS_AI' && this.aiPlayer === this.currentPlayer &&
             (this.gameState === 'PLAYING' || this.gameState === 'CHECK')) {
             setTimeout(() => this.makeAIMove(), 500);
         }
@@ -689,7 +689,7 @@ class ChessGame {
 
     private makeAIMove() {
         if ((this.gameState !== 'PLAYING' && this.gameState !== 'CHECK') ||
-            this.gameMode !== 'pve' || this.aiPlayer !== this.currentPlayer) {
+            this.gameMode !== 'VS_AI' || this.aiPlayer !== this.currentPlayer) {
             return;
         }
 

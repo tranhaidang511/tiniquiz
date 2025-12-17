@@ -39,8 +39,8 @@ export const ja = {
 
         // Game Mode
         labelMode: 'ゲームモード',
-        modePvP: '2プレイヤー',
-        modePvE: 'VS AI',
+        twoPlayers: '二人対戦',
+        vsAI: 'AI対戦',
         labelDifficulty: '難易度',
         difficultyEasy: '簡単',
         difficultyMedium: '普通',

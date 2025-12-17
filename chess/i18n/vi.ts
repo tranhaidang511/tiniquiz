@@ -39,8 +39,8 @@ export const vi = {
 
         // Game Mode
         labelMode: 'Chế độ chơi',
-        modePvP: '2 Người chơi',
-        modePvE: 'vs AI',
+        twoPlayers: '2 Người chơi',
+        vsAI: 'vs AI',
         labelDifficulty: 'Độ khó',
         difficultyEasy: 'Dễ',
         difficultyMedium: 'Trung bình',

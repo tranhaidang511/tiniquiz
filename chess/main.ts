@@ -28,8 +28,8 @@ let currentGameState: GameState = 'MENU';
 let timerInterval: number | null = null;
 
 // Track current game settings
-let currentGameMode: 'pvp' | 'pve' = 'pvp';
-let currentDifficulty: 'easy' | 'medium' | 'hard' = 'medium';
+let currentGameMode: 'TWO_PLAYER' | 'VS_AI' = 'TWO_PLAYER';
+let currentDifficulty: 'EASY' | 'MEDIUM' | 'HARD' = 'MEDIUM';
 let currentAISide: 'WHITE' | 'BLACK' | null = null;
 
 // --- UI Rendering ---
@@ -83,7 +83,7 @@ const loadSetup = () => {
                 // Show/hide difficulty and side sections based on mode
                 const diffSection = document.getElementById('difficulty-section');
                 const sideSection = document.getElementById('side-section');
-                if (mode === 'pve') {
+                if (mode === 'VS_AI') {
                     diffSection?.classList.remove('hidden');
                     sideSection?.classList.remove('hidden');
                 } else {
@@ -160,19 +160,19 @@ function setupEventListeners() {
     board?.addEventListener('click', handleBoardClick);
 
     // Game mode selection
-    const modePvPBtn = document.getElementById('mode-pvp');
-    const modePvEBtn = document.getElementById('mode-pve');
+    const twoPlayersBtn = document.getElementById('mode-two-player');
+    const vsAiBtn = document.getElementById('mode-vs-ai');
     const difficultySection = document.getElementById('difficulty-section');
     const sideSection = document.getElementById('side-section');
-    modePvPBtn?.addEventListener('click', () => {
-        modePvPBtn.classList.add('active');
-        modePvEBtn?.classList.remove('active');
+    twoPlayersBtn?.addEventListener('click', () => {
+        twoPlayersBtn.classList.add('active');
+        vsAiBtn?.classList.remove('active');
         difficultySection?.classList.add('hidden');
         sideSection?.classList.add('hidden');
     });
-    modePvEBtn?.addEventListener('click', () => {
-        modePvEBtn.classList.add('active');
-        modePvPBtn?.classList.remove('active');
+    vsAiBtn?.addEventListener('click', () => {
+        vsAiBtn.classList.add('active');
+        twoPlayersBtn?.classList.remove('active');
         difficultySection?.classList.remove('hidden');
         sideSection?.classList.remove('hidden');
     });
@@ -197,18 +197,18 @@ function setupEventListeners() {
     startBtn?.addEventListener('click', () => {
         saveSetup();
         const modeBtn = document.querySelector('.mode-btn.active');
-        const mode = modeBtn?.getAttribute('data-mode') as 'pvp' | 'pve' || 'pvp';
+        const mode = modeBtn?.getAttribute('data-mode') as 'TWO_PLAYER' | 'VS_AI' || 'TWO_PLAYER';
 
         let aiSide: 'WHITE' | 'BLACK' | null = null;
-        let difficulty: 'easy' | 'medium' | 'hard' = 'medium';
+        let difficulty: 'EASY' | 'MEDIUM' | 'HARD' = 'MEDIUM';
 
-        if (mode === 'pve') {
+        if (mode === 'VS_AI') {
             const sideBtn = document.querySelector('.side-btn.active');
             const selectedSide = sideBtn?.getAttribute('data-side');
             aiSide = selectedSide === 'white' ? 'BLACK' : 'WHITE'; // AI plays opposite
 
             const diffBtn = document.querySelector('.difficulty-btn.active');
-            difficulty = (diffBtn?.getAttribute('data-difficulty') as 'easy' | 'medium' | 'hard') || 'medium';
+            difficulty = (diffBtn?.getAttribute('data-difficulty') as 'EASY' | 'MEDIUM' | 'HARD') || 'MEDIUM';
         }
 
         // Store current settings
@@ -231,10 +231,10 @@ function renderBoard() {
     const padding = 40; // Padding for coordinates
 
     // Check if we need to flip the board (User is BLACK)
-    // In PvE, if AI is WHITE (first), then User is BLACK (second).
+    // In VS_AI, if AI is WHITE (first), then User is BLACK (second).
     // Or generally, if User is playing Black, we flip.
     // game.getAIPlayer() returns the AI's side.
-    const isFlipped = currentGameMode === 'pve' && game.getAIPlayer() === 'WHITE';
+    const isFlipped = currentGameMode === 'VS_AI' && game.getAIPlayer() === 'WHITE';
 
     // Set viewBox to include padding
     // Board is 800x800, plus 40px padding on all sides = 880x880
@@ -502,7 +502,7 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding
 
 function handleBoardClick(e: MouseEvent) {
     // Don't allow interaction during AI's turn
-    if (currentGameMode === 'pve' && currentAISide === game.getCurrentPlayer()) {
+    if (currentGameMode === 'VS_AI' && currentAISide === game.getCurrentPlayer()) {
         return;
     }
 
@@ -529,7 +529,7 @@ function handleBoardClick(e: MouseEvent) {
     const squareSize = 100;
 
     // Check if we need to flip the board (User is BLACK)
-    const isFlipped = currentGameMode === 'pve' && game.getAIPlayer() === 'WHITE';
+    const isFlipped = currentGameMode === 'VS_AI' && game.getAIPlayer() === 'WHITE';
 
     let col = Math.floor(boardX / squareSize);
     let row = Math.floor(boardY / squareSize);
@@ -606,8 +606,8 @@ function updateTexts() {
     document.getElementById('promotion-knight')!.textContent = localization.getUIText('knight');
     // Update game mode labels
     document.getElementById('label-mode')!.textContent = localization.getUIText('labelMode');
-    document.getElementById('mode-pvp')!.textContent = localization.getUIText('modePvP');
-    document.getElementById('mode-pve')!.textContent = localization.getUIText('modePvE');
+    document.getElementById('mode-two-player')!.textContent = localization.getUIText('twoPlayers');
+    document.getElementById('mode-vs-ai')!.textContent = localization.getUIText('vsAI');
     document.getElementById('label-difficulty')!.textContent = localization.getUIText('labelDifficulty');
     document.getElementById('diff-easy')!.textContent = localization.getUIText('difficultyEasy');
     document.getElementById('diff-medium')!.textContent = localization.getUIText('difficultyMedium');
@@ -697,8 +697,8 @@ const saveHighScore = () => {
     const winner = game.getWinner();
     if (!winner) return;
 
-    // Only save for PvE mode when White (human) wins
-    if (currentGameMode !== 'pve') return;
+    // Only save for VS_AI mode when White (human) wins
+    if (currentGameMode !== 'VS_AI') return;
     if (winner !== 'WHITE') return;
 
     const moves = game.getMoveCount();
@@ -715,7 +715,7 @@ const saveHighScore = () => {
 };
 
 const getHighScores = (): HighScore[] => {
-    if (currentGameMode !== 'pve') return [];
+    if (currentGameMode !== 'VS_AI') return [];
 
     const key = `chess_highscores_${currentDifficulty}`;
     return util.getHighScores<HighScore>(key);
@@ -760,8 +760,8 @@ function displayResult() {
     const tbody = document.getElementById('high-scores-body');
     const container = document.querySelector('.high-scores-container');
 
-    const mode = 'pve'; // Get from your stored mode value
-    if (mode === 'pve') {
+    const mode = 'VS_AI'; // Get from your stored mode value
+    if (mode === 'VS_AI') {
         if (container) container.classList.remove('hidden');
         if (tbody) {
             tbody.innerHTML = '';

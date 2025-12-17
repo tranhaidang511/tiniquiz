@@ -1,11 +1,11 @@
-import { CheckersAI } from './AI.ts';
+import { CheckersAI, type Difficulty } from './AI.ts';
 
 export type Player = 'RED' | 'BLACK';
 export type PieceType = 'REGULAR' | 'KING';
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type BoardSize = 8 | 10 | 12;
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+export type { Difficulty };
 
 export interface Piece {
     player: Player;

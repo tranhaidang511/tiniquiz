@@ -1,4 +1,6 @@
-import type { Piece, Move, Player, Difficulty } from './Game';
+import type { Piece, Move, Player } from './Game';
+
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export class CheckersAI {
     private game: any; // Using any to avoid circular dependency issues during development, but ideally should be CheckersGame

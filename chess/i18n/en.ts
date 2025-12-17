@@ -39,8 +39,8 @@ export const en = {
 
         // Game Mode
         labelMode: 'Game Mode',
-        modePvP: '2 Players',
-        modePvE: 'vs AI',
+        twoPlayers: '2 Players',
+        vsAI: 'vs AI',
         labelDifficulty: 'Difficulty',
         difficultyEasy: 'Easy',
         difficultyMedium: 'Medium',

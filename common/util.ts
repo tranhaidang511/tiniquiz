@@ -1,9 +1,14 @@
 class Util {
     formatTime(milliseconds: number): string {
         const totalSeconds = Math.floor(milliseconds / 1000);
-        const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
-        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        var minutes = Math.floor(totalSeconds / 60);
+        if (minutes < 60) {
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        const hours = Math.floor(minutes / 60);
+        minutes = minutes % 60;
+        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
     formatDate(date: number | string, language: 'en' | 'ja' | 'vi'): string {
