@@ -760,8 +760,7 @@ function displayResult() {
     const tbody = document.getElementById('high-scores-body');
     const container = document.querySelector('.high-scores-container');
 
-    const mode = 'VS_AI'; // Get from your stored mode value
-    if (mode === 'VS_AI') {
+    if (currentGameMode === 'VS_AI') {
         if (container) container.classList.remove('hidden');
         if (tbody) {
             tbody.innerHTML = '';

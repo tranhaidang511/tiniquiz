@@ -1,6 +1,6 @@
 
 import { XiangqiGame, Side } from './Game';
-import type { Piece, PieceType, Move } from './Game';
+import type { PieceType, Move } from './Game';
 
 export class XiangqiAI {
     game: XiangqiGame;

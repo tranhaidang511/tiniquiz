@@ -107,7 +107,6 @@ function setupEventListeners() {
                 if (mode === 'pve') el.classList.remove('hidden');
                 else el.classList.add('hidden');
             });
-            saveSetup();
         });
     });
 
@@ -118,7 +117,6 @@ function setupEventListeners() {
             diffBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentSettings.difficulty = (btn as HTMLElement).dataset.difficulty as 'easy' | 'medium' | 'hard';
-            saveSetup();
         });
     });
 
@@ -129,12 +127,12 @@ function setupEventListeners() {
             sideBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentSettings.side = (btn as HTMLElement).dataset.side as 'red' | 'black';
-            saveSetup();
         });
     });
 
     // Start Game
     document.getElementById('start-btn')?.addEventListener('click', () => {
+        saveSetup();
         // Determine AI side
         let aiSide: Side | null = null;
         if (currentSettings.mode === 'pve') {
@@ -151,22 +149,17 @@ function setupEventListeners() {
 
     // Game: Restart
     document.getElementById('restart-btn')?.addEventListener('click', () => {
-        let aiSide: Side | null = null;
-        if (currentSettings.mode === 'pve') {
-            aiSide = currentSettings.side === 'red' ? Side.BLACK : Side.RED;
-        }
-        game.start(currentSettings.mode, aiSide, currentSettings.difficulty);
+        game.restart();
     });
 
     // Game: Home
     document.getElementById('home-btn')?.addEventListener('click', () => {
-        game.reset(); // Or just go to menu. Resetting logic might be good.
-        showView('menu-view');
+        window.location.href = '/';
     });
 
     // Result: New Game (Go to Menu)
     document.getElementById('new-game-btn')?.addEventListener('click', () => {
-        showView('menu-view');
+        game.restart()
     });
 }
 
