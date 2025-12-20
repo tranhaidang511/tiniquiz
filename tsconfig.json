@@ -36,6 +36,7 @@
     "checkers",
     "mancala",
     "othello",
-    "chess"
+    "chess",
+    "xiangqi"
   ]
 }

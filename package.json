@@ -30,7 +30,10 @@
     "preview:othello": "vite preview --config othello/vite.config.ts",
     "dev:chess": "vite --config chess/vite.config.ts",
     "build:chess": "tsc && vite build --config chess/vite.config.ts",
-    "preview:chess": "vite preview --config chess/vite.config.ts"
+    "preview:chess": "vite preview --config chess/vite.config.ts",
+    "dev:xiangqi": "vite --config xiangqi/vite.config.ts",
+    "build:xiangqi": "tsc && vite build --config xiangqi/vite.config.ts",
+    "preview:xiangqi": "vite preview --config xiangqi/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",

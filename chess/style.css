@@ -191,7 +191,7 @@
 }
 
 .winner-display h3 {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     margin-bottom: 10px;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     -webkit-background-clip: text;

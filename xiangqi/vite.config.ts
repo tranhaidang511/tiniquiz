@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import { viteSingleFile } from "vite-plugin-singlefile";
 
 export default defineConfig({
-    root: 'mancala',
-    base: '/mancala/',
+    root: 'xiangqi',
+    base: '/xiangqi/',
     plugins: [viteSingleFile()],
     build: {
         outDir: 'dist',
