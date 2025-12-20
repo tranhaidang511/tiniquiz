@@ -35,7 +35,7 @@ let currentSettings = {
 };
 
 // --- Initialization ---
-const savedLang = localStorage.getItem('xiangqi_language') as Language | null;
+const savedLang = localStorage.getItem('language') as Language | null;
 const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 new Consent();
 
@@ -81,7 +81,7 @@ function setupEventListeners() {
             const lang = (e.target as HTMLElement).dataset.lang as Language;
             if (lang) {
                 localization.setLanguage(lang);
-                localStorage.setItem('xiangqi_language', lang);
+                localStorage.setItem('language', lang);
                 document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 updateTexts();

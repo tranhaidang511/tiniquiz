@@ -98,7 +98,7 @@ export class XiangqiGame {
 
         // If clicking on a valid move
         if (this.selectedPiece && this.validMoves.some(m => m.row === row && m.col === col)) {
-            return this.makeMove(row, col);
+            return this.makeMove(this.selectedPiece.row, this.selectedPiece.col, row, col);
         }
 
         const piece = this.getPiece(row, col);
@@ -189,17 +189,16 @@ export class XiangqiGame {
         return this.board[row][col];
     }
 
-    makeMove(toRow: number, toCol: number): boolean {
-        if (!this.selectedPiece) return false;
-        const fromRow = this.selectedPiece.row;
-        const fromCol = this.selectedPiece.col;
+    makeMove(fromRow: number, fromCol: number, toRow: number, toCol: number, isInternal: boolean = false): boolean {
+        const piece = this.board[fromRow][fromCol];
+        if (!piece) return false;
 
         if (!this.isValidMove(fromRow, fromCol, toRow, toCol)) return false;
 
         const target = this.board[toRow][toCol];
 
         // Execute move
-        this.board[toRow][toCol] = { ...this.selectedPiece, row: toRow, col: toCol };
+        this.board[toRow][toCol] = { ...piece, row: toRow, col: toCol };
         this.board[fromRow][fromCol] = null;
 
         const move = {
@@ -210,19 +209,25 @@ export class XiangqiGame {
 
         this.history.push(move);
         this.lastMove = move;
-        this.selectedPiece = null;
-        this.validMoves = [];
+
+        if (!isInternal) {
+            this.selectedPiece = null;
+            this.validMoves = [];
+        }
 
         // Switch turn
         this.turn = this.turn === 'RED' ? 'BLACK' : 'RED';
 
-        this.updateGameState();
-        this.notifyMove(move);
-        this.notifyBoardUpdate();
+        this.updateGameState(isInternal);
 
-        // AI Move
-        if (this.gameMode === 'pve' && this.turn === this.aiSide && !this.isGameOver()) {
-            setTimeout(() => this.makeAIMove(), 500);
+        if (!isInternal) {
+            this.notifyMove(move);
+            this.notifyBoardUpdate();
+
+            // AI Move
+            if (this.gameMode === 'pve' && this.turn === this.aiSide && !this.isGameOver()) {
+                setTimeout(() => this.makeAIMove(), 500);
+            }
         }
 
         return true;
@@ -393,26 +398,29 @@ export class XiangqiGame {
 
     // --- State Management ---
 
-    updateGameState() {
+    updateGameState(silent: boolean = false) {
         if (this.isNoMoves(this.turn)) {
             // No moves = loss
-            this.gameState = 'RESULT'; // In Xiangqi, result is shown differently or same? Chess uses 'CHECKMATE' -> 'RESULT'
-            // Let's use RESULT directly or CHECKMATE then RESULT. 
-            // Chess logic: CHECKMATE -> stopTimer -> 2s -> RESULT
             this.gameState = 'CHECKMATE';
             this.winner = this.turn === 'RED' ? 'BLACK' : 'RED';
             this.finalGameState = 'CHECKMATE';
-            this.stopTimer();
-            setTimeout(() => {
-                this.gameState = 'RESULT';
-                this.notifyStateChange();
-            }, 2000);
+
+            if (!silent) {
+                this.stopTimer();
+                setTimeout(() => {
+                    this.gameState = 'RESULT';
+                    this.notifyStateChange();
+                }, 2000);
+            }
         } else if (this.isChecked(this.turn)) {
             this.gameState = 'CHECK';
         } else {
             this.gameState = 'PLAYING';
         }
-        this.notifyStateChange();
+
+        if (!silent) {
+            this.notifyStateChange();
+        }
     }
     private finalGameState: 'CHECKMATE' | 'STALEMATE' | null = null; // To match Chess logic
 
@@ -453,15 +461,11 @@ export class XiangqiGame {
     private makeAIMove() {
         if (this.gameMode !== 'pve' || this.turn !== this.aiSide || this.isGameOver()) return;
 
-        // Use AI class (need to ensure AI class uses current Game instance or board)
-        // Current AI implementation takes 'game' in constructor. 
-        // We might need to adjust AI.ts to accept board/state for calculation or just use this instance.
-        // Let's create a temporary AI instance or keep one.
         const ai = new XiangqiAI(this); // Passing 'this'
         ai.searchDepth = this.aiDifficulty;
         const bestMove = ai.getBestMove();
         if (bestMove) {
-            this.makeMove(bestMove.to.row, bestMove.to.col);
+            this.makeMove(bestMove.from.row, bestMove.from.col, bestMove.to.row, bestMove.to.col);
         }
     }
 

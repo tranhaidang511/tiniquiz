@@ -87,8 +87,8 @@ const QUEEN_TABLE = [
 export class ChessAI {
     private static getSearchDepth(difficulty: Difficulty): number {
         switch (difficulty) {
-            case 'EASY': return 2;
-            case 'MEDIUM': return 4;
+            case 'EASY': return 1;
+            case 'MEDIUM': return 3;
             case 'HARD': return 5;
         }
     }

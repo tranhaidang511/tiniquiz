@@ -23,7 +23,7 @@ export class XiangqiAI {
         moves.sort(() => Math.random() - 0.5);
 
         for (const move of moves) {
-            this.game.makeMove(move.to.row, move.to.col);
+            this.game.makeMove(move.from.row, move.from.col, move.to.row, move.to.col, true);
             const score = -this.minimax(this.searchDepth - 1, -beta, -alpha);
             this.game.undoLastMove();
 
@@ -56,7 +56,7 @@ export class XiangqiAI {
         let maxScore = -Infinity;
 
         for (const move of moves) {
-            this.game.makeMove(move.to.row, move.to.col);
+            this.game.makeMove(move.from.row, move.from.col, move.to.row, move.to.col, true);
             const score = -this.minimax(depth - 1, -beta, -alpha);
             this.game.undoLastMove();
 

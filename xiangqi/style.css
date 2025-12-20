@@ -222,33 +222,3 @@
     gap: 60px;
     margin: 30px 0;
 }
-
-/* High Score Styling Overrides */
-#high-scores-table {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-#high-scores-table th {
-    background: rgba(93, 64, 55, 0.1);
-    color: var(--text-secondary);
-}
-
-#high-scores-table td {
-    color: var(--text-primary);
-    border-bottom: 1px solid var(--border-color);
-}
-
-#high-scores-table tr.current-run {
-    background: rgba(213, 0, 0, 0.1);
-    border-left-color: var(--piece-red);
-}
-
-#high-scores-table tr.current-run td {
-    color: var(--piece-red);
-}
-
-/* Setup Button Active State */
-.setup-btn.active {
-    background: var(--accent-primary);
-    color: #fff;
-}
