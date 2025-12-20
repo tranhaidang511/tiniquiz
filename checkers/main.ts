@@ -9,6 +9,12 @@ import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
 import { util } from '../common/util';
 
+interface HighScore {
+    moves: number;
+    time: number;
+    date: number | string;
+}
+
 // Initialize Consent Banner
 new Consent();
 
@@ -563,44 +569,17 @@ const showView = (viewId: string) => {
 
 // --- Game Event Handlers ---
 
-interface HighScore {
-    moves: number;
-    time: number;
-    date: number | string;
-}
-
-let currentGameState: GameState = 'MENU';
-let timerInterval: number | null = null;
-
 game.onStateChange((state: GameState) => {
-    currentGameState = state;
     if (state === 'MENU') {
         showView('menu-view');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
     }
     if (state === 'PLAYING') {
         showView('game-view');
         renderBoard();
         updateGameInfo();
-
-        // Start timer
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = window.setInterval(() => {
-            const elapsed = game.getElapsedTime();
-            const formatted = util.formatTime(elapsed);
-            const timerEl = document.getElementById('game-timer');
-            if (timerEl) timerEl.textContent = formatted;
-        }, 1000);
     }
     if (state === 'RESULT') {
         showView('result-view');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
         saveHighScore();
         displayResult();
     }
@@ -613,6 +592,13 @@ game.onMove(() => {
 
 game.onBoardUpdate(() => {
     renderBoard();
+});
+
+game.onTimerUpdate(() => {
+    const elapsed = game.getElapsedTime();
+    const formatted = util.formatTime(elapsed);
+    const timerEl = document.getElementById('game-timer');
+    if (timerEl) timerEl.textContent = formatted;
 });
 
 game.onAIThinking((thinking: boolean) => {
@@ -745,7 +731,7 @@ const displayResult = () => {
 // Subscribe to language changes
 localization.subscribe(() => {
     updateTexts();
-    if (currentGameState === 'RESULT') {
+    if (game.getState() === 'RESULT') {
         displayResult();
     }
 });

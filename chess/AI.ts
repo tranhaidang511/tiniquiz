@@ -85,7 +85,13 @@ const QUEEN_TABLE = [
 ];
 
 export class ChessAI {
-    private static getSearchDepth(difficulty: Difficulty): number {
+    private game: any; // Using any to avoid circular dependency issues, ideally ChessGame
+
+    constructor(gameInstance: any) {
+        this.game = gameInstance;
+    }
+
+    private getSearchDepth(difficulty: Difficulty): number {
         switch (difficulty) {
             case 'EASY': return 1;
             case 'MEDIUM': return 3;
@@ -93,18 +99,17 @@ export class ChessAI {
         }
     }
 
-    static getBestMove(
+    getBestMove(
         board: (Piece | null)[][],
         player: Player,
-        difficulty: Difficulty,
-        getValidMoves: (piece: Piece) => Position[]
+        difficulty: Difficulty
     ): { from: Position; to: Position } | null {
         const depth = this.getSearchDepth(difficulty);
         let bestMove: { from: Position; to: Position } | null = null;
         let bestScore = player === 'WHITE' ? -Infinity : Infinity;
 
         // Get all possible moves
-        const moves = this.getAllPossibleMoves(board, player, getValidMoves);
+        const moves = this.getAllPossibleMoves(board, player);
 
         if (moves.length === 0) {
             return null;
@@ -112,14 +117,13 @@ export class ChessAI {
 
         // Evaluate each move
         for (const move of moves) {
-            const newBoard = this.makeMove(board, move.from, move.to);
+            const newBoard = this.simulateMove(board, move.from, move.to);
             const score = this.minimax(
                 newBoard,
                 depth - 1,
                 -Infinity,
                 Infinity,
-                player === 'BLACK',
-                getValidMoves
+                player === 'BLACK'
             );
 
             if (player === 'WHITE') {
@@ -138,32 +142,35 @@ export class ChessAI {
         return bestMove;
     }
 
-    private static minimax(
+    private minimax(
         board: (Piece | null)[][],
         depth: number,
         alpha: number,
         beta: number,
-        maximizingPlayer: boolean,
-        getValidMoves: (piece: Piece) => Position[]
+        maximizingPlayer: boolean
     ): number {
         if (depth === 0) {
-            return this.evaluateBoard(board, getValidMoves);
+            return this.evaluateBoard(board);
         }
 
         const currentPlayer: Player = maximizingPlayer ? 'WHITE' : 'BLACK';
-        const moves = this.getAllPossibleMoves(board, currentPlayer, getValidMoves);
+        const moves = this.getAllPossibleMoves(board, currentPlayer);
 
         if (moves.length === 0) {
             // No moves available - check if it's checkmate or stalemate
-            // For simplicity, return a very high/low score
-            return maximizingPlayer ? -10000 : 10000;
+            // Check if king is in check on this board
+            if (this.game.isInCheck(currentPlayer, board)) {
+                return maximizingPlayer ? -10000 : 10000;
+            } else {
+                return 0; // Stalemate
+            }
         }
 
         if (maximizingPlayer) {
             let maxEval = -Infinity;
             for (const move of moves) {
-                const newBoard = this.makeMove(board, move.from, move.to);
-                const evalScore = this.minimax(newBoard, depth - 1, alpha, beta, false, getValidMoves);
+                const newBoard = this.simulateMove(board, move.from, move.to);
+                const evalScore = this.minimax(newBoard, depth - 1, alpha, beta, false);
                 maxEval = Math.max(maxEval, evalScore);
                 alpha = Math.max(alpha, evalScore);
                 if (beta <= alpha) {
@@ -174,8 +181,8 @@ export class ChessAI {
         } else {
             let minEval = Infinity;
             for (const move of moves) {
-                const newBoard = this.makeMove(board, move.from, move.to);
-                const evalScore = this.minimax(newBoard, depth - 1, alpha, beta, true, getValidMoves);
+                const newBoard = this.simulateMove(board, move.from, move.to);
+                const evalScore = this.minimax(newBoard, depth - 1, alpha, beta, true);
                 minEval = Math.min(minEval, evalScore);
                 beta = Math.min(beta, evalScore);
                 if (beta <= alpha) {
@@ -186,10 +193,10 @@ export class ChessAI {
         }
     }
 
-    private static evaluateBoard(board: (Piece | null)[][], getValidMoves?: (piece: Piece) => Position[]): number {
+    private evaluateBoard(board: (Piece | null)[][]): number {
         let score = 0;
         const isEndgamePhase = this.isEndgame(board);
-        
+
         // Material and positional evaluation
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
@@ -202,29 +209,27 @@ export class ChessAI {
                 }
             }
         }
-        
+
         // King safety (important in middlegame)
         if (!isEndgamePhase) {
             score += this.evaluateKingSafety(board, 'WHITE') * 2;
             score -= this.evaluateKingSafety(board, 'BLACK') * 2;
         }
-        
-        // Mobility (if getValidMoves provided)
-        if (getValidMoves) {
-            score += this.evaluateMobility(board, 'WHITE', getValidMoves) * 5;
-            score -= this.evaluateMobility(board, 'BLACK', getValidMoves) * 5;
-        }
-        
+
+        // Mobility
+        score += this.evaluateMobility(board, 'WHITE') * 5;
+        score -= this.evaluateMobility(board, 'BLACK') * 5;
+
         // Center control
         score += this.evaluateCenterControl(board);
-        
+
         // Pawn structure
         score += this.evaluatePawnStructure(board);
-        
+
         return score;
     }
 
-    private static getPositionalValue(piece: Piece, row: number, col: number, isEndgame: boolean): number {
+    private getPositionalValue(piece: Piece, row: number, col: number, isEndgame: boolean): number {
         // Flip row for white pieces (tables are from black's perspective)
         const tableRow = piece.player === 'WHITE' ? 7 - row : row;
         switch (piece.type) {
@@ -245,11 +250,11 @@ export class ChessAI {
         }
     }
 
-    private static isEndgame(board: (Piece | null)[][]): boolean {
+    private isEndgame(board: (Piece | null)[][]): boolean {
         // Endgame if queens are off or very few pieces remain
         let queens = 0;
         let minorPieces = 0;
-        
+
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 const piece = board[row][col];
@@ -259,12 +264,13 @@ export class ChessAI {
                 }
             }
         }
-        
+
         return queens === 0 || (queens === 2 && minorPieces <= 2);
     }
-    private static evaluateKingSafety(board: (Piece | null)[][], player: Player): number {
+
+    private evaluateKingSafety(board: (Piece | null)[][], player: Player): number {
         let safety = 0;
-        
+
         // Find king position
         let kingRow = -1, kingCol = -1;
         for (let row = 0; row < 8; row++) {
@@ -278,13 +284,13 @@ export class ChessAI {
             }
             if (kingRow !== -1) break;
         }
-        
+
         if (kingRow === -1) return 0;
-        
+
         // Check pawn shield (for non-endgame)
         const isWhite = player === 'WHITE';
         const shieldRow = isWhite ? kingRow - 1 : kingRow + 1;
-        
+
         if (shieldRow >= 0 && shieldRow < 8) {
             for (let colOffset = -1; colOffset <= 1; colOffset++) {
                 const col = kingCol + colOffset;
@@ -296,7 +302,7 @@ export class ChessAI {
                 }
             }
         }
-        
+
         // Penalty for king on open files
         let piecesOnKingFile = 0;
         for (let row = 0; row < 8; row++) {
@@ -305,36 +311,38 @@ export class ChessAI {
         if (piecesOnKingFile <= 2) {
             safety -= 15; // Penalty for exposed king
         }
-        
+
         // Bonus for castled position (king on g-file or c-file)
         if (kingCol === 6 || kingCol === 2) {
             safety += 25;
         }
-        
+
         return safety;
     }
-    private static evaluateMobility(board: (Piece | null)[][], player: Player, getValidMoves: (piece: Piece) => Position[]): number {
+
+    private evaluateMobility(board: (Piece | null)[][], player: Player): number {
         let mobility = 0;
-        
+
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 const piece = board[row][col];
                 if (piece && piece.player === player) {
-                    const moves = getValidMoves(piece);
+                    const moves = this.game.getValidMoves(piece, board);
                     mobility += moves.length;
                 }
             }
         }
-        
+
         return mobility;
     }
-    private static evaluateCenterControl(board: (Piece | null)[][]): number {
+
+    private evaluateCenterControl(board: (Piece | null)[][]): number {
         let score = 0;
         const centerSquares = [
             { row: 3, col: 3 }, { row: 3, col: 4 },
             { row: 4, col: 3 }, { row: 4, col: 4 }
         ];
-        
+
         for (const square of centerSquares) {
             const piece = board[square.row][square.col];
             if (piece) {
@@ -342,7 +350,7 @@ export class ChessAI {
                 score += piece.player === 'WHITE' ? value : -value;
             }
         }
-        
+
         // Extended center
         const extendedCenter = [
             { row: 2, col: 2 }, { row: 2, col: 3 }, { row: 2, col: 4 }, { row: 2, col: 5 },
@@ -350,23 +358,24 @@ export class ChessAI {
             { row: 4, col: 2 }, { row: 4, col: 5 },
             { row: 5, col: 2 }, { row: 5, col: 3 }, { row: 5, col: 4 }, { row: 5, col: 5 }
         ];
-        
+
         for (const square of extendedCenter) {
             const piece = board[square.row][square.col];
             if (piece && piece.type === 'PAWN') {
                 score += piece.player === 'WHITE' ? 5 : -5;
             }
         }
-        
+
         return score;
     }
-    private static evaluatePawnStructure(board: (Piece | null)[][]): number {
+
+    private evaluatePawnStructure(board: (Piece | null)[][]): number {
         let score = 0;
-        
+
         for (let col = 0; col < 8; col++) {
             let whitePawns = 0;
             let blackPawns = 0;
-            
+
             for (let row = 0; row < 8; row++) {
                 const piece = board[row][col];
                 if (piece && piece.type === 'PAWN') {
@@ -374,12 +383,12 @@ export class ChessAI {
                     else blackPawns++;
                 }
             }
-            
+
             // Penalty for doubled pawns
             if (whitePawns > 1) score -= (whitePawns - 1) * 15;
             if (blackPawns > 1) score += (blackPawns - 1) * 15;
         }
-        
+
         // Check for passed pawns
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
@@ -392,35 +401,35 @@ export class ChessAI {
                 }
             }
         }
-        
+
         return score;
     }
-    private static isPassedPawn(board: (Piece | null)[][], row: number, col: number, player: Player): boolean {
+
+    private isPassedPawn(board: (Piece | null)[][], row: number, col: number, player: Player): boolean {
         const direction = player === 'WHITE' ? -1 : 1;
         const startRow = player === 'WHITE' ? row - 1 : row + 1;
         const endRow = player === 'WHITE' ? 0 : 7;
-        
+
         // Check if there are enemy pawns blocking this pawn's path
         for (let r = startRow; player === 'WHITE' ? r >= endRow : r <= endRow; r += direction) {
             if (r < 0 || r >= 8) break;
-            
+
             for (let c = col - 1; c <= col + 1; c++) {
                 if (c < 0 || c >= 8) continue;
-                
+
                 const piece = board[r][c];
                 if (piece && piece.type === 'PAWN' && piece.player !== player) {
                     return false;
                 }
             }
         }
-        
+
         return true;
     }
 
-    private static getAllPossibleMoves(
+    private getAllPossibleMoves(
         board: (Piece | null)[][],
-        player: Player,
-        getValidMoves: (piece: Piece) => Position[]
+        player: Player
     ): { from: Position; to: Position }[] {
         const moves: { from: Position; to: Position }[] = [];
 
@@ -428,7 +437,7 @@ export class ChessAI {
             for (let col = 0; col < 8; col++) {
                 const piece = board[row][col];
                 if (piece && piece.player === player) {
-                    const validMoves = getValidMoves(piece);
+                    const validMoves = this.game.getValidMoves(piece, board);
                     for (const to of validMoves) {
                         moves.push({
                             from: { row, col },
@@ -442,7 +451,7 @@ export class ChessAI {
         return moves;
     }
 
-    private static makeMove(
+    private simulateMove(
         board: (Piece | null)[][],
         from: Position,
         to: Position
@@ -452,10 +461,13 @@ export class ChessAI {
             piece ? { ...piece } : null
         ));
 
-        const piece = newBoard[from.row][from.col];
-        if (piece) {
-            newBoard[to.row][to.col] = { ...piece, row: to.row, col: to.col };
-            newBoard[from.row][from.col] = null;
+        const move: any = { from, to };
+        this.game.executeMove(move, newBoard);
+
+        // Auto-promote to Queen in simulation for simplicity
+        const promotedPiece = newBoard[to.row][to.col];
+        if (promotedPiece && promotedPiece.type === 'PAWN' && (to.row === 0 || to.row === 7)) {
+            promotedPiece.type = 'QUEEN';
         }
 
         return newBoard;

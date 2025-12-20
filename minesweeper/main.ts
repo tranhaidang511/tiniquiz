@@ -9,6 +9,11 @@ import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
 import { util } from '../common/util';
 
+interface HighScore {
+    time: number;
+    date: number | string;
+}
+
 // Initialize Consent Banner
 new Consent();
 
@@ -280,15 +285,7 @@ const showView = (viewId: string) => {
 
 // --- Game Event Handlers ---
 
-interface HighScore {
-    time: number;
-    date: number | string;
-}
-
-let currentGameState: GameState = 'MENU';
-
 game.onStateChange((state: GameState) => {
-    currentGameState = state;
     if (state === 'MENU') {
         showView('menu-view');
     }
@@ -395,7 +392,7 @@ const displayResult = () => {
 // Subscribe to language changes
 localization.subscribe(() => {
     updateTexts();
-    if (currentGameState === 'WON' || currentGameState === 'LOST') {
+    if (game.getState() === 'WON' || game.getState() === 'LOST') {
         displayResult();
     }
 });

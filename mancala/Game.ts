@@ -33,6 +33,7 @@ class MancalaGame {
     private stateChangeListeners: ((state: GameState) => void)[] = [];
     private moveListeners: ((move: Move) => void)[] = [];
     private boardUpdateListeners: (() => void)[] = [];
+    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
     constructor() {
         this.ai = new MancalaAI(this.difficulty);
@@ -117,6 +118,7 @@ class MancalaGame {
         }
         this.timerInterval = window.setInterval(() => {
             this.elapsedTime = Date.now() - this.startTime;
+            this.notifyTimerUpdate();
         }, 1000);
     }
 
@@ -341,6 +343,10 @@ class MancalaGame {
         this.aiMoveListeners.push(listener);
     }
 
+    onTimerUpdate(listener: (elapsed: number) => void) {
+        this.timerUpdateListeners.push(listener);
+    }
+
     private notifyStateChange() {
         this.stateChangeListeners.forEach(listener => listener(this.gameState));
     }
@@ -355,6 +361,10 @@ class MancalaGame {
 
     private notifyAIMove() {
         this.aiMoveListeners.forEach(listener => listener());
+    }
+
+    private notifyTimerUpdate() {
+        this.timerUpdateListeners.forEach(listener => listener(this.elapsedTime));
     }
 }
 

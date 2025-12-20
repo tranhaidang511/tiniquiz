@@ -14,6 +14,7 @@ export class Game {
     private stateListeners: ((state: GameState) => void)[] = [];
     private boardListeners: (() => void)[] = [];
     private movesListeners: ((moves: number) => void)[] = [];
+    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
     constructor() { }
 
@@ -43,12 +44,12 @@ export class Game {
         // Shuffle the board
         this.shuffle();
 
-        this.moves = 0;
         this.startTime = Date.now();
         this.elapsedTime = 0;
         this.setState('PLAYING');
         this.emitBoardUpdate();
         this.emitMovesUpdate();
+        this.startTimer();
     }
 
     private shuffle() {
@@ -114,6 +115,7 @@ export class Game {
 
         if (this.checkWin()) {
             this.elapsedTime = Date.now() - this.startTime;
+            this.stopTimer();
             this.setState('WON');
         }
 
@@ -132,8 +134,26 @@ export class Game {
     }
 
     restart() {
+        this.stopTimer();
         this.setState('MENU');
     }
+
+    private startTimer() {
+        this.stopTimer();
+        this.timerInterval = window.setInterval(() => {
+            this.elapsedTime = Date.now() - this.startTime;
+            this.notifyTimerUpdate();
+        }, 1000);
+    }
+
+    private stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    private timerInterval: number | null = null;
 
     // --- Getters ---
 
@@ -164,6 +184,9 @@ export class Game {
 
     private setState(newState: GameState) {
         this.state = newState;
+        if (newState !== 'PLAYING') {
+            this.stopTimer();
+        }
         this.stateListeners.forEach(l => l(this.state));
     }
 
@@ -181,12 +204,20 @@ export class Game {
         this.movesListeners.push(listener);
     }
 
+    onTimerUpdate(listener: (elapsed: number) => void) {
+        this.timerUpdateListeners.push(listener);
+    }
+
     private emitBoardUpdate() {
         this.boardListeners.forEach(l => l());
     }
 
     private emitMovesUpdate() {
         this.movesListeners.forEach(l => l(this.moves));
+    }
+
+    private notifyTimerUpdate() {
+        this.timerUpdateListeners.forEach(l => l(this.elapsedTime));
     }
 
 }

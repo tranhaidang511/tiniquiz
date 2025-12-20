@@ -8,6 +8,13 @@ import type { Province } from './data/provinces';
 import { Consent } from '../common/Consent';
 import { util } from '../common/util';
 
+interface HighScore {
+  score: number;
+  total: number;
+  time: number;
+  date: number | string; // timestamp or legacy string
+}
+
 // Initialize Consent Banner
 new Consent();
 
@@ -277,40 +284,26 @@ const showView = (viewId: string) => {
 
 // --- Game Logic Integration ---
 
-let timerInterval: number | null = null;
-let currentGameState: GameState = 'MENU';
-
 game.onStateChange((state: GameState) => {
-  currentGameState = state;
   if (state === 'MENU') {
     showView('menu-view');
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
   }
   if (state === 'PLAYING') {
     showView('game-view');
-    // Start timer
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = window.setInterval(() => {
-      const elapsed = game.getElapsedTime();
-      const formatted = util.formatTime(elapsed);
-      const timerEl = document.getElementById('game-timer');
-      if (timerEl) timerEl.textContent = formatted;
-    }, 1000);
   }
   if (state === 'RESULT') {
     showView('result-view');
-    if (timerInterval) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
-
     // Save score and update display
     saveHighScore();
     displayResult();
   }
+});
+
+game.onTimerUpdate(() => {
+  const elapsed = game.getElapsedTime();
+  const formatted = util.formatTime(elapsed);
+  const timerEl = document.getElementById('game-timer');
+  if (timerEl) timerEl.textContent = formatted;
 });
 
 game.onQuestionChange((q: Question, index: number, total: number) => {
@@ -401,13 +394,6 @@ const handleAnswer = (choice: Country | Province, btn: HTMLElement, target: Coun
 
 // --- High Score Logic ---
 
-interface HighScore {
-  score: number;
-  total: number;
-  time: number;
-  date: number | string; // timestamp or legacy string
-}
-
 const saveHighScore = () => {
   const { score, total } = game.getScore();
   const time = game.getElapsedTime();
@@ -484,7 +470,7 @@ const displayResult = () => {
 localization.subscribe(() => {
   updateTexts();
   populateFilters();
-  if (currentGameState === 'RESULT') {
+  if (game.getState() === 'RESULT') {
     displayResult();
   }
 });

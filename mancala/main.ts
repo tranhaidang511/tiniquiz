@@ -445,39 +445,17 @@ const showView = (viewId: string) => {
 
 // --- Game Event Handlers ---
 
-let currentGameState: GameState = 'MENU';
-let timerInterval: number | null = null;
-
 game.onStateChange((state: GameState) => {
-    currentGameState = state;
     if (state === 'MENU') {
         showView('menu-view');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
     }
     if (state === 'PLAYING') {
         showView('game-view');
         renderBoard();
         updateGameInfo();
-
-        // Start timer
-        if (timerInterval) clearInterval(timerInterval);
-        timerInterval = window.setInterval(() => {
-            updateGameInfo();
-        }, 1000);
     }
     if (state === 'RESULT') {
         showView('result-view');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
         saveHighScore();
         displayResult();
     }
@@ -495,6 +473,10 @@ game.onBoardUpdate(() => {
 // Handle AI moves
 game.onAIMove(() => {
     game.makeAIMove();
+});
+
+game.onTimerUpdate(() => {
+    updateGameInfo();
 });
 
 const saveHighScore = () => {
@@ -654,7 +636,7 @@ const displayResult = () => {
 // Subscribe to language changes
 localization.subscribe(() => {
     updateTexts();
-    if (currentGameState === 'RESULT') {
+    if (game.getState() === 'RESULT') {
         displayResult();
     }
 });

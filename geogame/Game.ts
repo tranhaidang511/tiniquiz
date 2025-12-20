@@ -63,13 +63,15 @@ export class Game {
     private score: number = 0;
     private questions: Question[] = [];
     private startTime: number | null = null;
-    private endTime: number | null = null;
+    private elapsedTime: number = 0;
+    private timerInterval: number | null = null;
     private currentCountryFilter: string | null = null; // For states mode
     private filteredProvinces: Province[] = [];
 
     // Event listeners
     private stateListeners: ((state: GameState) => void)[] = [];
     private questionListeners: ((q: Question, index: number, total: number) => void)[] = [];
+    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
     constructor() {
         this.filteredCountries = [...countries];
@@ -141,10 +143,11 @@ export class Game {
         this.score = 0;
         this.currentQuestionIndex = 0;
         this.startTime = Date.now();
-        this.endTime = null;
+        this.elapsedTime = 0;
         this.generateQuestions(questionCount);
         this.setState('PLAYING');
         this.emitQuestion();
+        this.startTimer();
     }
 
     private generateQuestions(count: number) {
@@ -254,7 +257,8 @@ export class Game {
     nextQuestion() {
         this.currentQuestionIndex++;
         if (this.currentQuestionIndex >= this.questions.length) {
-            this.endTime = Date.now();
+            this.elapsedTime = Date.now() - (this.startTime || 0);
+            this.stopTimer();
             this.setState('RESULT');
         } else {
             this.emitQuestion();
@@ -262,14 +266,39 @@ export class Game {
     }
 
     restart() {
+        this.stopTimer();
         this.setState('MENU');
+    }
+
+    private startTimer() {
+        this.stopTimer();
+        this.timerInterval = window.setInterval(() => {
+            if (this.startTime) {
+                this.elapsedTime = Date.now() - this.startTime;
+                this.notifyTimerUpdate();
+            }
+        }, 1000);
+    }
+
+    private stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
     }
 
     // --- State Management ---
 
     private setState(newState: GameState) {
         this.state = newState;
+        if (newState !== 'PLAYING') {
+            this.stopTimer();
+        }
         this.stateListeners.forEach(l => l(this.state));
+    }
+
+    getState(): GameState {
+        return this.state;
     }
 
     onStateChange(listener: (state: GameState) => void) {
@@ -280,10 +309,18 @@ export class Game {
         this.questionListeners.push(listener);
     }
 
+    onTimerUpdate(listener: (elapsed: number) => void) {
+        this.timerUpdateListeners.push(listener);
+    }
+
     private emitQuestion() {
         if (this.state === 'PLAYING' && this.questions[this.currentQuestionIndex]) {
             this.questionListeners.forEach(l => l(this.questions[this.currentQuestionIndex], this.currentQuestionIndex + 1, this.questions.length));
         }
+    }
+
+    private notifyTimerUpdate() {
+        this.timerUpdateListeners.forEach(l => l(this.elapsedTime));
     }
 
     getScore(): { score: number; total: number } {
@@ -291,9 +328,7 @@ export class Game {
     }
 
     getElapsedTime(): number {
-        if (!this.startTime) return 0;
-        const end = this.endTime || Date.now();
-        return end - this.startTime; // milliseconds
+        return this.elapsedTime;
     }
 
 }

@@ -49,6 +49,7 @@ class CheckersGame {
     private moveListeners: ((move: Move) => void)[] = [];
     private boardUpdateListeners: (() => void)[] = [];
     private aiThinkingListeners: ((thinking: boolean) => void)[] = [];
+    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
     constructor() {
         this.ai = new CheckersAI(this);
@@ -166,6 +167,7 @@ class CheckersGame {
         }
         this.timerInterval = window.setInterval(() => {
             this.elapsedTime = Date.now() - this.startTime;
+            this.notifyTimerUpdate();
         }, 1000);
     }
 
@@ -663,6 +665,10 @@ class CheckersGame {
         this.aiThinkingListeners.push(listener);
     }
 
+    onTimerUpdate(listener: (elapsed: number) => void) {
+        this.timerUpdateListeners.push(listener);
+    }
+
     private notifyStateChange() {
         this.stateChangeListeners.forEach(listener => listener(this.gameState));
     }
@@ -677,6 +683,10 @@ class CheckersGame {
 
     private notifyAIThinking(thinking: boolean) {
         this.aiThinkingListeners.forEach(listener => listener(thinking));
+    }
+
+    private notifyTimerUpdate() {
+        this.timerUpdateListeners.forEach(listener => listener(this.elapsedTime));
     }
 }
 

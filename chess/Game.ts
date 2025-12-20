@@ -3,6 +3,7 @@ import { ChessAI, type Difficulty } from './AI';
 export type Player = 'WHITE' | 'BLACK';
 export type PieceType = 'PAWN' | 'ROOK' | 'KNIGHT' | 'BISHOP' | 'QUEEN' | 'KING';
 export type GameState = 'MENU' | 'PLAYING' | 'CHECK' | 'CHECKMATE' | 'STALEMATE' | 'RESULT';
+export type GameMode = 'TWO_PLAYER' | 'VS_AI';
 
 export interface Position {
     row: number;
@@ -39,7 +40,7 @@ class ChessGame {
     private finalGameState: 'CHECKMATE' | 'STALEMATE' | null = null;
 
     // AI properties
-    private gameMode: 'TWO_PLAYER' | 'VS_AI' = 'TWO_PLAYER';
+    private gameMode: GameMode = 'TWO_PLAYER';
     private aiPlayer: Player | null = null;
     private aiDifficulty: Difficulty = 'MEDIUM';
 
@@ -51,6 +52,7 @@ class ChessGame {
     // Event listeners
     private stateChangeListeners: ((state: GameState) => void)[] = [];
     private moveListeners: ((move: Move) => void)[] = [];
+    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
     private promotionListeners: ((row: number, col: number) => void)[] = [];
     private boardUpdateListeners: (() => void)[] = [];
 
@@ -78,7 +80,19 @@ class ChessGame {
         }
     }
 
-    start(mode: 'TWO_PLAYER' | 'VS_AI' = 'TWO_PLAYER', aiSide: Player | null = null, difficulty: Difficulty = 'MEDIUM') {
+    setDifficulty(difficulty: Difficulty) {
+        this.aiDifficulty = difficulty;
+    }
+
+    setGameMode(mode: GameMode) {
+        this.gameMode = mode;
+    }
+
+    setAISide(side: Player | null) {
+        this.aiPlayer = side;
+    }
+
+    start() {
         this.initializeBoard();
         this.currentPlayer = 'WHITE';
         this.gameState = 'PLAYING';
@@ -89,11 +103,6 @@ class ChessGame {
         this.enPassantTarget = null;
         this.lastMove = null;
         this.finalGameState = null;
-
-        // Set game mode and AI properties
-        this.gameMode = mode;
-        this.aiPlayer = mode === 'VS_AI' ? aiSide : null;
-        this.aiDifficulty = difficulty;
 
         this.startTimer();
         this.notifyStateChange();
@@ -116,6 +125,7 @@ class ChessGame {
         this.elapsedTime = 0;
         this.timerInterval = window.setInterval(() => {
             this.elapsedTime = Date.now() - this.startTime;
+            this.notifyTimerUpdate();
         }, 1000);
     }
 
@@ -200,34 +210,28 @@ class ChessGame {
         }
 
         // Execute the move
-        this.board[toRow][toCol] = this.selectedPiece;
-        this.board[from.row][from.col] = null;
-        this.selectedPiece.row = toRow;
-        this.selectedPiece.col = toCol;
-        this.selectedPiece.hasMoved = true;
+        this.executeMove(move, this.board);
 
-        // Check for pawn promotion
-        if (this.selectedPiece.type === 'PAWN' && (toRow === 0 || toRow === 7)) {
-            move.special = 'PROMOTION';
-            // Store pending promotion and wait for user choice
+        // Check for pawn promotion (only on the real board)
+        if (move.special === 'PROMOTION') {
             this.pendingPromotion = { row: toRow, col: toCol, move };
             this.notifyPromotion(toRow, toCol);
-            return true; // Don't complete the turn yet
-        }
-
-        // Update en passant target
-        this.enPassantTarget = null;
-        if (this.selectedPiece.type === 'PAWN' && Math.abs(toRow - from.row) === 2) {
-            this.enPassantTarget = {
-                row: this.currentPlayer === 'WHITE' ? toRow + 1 : toRow - 1,
-                col: toCol
-            };
+            return true;
         }
 
         this.lastMove = move;
         this.moveHistory.push(move);
         this.selectedPiece = null;
         this.validMoves = [];
+
+        // Update en passant target for the next turn
+        this.enPassantTarget = null;
+        if (this.board[toRow][toCol]?.type === 'PAWN' && Math.abs(toRow - from.row) === 2) {
+            this.enPassantTarget = {
+                row: this.currentPlayer === 'WHITE' ? toRow + 1 : toRow - 1,
+                col: toCol
+            };
+        }
 
         // Switch player
         this.currentPlayer = this.currentPlayer === 'WHITE' ? 'BLACK' : 'WHITE';
@@ -247,50 +251,96 @@ class ChessGame {
         return true;
     }
 
-    getValidMoves(piece: Piece): Position[] {
+    executeMove(move: Move, board: (Piece | null)[][] = this.board) {
+        const piece = board[move.from.row][move.from.col];
+        if (!piece) return;
+
+        const toRow = move.to.row;
+        const toCol = move.to.col;
+
+        // Handle en passant capture
+        if (piece.type === 'PAWN' && !board[toRow][toCol] && move.to.col !== move.from.col) {
+            const capturedRow = piece.player === 'WHITE' ? toRow + 1 : toRow - 1;
+            board[capturedRow][toCol] = null;
+            move.special = 'EN_PASSANT';
+        }
+
+        // Handle castling
+        if (piece.type === 'KING' && Math.abs(toCol - move.from.col) === 2) {
+            move.special = 'CASTLING';
+            const isKingside = toCol > move.from.col;
+            move.castlingSide = isKingside ? 'KINGSIDE' : 'QUEENSIDE';
+
+            // Move the rook
+            const rookCol = isKingside ? 7 : 0;
+            const newRookCol = isKingside ? toCol - 1 : toCol + 1;
+            const rook = board[toRow][rookCol];
+            if (rook) {
+                board[toRow][newRookCol] = rook;
+                board[toRow][rookCol] = null;
+                rook.col = newRookCol;
+                rook.row = toRow;
+                rook.hasMoved = true;
+            }
+        }
+
+        // Check for promotion (mark it, but caller handles the actual choice for the real board)
+        if (piece.type === 'PAWN' && (toRow === 0 || toRow === 7)) {
+            move.special = 'PROMOTION';
+        }
+
+        // Standard move/capture
+        board[toRow][toCol] = piece;
+        board[move.from.row][move.from.col] = null;
+        piece.row = toRow;
+        piece.col = toCol;
+        piece.hasMoved = true;
+    }
+
+    getValidMoves(piece: Piece, board: (Piece | null)[][] = this.board): Position[] {
         let moves: Position[] = [];
 
         switch (piece.type) {
             case 'PAWN':
-                moves = this.getPawnMoves(piece);
+                moves = this.getPawnMoves(piece, board);
                 break;
             case 'ROOK':
-                moves = this.getRookMoves(piece);
+                moves = this.getRookMoves(piece, board);
                 break;
             case 'KNIGHT':
-                moves = this.getKnightMoves(piece);
+                moves = this.getKnightMoves(piece, board);
                 break;
             case 'BISHOP':
-                moves = this.getBishopMoves(piece);
+                moves = this.getBishopMoves(piece, board);
                 break;
             case 'QUEEN':
-                moves = this.getQueenMoves(piece);
+                moves = this.getQueenMoves(piece, board);
                 break;
             case 'KING':
-                moves = this.getKingMoves(piece);
+                moves = this.getKingMoves(piece, board);
                 break;
         }
 
         // Filter out moves that would leave king in check
-        moves = moves.filter(move => !this.wouldBeInCheck(piece, move));
+        moves = moves.filter(move => !this.wouldBeInCheck(piece, move, board));
 
         return moves;
     }
 
-    getPawnMoves(piece: Piece): Position[] {
+    getPawnMoves(piece: Piece, board: (Piece | null)[][] = this.board): Position[] {
         const moves: Position[] = [];
         const direction = piece.player === 'WHITE' ? -1 : 1;
         const startRow = piece.player === 'WHITE' ? 6 : 1;
 
         // Forward move
         const newRow = piece.row + direction;
-        if (this.isInBounds(newRow, piece.col) && !this.board[newRow][piece.col]) {
+        if (this.isInBounds(newRow, piece.col) && !board[newRow][piece.col]) {
             moves.push({ row: newRow, col: piece.col });
 
             // Double move from starting position
             if (piece.row === startRow) {
                 const doubleRow = piece.row + 2 * direction;
-                if (!this.board[doubleRow][piece.col]) {
+                if (!board[doubleRow][piece.col]) {
                     moves.push({ row: doubleRow, col: piece.col });
                 }
             }
@@ -300,13 +350,13 @@ class ChessGame {
         for (const colOffset of [-1, 1]) {
             const newCol = piece.col + colOffset;
             if (this.isInBounds(newRow, newCol)) {
-                const target = this.board[newRow][newCol];
+                const target = board[newRow][newCol];
                 if (target && target.player !== piece.player) {
                     moves.push({ row: newRow, col: newCol });
                 }
 
-                // En passant
-                if (this.enPassantTarget &&
+                // En passant (only on real board unless we pass state for it)
+                if (board === this.board && this.enPassantTarget &&
                     newRow === this.enPassantTarget.row &&
                     newCol === this.enPassantTarget.col) {
                     moves.push({ row: newRow, col: newCol });
@@ -317,16 +367,16 @@ class ChessGame {
         return moves;
     }
 
-    getRookMoves(piece: Piece): Position[] {
+    getRookMoves(piece: Piece, board: (Piece | null)[][] = this.board): Position[] {
         return this.getLinearMoves(piece, [
             { row: -1, col: 0 },
             { row: 1, col: 0 },
             { row: 0, col: -1 },
             { row: 0, col: 1 }
-        ]);
+        ], board);
     }
 
-    getKnightMoves(piece: Piece): Position[] {
+    getKnightMoves(piece: Piece, board: (Piece | null)[][] = this.board): Position[] {
         const moves: Position[] = [];
         const offsets = [
             { row: -2, col: -1 }, { row: -2, col: 1 },
@@ -340,7 +390,7 @@ class ChessGame {
             const newCol = piece.col + offset.col;
 
             if (this.isInBounds(newRow, newCol)) {
-                const target = this.board[newRow][newCol];
+                const target = board[newRow][newCol];
                 if (!target || target.player !== piece.player) {
                     moves.push({ row: newRow, col: newCol });
                 }
@@ -350,25 +400,25 @@ class ChessGame {
         return moves;
     }
 
-    getBishopMoves(piece: Piece): Position[] {
+    getBishopMoves(piece: Piece, board: (Piece | null)[][] = this.board): Position[] {
         return this.getLinearMoves(piece, [
             { row: -1, col: -1 },
             { row: -1, col: 1 },
             { row: 1, col: -1 },
             { row: 1, col: 1 }
-        ]);
+        ], board);
     }
 
-    getQueenMoves(piece: Piece): Position[] {
+    getQueenMoves(piece: Piece, board: (Piece | null)[][] = this.board): Position[] {
         return this.getLinearMoves(piece, [
             { row: -1, col: 0 }, { row: 1, col: 0 },
             { row: 0, col: -1 }, { row: 0, col: 1 },
             { row: -1, col: -1 }, { row: -1, col: 1 },
             { row: 1, col: -1 }, { row: 1, col: 1 }
-        ]);
+        ], board);
     }
 
-    getKingMoves(piece: Piece): Position[] {
+    getKingMoves(piece: Piece, board: (Piece | null)[][] = this.board): Position[] {
         const moves: Position[] = [];
 
         // Normal king moves
@@ -380,7 +430,7 @@ class ChessGame {
                 const newCol = piece.col + colOffset;
 
                 if (this.isInBounds(newRow, newCol)) {
-                    const target = this.board[newRow][newCol];
+                    const target = board[newRow][newCol];
                     if (!target || target.player !== piece.player) {
                         moves.push({ row: newRow, col: newCol });
                     }
@@ -388,26 +438,26 @@ class ChessGame {
             }
         }
 
-        // Castling
-        if (!piece.hasMoved && !this.isInCheck(piece.player)) {
+        // Castling (only on the real board or if we simulate state properly)
+        if (board === this.board && !piece.hasMoved && !this.isInCheck(piece.player, board)) {
             // Kingside castling
-            const kingsideRook = this.board[piece.row][7];
+            const kingsideRook = board[piece.row][7];
             if (kingsideRook && !kingsideRook.hasMoved &&
-                !this.board[piece.row][5] && !this.board[piece.row][6]) {
+                !board[piece.row][5] && !board[piece.row][6]) {
                 // Check if squares king moves through are not under attack
-                if (!this.isSquareUnderAttack(piece.row, 5, piece.player) &&
-                    !this.isSquareUnderAttack(piece.row, 6, piece.player)) {
+                if (!this.isSquareUnderAttack(piece.row, 5, piece.player, board) &&
+                    !this.isSquareUnderAttack(piece.row, 6, piece.player, board)) {
                     moves.push({ row: piece.row, col: 6 });
                 }
             }
 
             // Queenside castling
-            const queensideRook = this.board[piece.row][0];
+            const queensideRook = board[piece.row][0];
             if (queensideRook && !queensideRook.hasMoved &&
-                !this.board[piece.row][1] && !this.board[piece.row][2] && !this.board[piece.row][3]) {
+                !board[piece.row][1] && !board[piece.row][2] && !board[piece.row][3]) {
                 // Check if squares king moves through are not under attack
-                if (!this.isSquareUnderAttack(piece.row, 2, piece.player) &&
-                    !this.isSquareUnderAttack(piece.row, 3, piece.player)) {
+                if (!this.isSquareUnderAttack(piece.row, 2, piece.player, board) &&
+                    !this.isSquareUnderAttack(piece.row, 3, piece.player, board)) {
                     moves.push({ row: piece.row, col: 2 });
                 }
             }
@@ -416,7 +466,7 @@ class ChessGame {
         return moves;
     }
 
-    getLinearMoves(piece: Piece, directions: Position[]): Position[] {
+    getLinearMoves(piece: Piece, directions: Position[], board: (Piece | null)[][] = this.board): Position[] {
         const moves: Position[] = [];
 
         for (const dir of directions) {
@@ -424,7 +474,7 @@ class ChessGame {
             let newCol = piece.col + dir.col;
 
             while (this.isInBounds(newRow, newCol)) {
-                const target = this.board[newRow][newCol];
+                const target = board[newRow][newCol];
 
                 if (!target) {
                     moves.push({ row: newRow, col: newCol });
@@ -443,34 +493,40 @@ class ChessGame {
         return moves;
     }
 
-    wouldBeInCheck(piece: Piece, move: Position): boolean {
+    wouldBeInCheck(piece: Piece, move: Position, board: (Piece | null)[][] = this.board): boolean {
+        // Handle castling special case for wouldBeInCheck
+        if (piece.type === 'KING' && Math.abs(move.col - piece.col) === 2) {
+            // kingMoves logic already checks if intermediate squares are under attack
+            // so we just need to check the final position
+        }
+
         // Simulate the move
         const originalRow = piece.row;
         const originalCol = piece.col;
-        const targetPiece = this.board[move.row][move.col];
+        const targetPiece = board[move.row][move.col];
 
-        this.board[move.row][move.col] = piece;
-        this.board[originalRow][originalCol] = null;
+        board[move.row][move.col] = piece;
+        board[originalRow][originalCol] = null;
         piece.row = move.row;
         piece.col = move.col;
 
-        const inCheck = this.isInCheck(piece.player);
+        const inCheck = this.isInCheck(piece.player, board);
 
-        // Undo the move
-        this.board[originalRow][originalCol] = piece;
-        this.board[move.row][move.col] = targetPiece;
+        // Undo the simulation
+        board[originalRow][originalCol] = piece;
+        board[move.row][move.col] = targetPiece;
         piece.row = originalRow;
         piece.col = originalCol;
 
         return inCheck;
     }
 
-    isInCheck(player: Player): boolean {
+    isInCheck(player: Player, board: (Piece | null)[][] = this.board): boolean {
         // Find the king
         let kingPos: Position | null = null;
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
-                const piece = this.board[row][col];
+                const piece = board[row][col];
                 if (piece && piece.type === 'KING' && piece.player === player) {
                     kingPos = { row, col };
                     break;
@@ -481,18 +537,18 @@ class ChessGame {
 
         if (!kingPos) return false;
 
-        return this.isSquareUnderAttack(kingPos.row, kingPos.col, player);
+        return this.isSquareUnderAttack(kingPos.row, kingPos.col, player, board);
     }
 
-    isSquareUnderAttack(row: number, col: number, player: Player): boolean {
+    isSquareUnderAttack(row: number, col: number, player: Player, board: (Piece | null)[][] = this.board): boolean {
         const opponent = player === 'WHITE' ? 'BLACK' : 'WHITE';
 
         // Check all opponent pieces
         for (let r = 0; r < 8; r++) {
             for (let c = 0; c < 8; c++) {
-                const piece = this.board[r][c];
+                const piece = board[r][c];
                 if (piece && piece.player === opponent) {
-                    const moves = this.getPieceMoves(piece);
+                    const moves = this.getPieceMoves(piece, board);
                     if (moves.some(m => m.row === row && m.col === col)) {
                         return true;
                     }
@@ -503,18 +559,18 @@ class ChessGame {
         return false;
     }
 
-    getPieceMoves(piece: Piece): Position[] {
+    getPieceMoves(piece: Piece, board: (Piece | null)[][] = this.board): Position[] {
         switch (piece.type) {
             case 'PAWN':
                 return this.getPawnAttackMoves(piece);
             case 'ROOK':
-                return this.getRookMoves(piece);
+                return this.getRookMoves(piece, board);
             case 'KNIGHT':
-                return this.getKnightMoves(piece);
+                return this.getKnightMoves(piece, board);
             case 'BISHOP':
-                return this.getBishopMoves(piece);
+                return this.getBishopMoves(piece, board);
             case 'QUEEN':
-                return this.getQueenMoves(piece);
+                return this.getQueenMoves(piece, board);
             case 'KING':
                 return this.getKingAttackMoves(piece);
             default:
@@ -556,40 +612,50 @@ class ChessGame {
         return moves;
     }
 
-    checkGameState() {
-        if (this.isInCheck(this.currentPlayer)) {
-            if (this.hasNoLegalMoves(this.currentPlayer)) {
-                this.gameState = 'CHECKMATE';
-                this.finalGameState = 'CHECKMATE';
+    checkGameState(board: (Piece | null)[][] = this.board) {
+        if (this.isInCheck(this.currentPlayer, board)) {
+            if (this.hasNoLegalMoves(this.currentPlayer, board)) {
+                if (board === this.board) {
+                    this.gameState = 'CHECKMATE';
+                    this.finalGameState = 'CHECKMATE';
+                    this.stopTimer();
+                    setTimeout(() => {
+                        this.gameState = 'RESULT';
+                        this.notifyStateChange();
+                    }, 2000);
+                }
+            } else {
+                if (board === this.board) {
+                    this.gameState = 'CHECK';
+                }
+            }
+        } else if (this.hasNoLegalMoves(this.currentPlayer, board)) {
+            if (board === this.board) {
+                this.gameState = 'STALEMATE';
+                this.finalGameState = 'STALEMATE';
                 this.stopTimer();
                 setTimeout(() => {
                     this.gameState = 'RESULT';
                     this.notifyStateChange();
                 }, 2000);
-            } else {
-                this.gameState = 'CHECK';
             }
-        } else if (this.hasNoLegalMoves(this.currentPlayer)) {
-            this.gameState = 'STALEMATE';
-            this.finalGameState = 'STALEMATE';
-            this.stopTimer();
-            setTimeout(() => {
-                this.gameState = 'RESULT';
-                this.notifyStateChange();
-            }, 2000);
         } else {
-            this.gameState = 'PLAYING';
+            if (board === this.board) {
+                this.gameState = 'PLAYING';
+            }
         }
 
-        this.notifyStateChange();
+        if (board === this.board) {
+            this.notifyStateChange();
+        }
     }
 
-    hasNoLegalMoves(player: Player): boolean {
+    hasNoLegalMoves(player: Player, board: (Piece | null)[][] = this.board): boolean {
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
-                const piece = this.board[row][col];
+                const piece = board[row][col];
                 if (piece && piece.player === player) {
-                    const moves = this.getValidMoves(piece);
+                    const moves = this.getValidMoves(piece, board);
                     if (moves.length > 0) {
                         return false;
                     }
@@ -604,6 +670,14 @@ class ChessGame {
     }
 
     // Getters
+    getGameMode(): GameMode {
+        return this.gameMode;
+    }
+
+    getDifficulty(): Difficulty {
+        return this.aiDifficulty;
+    }
+
     getAIPlayer(): Player | null {
         return this.aiPlayer;
     }
@@ -693,18 +767,11 @@ class ChessGame {
             return;
         }
 
-        const bestMove = ChessAI.getBestMove(
+        const ai = new ChessAI(this);
+        const bestMove = ai.getBestMove(
             this.board,
             this.currentPlayer,
-            this.aiDifficulty,
-            (piece) => {
-                // Find the piece in the real board using row/col from the simulated piece
-                const realPiece = this.board[piece.row][piece.col];
-                if (realPiece) {
-                    return this.getValidMoves(realPiece);
-                }
-                return [];
-            }
+            this.aiDifficulty
         );
 
         if (bestMove) {
@@ -733,6 +800,10 @@ class ChessGame {
         this.promotionListeners.push(listener);
     }
 
+    onTimerUpdate(listener: (elapsed: number) => void) {
+        this.timerUpdateListeners.push(listener);
+    }
+
     private notifyStateChange() {
         this.stateChangeListeners.forEach(listener => listener(this.gameState));
     }
@@ -747,6 +818,10 @@ class ChessGame {
 
     private notifyPromotion(row: number, col: number) {
         this.promotionListeners.forEach(listener => listener(row, col));
+    }
+
+    private notifyTimerUpdate() {
+        this.timerUpdateListeners.forEach(listener => listener(this.elapsedTime));
     }
 }
 

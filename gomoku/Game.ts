@@ -28,13 +28,15 @@ export class Game {
     private aiSide: Player | null = null;
     private isAIThinking: boolean = false;
     private startTime: number | null = null;
-    private endTime: number | null = null;
+    private elapsedTime: number = 0;
+    private timerInterval: number | null = null;
 
     // Event listeners
     private stateListeners: ((state: GameState) => void)[] = [];
     private moveListeners: ((stone: Stone) => void)[] = [];
     private boardListeners: ((board: (Player | null)[][]) => void)[] = [];
     private aiThinkingListeners: ((thinking: boolean) => void)[] = [];
+    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
     constructor() {
         this.ai = new GomokuAI(this.boardSize);
@@ -84,9 +86,10 @@ export class Game {
         this.winner = null;
         this.winningLine = null;
         this.startTime = Date.now();
-        this.endTime = null;
+        this.elapsedTime = 0;
         this.setState('PLAYING');
         this.emitBoard();
+        this.startTimer();
 
         // If AI plays BLACK (first), trigger move
         if (this.mode === 'VS_AI' && this.aiSide === 'BLACK') {
@@ -111,7 +114,6 @@ export class Game {
         // Check for win
         if (this.checkWin(row, col)) {
             this.winner = this.currentPlayer;
-            this.endTime = Date.now();
             this.emitMove(stone); // Emit before ending game
             this.setState('RESULT');
             return true;
@@ -119,7 +121,6 @@ export class Game {
 
         // Check for draw (board full)
         if (this.moves.length === this.boardSize * this.boardSize) {
-            this.endTime = Date.now();
             this.emitMove(stone); // Emit before ending game
             this.setState('RESULT');
             return true;
@@ -155,7 +156,6 @@ export class Game {
                 // Check for win
                 if (this.checkWin(aiMove.row, aiMove.col)) {
                     this.winner = aiSide;
-                    this.endTime = Date.now();
                     this.emitMove(stone); // Emit before ending
                     this.setState('RESULT');
                     this.isAIThinking = false;
@@ -165,7 +165,6 @@ export class Game {
 
                 // Check for draw
                 if (this.moves.length === this.boardSize * this.boardSize) {
-                    this.endTime = Date.now();
                     this.emitMove(stone); // Emit before ending
                     this.setState('RESULT');
                     this.isAIThinking = false;
@@ -230,13 +229,34 @@ export class Game {
     }
 
     restart() {
+        this.stopTimer();
         this.setState('MENU');
+    }
+
+    private startTimer() {
+        this.stopTimer();
+        this.timerInterval = window.setInterval(() => {
+            if (this.startTime) {
+                this.elapsedTime = Date.now() - this.startTime;
+                this.emitTimerUpdate();
+            }
+        }, 1000);
+    }
+
+    private stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
     }
 
     // --- State Management ---
 
     private setState(newState: GameState) {
         this.state = newState;
+        if (newState !== 'PLAYING') {
+            this.stopTimer();
+        }
         this.stateListeners.forEach(l => l(this.state));
     }
 
@@ -294,6 +314,10 @@ export class Game {
         this.aiThinkingListeners.push(listener);
     }
 
+    onTimerUpdate(listener: (elapsed: number) => void) {
+        this.timerUpdateListeners.push(listener);
+    }
+
     private emitMove(stone: Stone) {
         this.moveListeners.forEach(l => l(stone));
     }
@@ -306,10 +330,12 @@ export class Game {
         this.aiThinkingListeners.forEach(l => l(thinking));
     }
 
+    private emitTimerUpdate() {
+        this.timerUpdateListeners.forEach(l => l(this.elapsedTime));
+    }
+
     getElapsedTime(): number {
-        if (!this.startTime) return 0;
-        const end = this.endTime || Date.now();
-        return end - this.startTime; // milliseconds
+        return this.elapsedTime;
     }
 
 }

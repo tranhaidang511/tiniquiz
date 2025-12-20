@@ -23,15 +23,6 @@ new Consent();
 const savedLang = localStorage.getItem('language') as Language | null;
 const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 
-// --- State ---
-let currentGameState: GameState = 'MENU';
-let timerInterval: number | null = null;
-
-// Track current game settings
-let currentGameMode: 'TWO_PLAYER' | 'VS_AI' = 'TWO_PLAYER';
-let currentDifficulty: 'EASY' | 'MEDIUM' | 'HARD' = 'MEDIUM';
-let currentAISide: 'WHITE' | 'BLACK' | null = null;
-
 // --- UI Rendering ---
 
 function renderApp() {
@@ -211,12 +202,10 @@ function setupEventListeners() {
             difficulty = (diffBtn?.getAttribute('data-difficulty') as 'EASY' | 'MEDIUM' | 'HARD') || 'MEDIUM';
         }
 
-        // Store current settings
-        currentGameMode = mode;
-        currentDifficulty = difficulty;
-        currentAISide = aiSide;
-
-        game.start(mode, aiSide, difficulty);
+        game.setGameMode(mode);
+        game.setAISide(aiSide);
+        game.setDifficulty(difficulty);
+        game.start();
     });
 }
 
@@ -232,9 +221,7 @@ function renderBoard() {
 
     // Check if we need to flip the board (User is BLACK)
     // In VS_AI, if AI is WHITE (first), then User is BLACK (second).
-    // Or generally, if User is playing Black, we flip.
-    // game.getAIPlayer() returns the AI's side.
-    const isFlipped = currentGameMode === 'VS_AI' && game.getAIPlayer() === 'WHITE';
+    const isFlipped = game.getGameMode() === 'VS_AI' && game.getAIPlayer() === 'WHITE';
 
     // Set viewBox to include padding
     // Board is 800x800, plus 40px padding on all sides = 880x880
@@ -502,7 +489,7 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding
 
 function handleBoardClick(e: MouseEvent) {
     // Don't allow interaction during AI's turn
-    if (currentGameMode === 'VS_AI' && currentAISide === game.getCurrentPlayer()) {
+    if (game.getGameMode() === 'VS_AI' && game.getAIPlayer() === game.getCurrentPlayer()) {
         return;
     }
 
@@ -529,7 +516,7 @@ function handleBoardClick(e: MouseEvent) {
     const squareSize = 100;
 
     // Check if we need to flip the board (User is BLACK)
-    const isFlipped = currentGameMode === 'VS_AI' && game.getAIPlayer() === 'WHITE';
+    const isFlipped = game.getGameMode() === 'VS_AI' && game.getAIPlayer() === 'WHITE';
 
     let col = Math.floor(boardX / squareSize);
     let row = Math.floor(boardY / squareSize);
@@ -627,30 +614,15 @@ function updateTexts() {
 // --- Game Event Handlers ---
 
 game.onStateChange((state: GameState) => {
-    currentGameState = state;
 
     if (state === 'MENU') {
         showView('menu-view');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
     } else if (state === 'PLAYING' || state === 'CHECK') {
         showView('game-view');
         renderBoard();
         updateGameInfo();
-
-        if (!timerInterval) {
-            timerInterval = window.setInterval(() => {
-                updateGameInfo();
-            }, 1000);
-        }
     } else if (state === 'RESULT') {
         showView('result-view');
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
         saveHighScore();
         displayResult();
     }
@@ -663,6 +635,10 @@ game.onMove(() => {
 
 game.onBoardUpdate(() => {
     renderBoard();
+});
+
+game.onTimerUpdate(() => {
+    updateGameInfo();
 });
 
 game.onPromotion(() => {
@@ -698,7 +674,7 @@ const saveHighScore = () => {
     if (!winner) return;
 
     // Only save for VS_AI mode when White (human) wins
-    if (currentGameMode !== 'VS_AI') return;
+    if (game.getGameMode() !== 'VS_AI') return;
     if (winner !== 'WHITE') return;
 
     const moves = game.getMoveCount();
@@ -706,7 +682,7 @@ const saveHighScore = () => {
     const date = Date.now();
 
     const newScore: HighScore = { moves, time, date };
-    const key = `chess_highscores_${currentDifficulty}`;
+    const key = `chess_highscores_${game.getDifficulty()}`;
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.moves !== b.moves) return a.moves - b.moves;
@@ -715,9 +691,9 @@ const saveHighScore = () => {
 };
 
 const getHighScores = (): HighScore[] => {
-    if (currentGameMode !== 'VS_AI') return [];
+    if (game.getGameMode() !== 'VS_AI') return [];
 
-    const key = `chess_highscores_${currentDifficulty}`;
+    const key = `chess_highscores_${game.getDifficulty()}`;
     return util.getHighScores<HighScore>(key);
 };
 
@@ -760,7 +736,7 @@ function displayResult() {
     const tbody = document.getElementById('high-scores-body');
     const container = document.querySelector('.high-scores-container');
 
-    if (currentGameMode === 'VS_AI') {
+    if (game.getGameMode() === 'VS_AI') {
         if (container) container.classList.remove('hidden');
         if (tbody) {
             tbody.innerHTML = '';
@@ -799,7 +775,7 @@ function displayResult() {
 // Subscribe to language changes
 localization.subscribe(() => {
     updateTexts();
-    if (currentGameState === 'RESULT') {
+    if (game.getState() === 'RESULT') {
         displayResult();
     }
 });
