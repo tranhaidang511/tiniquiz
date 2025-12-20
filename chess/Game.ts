@@ -1,9 +1,10 @@
-import { ChessAI, type Difficulty } from './AI';
+import { ChessAI } from './AI';
 
 export type Player = 'WHITE' | 'BLACK';
 export type PieceType = 'PAWN' | 'ROOK' | 'KNIGHT' | 'BISHOP' | 'QUEEN' | 'KING';
 export type GameState = 'MENU' | 'PLAYING' | 'CHECK' | 'CHECKMATE' | 'STALEMATE' | 'RESULT';
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface Position {
     row: number;
@@ -768,10 +769,10 @@ class ChessGame {
         }
 
         const ai = new ChessAI(this);
+        ai.setDifficulty(this.aiDifficulty);
         const bestMove = ai.getBestMove(
             this.board,
-            this.currentPlayer,
-            this.aiDifficulty
+            this.currentPlayer
         );
 
         if (bestMove) {

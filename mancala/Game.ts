@@ -1,10 +1,10 @@
-import { MancalaAI, type Difficulty } from './AI';
+import { MancalaAI } from './AI';
 
 export type Player = 'PLAYER1' | 'PLAYER2';
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
 export type PitCount = 4 | 5 | 6 | 7 | 8;
-export type { Difficulty };
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface Move {
     player: Player;

@@ -1,6 +1,4 @@
-import type { Piece, Player, Position } from './Game';
-
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+import type { Piece, Player, Position, Difficulty } from './Game';
 
 // Piece values for evaluation
 const PIECE_VALUES: Record<string, number> = {
@@ -85,26 +83,32 @@ const QUEEN_TABLE = [
 ];
 
 export class ChessAI {
-    private game: any; // Using any to avoid circular dependency issues, ideally ChessGame
+    private game: any;
+    private searchDepth: number = 3;
 
     constructor(gameInstance: any) {
         this.game = gameInstance;
     }
 
-    private getSearchDepth(difficulty: Difficulty): number {
+    setDifficulty(difficulty: Difficulty) {
         switch (difficulty) {
-            case 'EASY': return 1;
-            case 'MEDIUM': return 3;
-            case 'HARD': return 5;
+            case 'EASY':
+                this.searchDepth = 1;
+                break;
+            case 'MEDIUM':
+                this.searchDepth = 3;
+                break;
+            case 'HARD':
+                this.searchDepth = 5;
+                break;
         }
     }
 
     getBestMove(
         board: (Piece | null)[][],
-        player: Player,
-        difficulty: Difficulty
+        player: Player
     ): { from: Position; to: Position } | null {
-        const depth = this.getSearchDepth(difficulty);
+        const depth = this.searchDepth;
         let bestMove: { from: Position; to: Position } | null = null;
         let bestScore = player === 'WHITE' ? -Infinity : Infinity;
 

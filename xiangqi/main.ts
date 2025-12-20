@@ -1,7 +1,7 @@
 
 import './style.css';
-import { game, Side } from './Game.js';
-import type { Piece, GameState } from './Game.js';
+import { game } from './Game.js';
+import type { Piece, GameState, PieceType, Player, GameMode, Difficulty } from './Game.js';
 import { Localization } from '../common/Localization.js';
 import type { Language } from '../common/Localization.js';
 import { Consent } from '../common/Consent.js';
@@ -26,18 +26,10 @@ const ROWS = 10;
 const BOARD_WIDTH = PADDING * 2 + (COLS - 1) * CELL_SIZE;
 const BOARD_HEIGHT = PADDING * 2 + (ROWS - 1) * CELL_SIZE;
 
-// --- State ---
-let timerInterval: number | null = null;
-let currentSettings = {
-    mode: 'pvp' as 'pvp' | 'pve',
-    difficulty: 'medium' as 'easy' | 'medium' | 'hard',
-    side: 'red' as 'red' | 'black' // User's side in PvE
-};
-
 // --- Initialization ---
+new Consent();
 const savedLang = localStorage.getItem('language') as Language | null;
 const localization = new Localization({ en, ja, vi }, savedLang || 'en');
-new Consent();
 
 function init() {
     setupEventListeners();
@@ -61,15 +53,11 @@ function showView(viewId: string) {
         if (el) el.classList.toggle('hidden', id !== viewId);
     });
 
-    if (viewId === 'menu-view') {
-        stopTimer();
-    } else if (viewId === 'game-view') {
-        startTimer();
+    if (viewId === 'game-view') {
         renderBoard();
         updateGameInfo();
     } else if (viewId === 'result-view') {
-        stopTimer();
-        renderResult();
+        displayResult();
     }
 }
 
@@ -95,18 +83,11 @@ function setupEventListeners() {
 
     // Menu: Game Mode
     const modeBtns = document.querySelectorAll('.mode-btn');
-    const pveSettings = document.querySelectorAll('.pve-setting');
     modeBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            modeBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const mode = (btn as HTMLElement).dataset.mode as 'pvp' | 'pve';
-            currentSettings.mode = mode;
-
-            pveSettings.forEach(el => {
-                if (mode === 'pve') el.classList.remove('hidden');
-                else el.classList.add('hidden');
-            });
+            const mode = (btn as HTMLElement).dataset.mode as GameMode;
+            game.setGameMode(mode);
+            updateMenuUI();
         });
     });
 
@@ -114,9 +95,9 @@ function setupEventListeners() {
     const diffBtns = document.querySelectorAll('.difficulty-btn');
     diffBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            diffBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentSettings.difficulty = (btn as HTMLElement).dataset.difficulty as 'easy' | 'medium' | 'hard';
+            const diff = (btn as HTMLElement).dataset.difficulty as Difficulty;
+            game.setDifficulty(diff);
+            updateMenuUI();
         });
     });
 
@@ -124,24 +105,16 @@ function setupEventListeners() {
     const sideBtns = document.querySelectorAll('.side-btn');
     sideBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            sideBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentSettings.side = (btn as HTMLElement).dataset.side as 'red' | 'black';
+            const side = (btn as HTMLElement).dataset.side as Player;
+            game.setAIPlayer(side === 'RED' ? 'BLACK' : 'RED'); // Setting AI side opposite to player
+            updateMenuUI();
         });
     });
 
     // Start Game
     document.getElementById('start-btn')?.addEventListener('click', () => {
         saveSetup();
-        // Determine AI side
-        let aiSide: Side | null = null;
-        if (currentSettings.mode === 'pve') {
-            // User plays currentSettings.side (e.g. 'red')
-            // AI plays opposite (e.g. 'BLACK')
-            aiSide = currentSettings.side === 'red' ? Side.BLACK : Side.RED;
-        }
-
-        game.start(currentSettings.mode, aiSide, currentSettings.difficulty);
+        game.start();
     });
 
     // Game: Board Interaction
@@ -163,39 +136,22 @@ function setupEventListeners() {
     });
 }
 
-function stopTimer() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-}
-
-function startTimer() {
-    if (timerInterval) clearInterval(timerInterval);
-    timerInterval = window.setInterval(() => {
-        const timerEl = document.getElementById('game-timer');
-        if (timerEl) {
-            timerEl.textContent = util.formatTime(game.getElapsedTime());
-        }
-    }, 1000);
-}
-
 // --- Logic Integration ---
 game.onStateChange((state: GameState) => {
     if (state === 'MENU') {
         showView('menu-view');
-    } else if (state === 'PLAYING' || state === 'CHECK') {
+    } else if (state === 'PLAYING' || state === 'CHECK' || state === 'CHECKMATE' || state === 'STALEMATE') {
         showView('game-view');
-    } else if (state === 'CHECKMATE' || state === 'STALEMATE' || state === 'RESULT') {
-        // If the game transitions to a result state
-        // For checkmate/stalemate, we often still show board briefly or show result view immediately.
-        // The game loop usually handles final state.
-        // Let's assume onStateChange to RESULT means "Game Over, show results".
-        // But game.ts might transition to CHECKMATE then wait.
-        // Let's check `game.isGameOver()`
-        if (game.isGameOver()) {
-            handleGameOver();
-        }
+    } else if (state === 'RESULT') {
+        saveHighScore();
+        showView('result-view');
+    }
+});
+
+game.onTimerUpdate(() => {
+    const timerEl = document.getElementById('game-timer');
+    if (timerEl) {
+        timerEl.textContent = util.formatTime(game.getElapsedTime());
     }
 });
 
@@ -208,22 +164,24 @@ game.onBoardUpdate(() => {
     renderBoard();
 });
 
-function handleGameOver() {
-    saveHighScoreIfApplicable();
-    showView('result-view');
-}
-
 // --- Persistence ---
 function saveSetup() {
-    localStorage.setItem('xiangqi_setup', JSON.stringify(currentSettings));
+    const setup = {
+        mode: game.getGameMode(),
+        difficulty: game.getDifficulty(),
+        aiPlayer: game.getAIPlayer()
+    };
+    localStorage.setItem('xiangqi_setup', JSON.stringify(setup));
 }
 
 function loadSetup() {
     try {
         const saved = localStorage.getItem('xiangqi_setup');
         if (saved) {
-            const parsed = JSON.parse(saved);
-            currentSettings = { ...currentSettings, ...parsed };
+            const { mode, difficulty, aiPlayer } = JSON.parse(saved);
+            if (mode) game.setGameMode(mode);
+            if (difficulty) game.setDifficulty(difficulty);
+            if (aiPlayer) game.setAIPlayer(aiPlayer);
             updateMenuUI();
         }
     } catch (e) {
@@ -232,28 +190,33 @@ function loadSetup() {
 }
 
 function updateMenuUI() {
+    const mode = game.getGameMode();
+    const difficulty = game.getDifficulty();
+    const aiPlayer = game.getAIPlayer();
+    const playerSide = aiPlayer === 'RED' ? 'BLACK' : 'RED';
+
     // Mode
     document.querySelectorAll('.mode-btn').forEach(btn => {
         const m = (btn as HTMLElement).dataset.mode;
-        btn.classList.toggle('active', m === currentSettings.mode);
+        btn.classList.toggle('active', m === mode);
     });
 
     // Difficulty
     document.querySelectorAll('.difficulty-btn').forEach(btn => {
         const d = (btn as HTMLElement).dataset.difficulty;
-        btn.classList.toggle('active', d === currentSettings.difficulty);
+        btn.classList.toggle('active', d === difficulty);
     });
 
     // Side
     document.querySelectorAll('.side-btn').forEach(btn => {
         const s = (btn as HTMLElement).dataset.side;
-        btn.classList.toggle('active', s === currentSettings.side);
+        btn.classList.toggle('active', s === playerSide);
     });
 
     // Visibility
     const pveSettings = document.querySelectorAll('.pve-setting');
     pveSettings.forEach(el => {
-        if (currentSettings.mode === 'pve') el.classList.remove('hidden');
+        if (mode === 'VS_AI') el.classList.remove('hidden');
         else el.classList.add('hidden');
     });
 }
@@ -272,8 +235,8 @@ function renderBoard() {
     // Or if it's black's turn in PvP? No, usually static in local PvP.
 
     // Check if we need to flip
-    // If PvE and User is Black -> Flip.
-    const isFlipped = (currentSettings.mode === 'pve' && currentSettings.side === 'black');
+    // If VS_AI and User is Black -> Flip. (User is Red if AI is Black)
+    const isFlipped = (game.getGameMode() === 'VS_AI' && game.getAIPlayer() === 'RED');
 
     drawGrid(svg);
     drawLastMove(svg, isFlipped);
@@ -347,7 +310,7 @@ function drawPieces(svg: SVGSVGElement, isFlipped: boolean) {
             if (p) {
                 const { x, y } = getVisualPos(r, c, isFlipped);
                 const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                g.setAttribute('class', `piece ${p.side.toLowerCase()}`);
+                g.setAttribute('class', `piece ${p.player.toLowerCase()}`);
                 g.setAttribute('transform', `translate(${x}, ${y})`);
 
                 const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -369,16 +332,16 @@ function drawPieces(svg: SVGSVGElement, isFlipped: boolean) {
 }
 
 function getPieceChar(p: Piece): string {
-    const chars: Record<string, Record<Side, string>> = {
-        'general': { [Side.RED]: '帥', [Side.BLACK]: '將' },
-        'advisor': { [Side.RED]: '仕', [Side.BLACK]: '士' },
-        'elephant': { [Side.RED]: '相', [Side.BLACK]: '象' },
-        'horse': { [Side.RED]: '傌', [Side.BLACK]: '馬' },
-        'chariot': { [Side.RED]: '俥', [Side.BLACK]: '車' },
-        'cannon': { [Side.RED]: '炮', [Side.BLACK]: '砲' },
-        'soldier': { [Side.RED]: '兵', [Side.BLACK]: '卒' }
+    const chars: Record<PieceType, Record<Player, string>> = {
+        'GENERAL': { 'RED': '帥', 'BLACK': '將' },
+        'ADVISOR': { 'RED': '仕', 'BLACK': '士' },
+        'ELEPHANT': { 'RED': '相', 'BLACK': '象' },
+        'HORSE': { 'RED': '傌', 'BLACK': '馬' },
+        'CHARIOT': { 'RED': '俥', 'BLACK': '車' },
+        'CANNON': { 'RED': '炮', 'BLACK': '砲' },
+        'SOLDIER': { 'RED': '兵', 'BLACK': '卒' }
     };
-    return chars[p.type][p.side] || '?';
+    return chars[p.type][p.player] || '?';
 }
 
 function drawHighlights(svg: SVGSVGElement, isFlipped: boolean) {
@@ -449,8 +412,8 @@ function drawLastMove(svg: SVGSVGElement, isFlipped: boolean) {
 }
 
 function handleBoardClick(e: MouseEvent) {
-    // If PvE and it's AI turn, ignore
-    if (currentSettings.mode === 'pve' && game.getCurrentPlayer() !== (currentSettings.side === 'red' ? Side.RED : Side.BLACK)) {
+    // If VS_AI and it's AI turn, ignore
+    if (game.getGameMode() === 'VS_AI' && game.getCurrentPlayer() === game.getAIPlayer()) {
         if (!game.isGameOver()) return;
     }
     if (game.isGameOver()) return;
@@ -472,7 +435,7 @@ function handleBoardClick(e: MouseEvent) {
     // x = PADDING + (isFlipped ? 8-col : col) * CELL_SIZE
     // (x - PADDING) / CELL_SIZE = (isFlipped ? 8-col : col)
 
-    const isFlipped = (currentSettings.mode === 'pve' && currentSettings.side === 'black');
+    const isFlipped = (game.getGameMode() === 'VS_AI' && game.getAIPlayer() === 'RED');
     let c = Math.round((x - PADDING) / CELL_SIZE);
     let r = Math.round((y - PADDING) / CELL_SIZE);
 
@@ -496,7 +459,7 @@ function updateGameInfo() {
         // Classes: 'turn-indicator red' or 'black'
         indicatorEl.className = `turn-indicator ${turn.toLowerCase()}`;
 
-        let textKey = turn === Side.RED ? 'redTurn' : 'blackTurn';
+        let textKey = turn === 'RED' ? 'redTurn' : 'blackTurn';
         if (state === 'CHECK') textKey = 'check'; // Or combine e.g. "Red Turn (Check)"? 
         // Localization keys: 'redTurn', 'blackTurn', 'check'
         // If check, usually we say "Check!" or "Red - Check!". 
@@ -505,6 +468,10 @@ function updateGameInfo() {
         let text = localization.getUIText(textKey);
         if (state === 'CHECK') {
             text += ` - ${localization.getUIText('check')}`;
+        } else if (state === 'CHECKMATE') {
+            text += ` - ${localization.getUIText('checkmate')}`;
+        } else if (state === 'STALEMATE') {
+            text += ` - ${localization.getUIText('draw')}`;
         }
         turnTextEl.textContent = text;
     }
@@ -525,15 +492,15 @@ function updateTexts() {
     document.getElementById('label-total-moves')!.textContent = localization.getUIText('totalMoves');
     // Settings
     document.getElementById('label-mode')!.textContent = localization.getUIText('labelMode');
-    document.getElementById('mode-pvp')!.textContent = localization.getUIText('modePvP');
-    document.getElementById('mode-pve')!.textContent = localization.getUIText('modePvE');
+    document.getElementById('mode-two-player')!.textContent = localization.getUIText('TWO_PLAYER');
+    document.getElementById('mode-vs-ai')!.textContent = localization.getUIText('VS_AI');
     document.getElementById('label-difficulty')!.textContent = localization.getUIText('labelDifficulty');
-    document.getElementById('diff-easy')!.textContent = localization.getUIText('difficultyEasy');
-    document.getElementById('diff-medium')!.textContent = localization.getUIText('difficultyMedium');
-    document.getElementById('diff-hard')!.textContent = localization.getUIText('difficultyHard');
+    document.getElementById('diff-easy')!.textContent = localization.getUIText('EASY');
+    document.getElementById('diff-medium')!.textContent = localization.getUIText('MEDIUM');
+    document.getElementById('diff-hard')!.textContent = localization.getUIText('HARD');
     document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
-    document.getElementById('side-red')!.textContent = localization.getUIText('sideRed');
-    document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
+    document.getElementById('side-red')!.textContent = localization.getUIText('RED');
+    document.getElementById('side-black')!.textContent = localization.getUIText('BLACK');
     // Result
     document.getElementById('result-title')!.textContent = localization.getUIText('gameOver');
     document.getElementById('restart-btn')!.textContent = localization.getUIText('playAgain');
@@ -549,16 +516,16 @@ function updateTexts() {
     });
 }
 
-function renderResult() {
+function displayResult() {
     const state = game.getFinalGameState();
     const winner = game.getWinner();
     const display = document.getElementById('winner-display');
     if (display) {
         let key = 'draw';
         if (state === 'CHECKMATE' && winner) {
-            key = winner === Side.RED ? 'redWins' : 'blackWins';
+            key = winner === 'RED' ? 'redWins' : 'blackWins';
         } else if (state === 'STALEMATE') {
-            key = 'stalemate'; // or draw
+            key = 'STALEMATE'; // standardized key
         }
         display.innerHTML = `<h3>${localization.getUIText(key)}</h3>`;
     }
@@ -566,16 +533,16 @@ function renderResult() {
     document.getElementById('total-time')!.textContent = util.formatTime(game.getElapsedTime());
     document.getElementById('total-moves')!.textContent = game.getMoveCount().toString();
 
-    renderHighScores();
+    displayHighScores();
 }
 
 // --- High Scores ---
-function saveHighScoreIfApplicable() {
-    if (currentSettings.mode !== 'pve') return;
+function saveHighScore() {
+    if (game.getGameMode() !== 'VS_AI') return;
 
     const winner = game.getWinner();
     // User wins if winner matches their side
-    const userSide = currentSettings.side === 'red' ? Side.RED : Side.BLACK;
+    const userSide = game.getAIPlayer() === 'RED' ? 'BLACK' : 'RED';
 
     if (winner === userSide) {
         const score: HighScore = {
@@ -583,7 +550,7 @@ function saveHighScoreIfApplicable() {
             time: game.getElapsedTime(),
             date: Date.now()
         };
-        const key = `xiangqi_highscores_${currentSettings.difficulty}`;
+        const key = `xiangqi_highscores_${game.getDifficulty()}`;
         util.saveHighScore(key, score, (a, b) => {
             // Sort by moves asc, then time asc
             if (a.moves !== b.moves) return a.moves - b.moves;
@@ -592,15 +559,15 @@ function saveHighScoreIfApplicable() {
     }
 }
 
-function renderHighScores() {
+function displayHighScores() {
     const container = document.querySelector('.high-scores-container');
-    if (currentSettings.mode !== 'pve') {
+    if (game.getGameMode() !== 'VS_AI') {
         if (container) container.classList.add('hidden');
         return;
     }
     if (container) container.classList.remove('hidden');
 
-    const key = `xiangqi_highscores_${currentSettings.difficulty}`;
+    const key = `xiangqi_highscores_${game.getDifficulty()}`;
     const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
     if (tbody) {

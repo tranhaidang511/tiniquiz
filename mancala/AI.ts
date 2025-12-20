@@ -1,6 +1,4 @@
-import type { Player, PitCount } from './Game';
-
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+import type { Player, PitCount, Difficulty } from './Game';
 
 export class MancalaAI {
     private difficulty: Difficulty;

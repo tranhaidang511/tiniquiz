@@ -1,17 +1,33 @@
 
-import { XiangqiGame, Side } from './Game';
-import type { PieceType, Move } from './Game';
+import { XiangqiGame } from './Game';
+import type { PieceType, Move, Player, Difficulty } from './Game';
 
 export class XiangqiAI {
     game: XiangqiGame;
-    searchDepth: number = 3;
+
+    private searchDepth: number = 3;
 
     constructor(game: XiangqiGame) {
         this.game = game;
     }
 
+    setDifficulty(difficulty: Difficulty) {
+        switch (difficulty) {
+            case 'EASY':
+                this.searchDepth = 1;
+                break;
+            case 'MEDIUM':
+                this.searchDepth = 3;
+                break;
+            case 'HARD':
+                this.searchDepth = 5;
+                break;
+        }
+    }
+
     getBestMove(): Move | null {
-        const moves = this.getAllValidMoves(this.game.turn);
+        const depth = this.searchDepth;
+        const moves = this.getAllValidMoves(this.game.getCurrentPlayer());
         if (moves.length === 0) return null;
 
         let bestMove: Move | null = null;
@@ -24,7 +40,7 @@ export class XiangqiAI {
 
         for (const move of moves) {
             this.game.makeMove(move.from.row, move.from.col, move.to.row, move.to.col, true);
-            const score = -this.minimax(this.searchDepth - 1, -beta, -alpha);
+            const score = -this.minimax(depth - 1, -beta, -alpha);
             this.game.undoLastMove();
 
             if (score > bestScore) {
@@ -45,7 +61,7 @@ export class XiangqiAI {
             return this.evaluate();
         }
 
-        const moves = this.getAllValidMoves(this.game.turn);
+        const moves = this.getAllValidMoves(this.game.getCurrentPlayer());
         if (moves.length === 0) {
             // No moves? strictly checkmate check?
             // The game.isGameOver should catch result.
@@ -74,13 +90,13 @@ export class XiangqiAI {
         return maxScore;
     }
 
-    private getAllValidMoves(side: Side): Move[] {
+    private getAllValidMoves(player: Player): Move[] {
         const moves: Move[] = [];
         const board = this.game.board;
         for (let r = 0; r < 10; r++) {
             for (let c = 0; c < 9; c++) {
                 const p = board[r][c];
-                if (p && p.side === side) {
+                if (p && p.player === player) {
                     // Try all targets
                     // Optimized: get candidate moves for piece
                     // But Game.ts doesn't expose "getMovesForPiece" easily without checking all board.
@@ -110,16 +126,16 @@ export class XiangqiAI {
 
         // Material weights
         const weights: Record<PieceType, number> = {
-            'general': 10000,
-            'advisor': 20,
-            'elephant': 20,
-            'horse': 40,
-            'cannon': 45,
-            'chariot': 90,
-            'soldier': 10
+            'GENERAL': 10000,
+            'ADVISOR': 20,
+            'ELEPHANT': 20,
+            'HORSE': 40,
+            'CANNON': 45,
+            'CHARIOT': 90,
+            'SOLDIER': 10
         };
 
-        const turnSide = this.game.turn; // Current player view
+        const turnSide = this.game.getCurrentPlayer(); // Current player view
 
         for (let r = 0; r < 10; r++) {
             for (let c = 0; c < 9; c++) {
@@ -127,12 +143,12 @@ export class XiangqiAI {
                 if (p) {
                     let val = weights[p.type];
                     // Soldier value increases across river
-                    if (p.type === 'soldier') {
-                        if (p.side === Side.RED && r < 5) val += 10; // Red crossed river (rows 0-4)
-                        if (p.side === Side.BLACK && r > 4) val += 10; // Black crossed river (rows 5-9)
+                    if (p.type === 'SOLDIER') {
+                        if (p.player === 'RED' && r < 5) val += 10; // Red crossed river (rows 0-4)
+                        if (p.player === 'BLACK' && r > 4) val += 10; // Black crossed river (rows 5-9)
                     }
 
-                    if (p.side === turnSide) {
+                    if (p.player === turnSide) {
                         score += val;
                     } else {
                         score -= val;

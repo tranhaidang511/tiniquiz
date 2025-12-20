@@ -1,9 +1,9 @@
-import { OthelloAI, type Difficulty } from './AI';
+import { OthelloAI } from './AI';
 
 export type Player = 'BLACK' | 'WHITE';
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
-export type { Difficulty };
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface Position {
     row: number;

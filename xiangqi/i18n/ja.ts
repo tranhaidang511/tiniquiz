@@ -16,7 +16,6 @@ export const ja = {
 
         check: '王手！',
         checkmate: '詰み！',
-        stalemate: 'ステイルメイト',
 
         gameOver: 'ゲーム終了',
         redWins: '紅の勝利！',
@@ -24,18 +23,16 @@ export const ja = {
         draw: '引き分け',
         playAgain: 'もう一度プレイ',
 
-        promotion: '昇格',
-
         labelMode: 'ゲームモード',
-        modePvP: '2人対戦',
-        modePvE: 'AI対戦',
+        TWO_PLAYER: '2人対戦',
+        VS_AI: 'AI対戦',
         labelDifficulty: '難易度',
-        difficultyEasy: '簡単',
-        difficultyMedium: '普通',
-        difficultyHard: '難しい',
+        EASY: '簡単',
+        MEDIUM: '普通',
+        HARD: '難しい',
         labelSide: 'プレイヤー',
-        sideRed: '紅 (赤)',
-        sideBlack: '黒',
+        RED: '紅 (赤)',
+        BLACK: '黒',
         aiThinking: 'AI思考中...',
 
         highScores: 'ハイスコア',

@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Piece } from './Game';
+import type { GameState, Piece, Difficulty, GameMode, Player } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import { Consent } from '../common/Consent';
@@ -188,18 +188,18 @@ function setupEventListeners() {
     startBtn?.addEventListener('click', () => {
         saveSetup();
         const modeBtn = document.querySelector('.mode-btn.active');
-        const mode = modeBtn?.getAttribute('data-mode') as 'TWO_PLAYER' | 'VS_AI' || 'TWO_PLAYER';
+        const mode = (modeBtn?.getAttribute('data-mode') as GameMode) || 'TWO_PLAYER';
 
-        let aiSide: 'WHITE' | 'BLACK' | null = null;
-        let difficulty: 'EASY' | 'MEDIUM' | 'HARD' = 'MEDIUM';
+        let aiSide: Player | null = null;
+        let difficulty: Difficulty = 'MEDIUM';
 
         if (mode === 'VS_AI') {
-            const sideBtn = document.querySelector('.side-btn.active');
-            const selectedSide = sideBtn?.getAttribute('data-side');
+            const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
+            const selectedSide = sideBtn?.dataset.side;
             aiSide = selectedSide === 'white' ? 'BLACK' : 'WHITE'; // AI plays opposite
 
-            const diffBtn = document.querySelector('.difficulty-btn.active');
-            difficulty = (diffBtn?.getAttribute('data-difficulty') as 'EASY' | 'MEDIUM' | 'HARD') || 'MEDIUM';
+            const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
+            difficulty = (diffBtn?.dataset.difficulty || 'MEDIUM') as Difficulty;
         }
 
         game.setGameMode(mode);

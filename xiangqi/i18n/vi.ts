@@ -16,7 +16,6 @@ export const vi = {
 
         check: 'Chiếu!',
         checkmate: 'Chiếu hết!',
-        stalemate: 'Hòa',
 
         gameOver: 'Kết thúc',
         redWins: 'Đỏ thắng!',
@@ -24,18 +23,16 @@ export const vi = {
         draw: 'Hòa',
         playAgain: 'Chơi lại',
 
-        promotion: 'Phong cấp',
-
         labelMode: 'Chế độ chơi',
-        modePvP: '2 Người chơi',
-        modePvE: 'Đấu với AI',
+        TWO_PLAYER: '2 Người chơi',
+        VS_AI: 'Đấu với AI',
         labelDifficulty: 'Độ khó',
-        difficultyEasy: 'Dễ',
-        difficultyMedium: 'Thường',
-        difficultyHard: 'Khó',
+        EASY: 'Dễ',
+        MEDIUM: 'Thường',
+        HARD: 'Khó',
         labelSide: 'Chọn bên',
-        sideRed: 'Đỏ',
-        sideBlack: 'Đen',
+        RED: 'Đỏ',
+        BLACK: 'Đen',
         aiThinking: 'AI đang suy nghĩ...',
 
         highScores: 'Điểm cao',

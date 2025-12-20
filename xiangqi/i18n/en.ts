@@ -16,7 +16,6 @@ export const en = {
 
         check: 'Check!',
         checkmate: 'Checkmate!',
-        stalemate: 'Stalemate!', // Not really used in Xiangqi but good for robustness
 
         gameOver: 'Game Over',
         redWins: 'Red Wins!',
@@ -24,18 +23,16 @@ export const en = {
         draw: 'Draw!',
         playAgain: 'Play Again',
 
-        promotion: 'Promotion', // Not used but keeps structure
-
         labelMode: 'Game Mode',
-        modePvP: '2 Players',
-        modePvE: 'vs AI',
+        TWO_PLAYER: '2 Players',
+        VS_AI: 'vs AI',
         labelDifficulty: 'Difficulty',
-        difficultyEasy: 'Easy',
-        difficultyMedium: 'Medium',
-        difficultyHard: 'Hard',
+        EASY: 'Easy',
+        MEDIUM: 'Medium',
+        HARD: 'Hard',
         labelSide: 'Play As',
-        sideRed: 'Red', // Changed White/Black to Red/Black
-        sideBlack: 'Black',
+        RED: 'Red',
+        BLACK: 'Black',
         aiThinking: 'AI is thinking...',
 
         highScores: 'High Scores',
