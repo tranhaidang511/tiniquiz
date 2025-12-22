@@ -37,6 +37,7 @@
     "mancala",
     "othello",
     "chess",
-    "xiangqi"
+    "xiangqi",
+    "go"
   ]
 }

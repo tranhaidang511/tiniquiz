@@ -1,0 +1,284 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* Import common styles */
+@import url('../common/style.css');
+
+:root {
+    --bg-primary: #0a0e27;
+    --bg-secondary: #151b3d;
+    --bg-card: #1e2749;
+    --text-primary: #e8eaf0;
+    --text-secondary: #a8b2d1;
+    --accent-primary: #4a90e2;
+    --accent-secondary: #357abd;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+    /* Go board colors */
+    --board-color: #deb887;
+    --board-line: #3d2b1f;
+    --stone-black: #1a1a1a;
+    --stone-white: #f0f0f0;
+}
+
+#app {
+    max-width: 900px;
+}
+
+/* Card Improvements */
+.card h2 {
+    font-size: 2rem;
+    margin-bottom: 30px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+/* Setup Groups */
+.setup-group {
+    margin-bottom: 25px;
+}
+
+.setup-group h3 {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+/* Game Header (Info) */
+.game-info {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+    background: var(--bg-secondary);
+    padding: 15px 25px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.current-turn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.turn-indicator {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.turn-indicator.black {
+    background: var(--stone-black);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.turn-indicator.white {
+    background: var(--stone-white);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.turn-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+/* Board Styles */
+#board-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    aspect-ratio: 1 / 1;
+    background-color: var(--board-color);
+    box-shadow: var(--shadow);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+#board {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+#board line {
+    stroke: var(--board-line);
+    stroke-width: 1;
+}
+
+#board .star-point {
+    fill: var(--board-line);
+}
+
+/* Stones */
+.stone {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+    transition: all 0.2s ease-out;
+}
+
+.stone.black {
+    fill: var(--stone-black);
+}
+
+.stone.white {
+    fill: var(--stone-white);
+}
+
+/* Last Move Indicator */
+.stone.last-move {
+    stroke: #ef4444;
+    /* Red indicator */
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 3px #ef4444);
+}
+
+/* Footer Buttons */
+.game-footer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    width: 100%;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Button Styles */
+button.secondary {
+    padding: 1rem 2rem;
+    /* Match common primary vertical padding */
+    font-size: 1.1rem;
+    /* Match common primary font size */
+    font-weight: 700;
+    /* Match common primary font weight */
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal;
+}
+
+.game-footer button {
+    margin-top: 0 !important;
+    flex: 1;
+    min-width: 140px;
+    height: 54px;
+    /* Explicit height to guarantee match */
+}
+
+button.secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+    transform: translateY(-2px);
+}
+
+button.secondary:active {
+    transform: translateY(0);
+}
+
+/* Result View */
+.winner-display {
+    text-align: center;
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(74, 144, 226, 0.1);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent-primary);
+}
+
+.result-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin: 20px 0;
+}
+
+/* Select Box */
+.styled-select {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.styled-select:focus {
+    border-color: var(--accent-primary);
+}
+
+/* Animations */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes placeStone {
+    from {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .game-info {
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .result-stats {
+        grid-template-columns: 1fr;
+    }
+}

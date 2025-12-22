@@ -33,7 +33,10 @@
     "preview:chess": "vite preview --config chess/vite.config.ts",
     "dev:xiangqi": "vite --config xiangqi/vite.config.ts",
     "build:xiangqi": "tsc && vite build --config xiangqi/vite.config.ts",
-    "preview:xiangqi": "vite preview --config xiangqi/vite.config.ts"
+    "preview:xiangqi": "vite preview --config xiangqi/vite.config.ts",
+    "dev:go": "vite --config go/vite.config.ts",
+    "build:go": "tsc && vite build --config go/vite.config.ts",
+    "preview:go": "vite preview --config go/vite.config.ts"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
