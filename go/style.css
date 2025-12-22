@@ -146,6 +146,20 @@
     fill: var(--stone-white);
 }
 
+/* Hover Stone */
+.stone-hover {
+    pointer-events: none;
+    transition: opacity 0.1s ease;
+}
+
+.stone-hover.black {
+    fill: var(--stone-black);
+}
+
+.stone-hover.white {
+    fill: var(--stone-white);
+}
+
 /* Last Move Indicator */
 .stone.last-move {
     stroke: #ef4444;

@@ -79,9 +79,16 @@
             <div class="setup-group">
                 <h3 id="label-mode">Game Mode</h3>
                 <div class="radio-group">
-                    <button class="setup-btn mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2
-                        Players</button>
+                    <button class="setup-btn mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2 Players</button>
                     <button class="setup-btn mode-btn" data-mode="VS_AI" id="mode-vs-ai">vs AI</button>
+                </div>
+            </div>
+
+            <div class="setup-group hidden" id="side-section">
+                <h3 id="label-side">Play As</h3>
+                <div class="radio-group">
+                    <button class="setup-btn side-btn active" data-side="BLACK" id="side-black">Black</button>
+                    <button class="setup-btn side-btn" data-side="WHITE" id="side-white">White</button>
                 </div>
             </div>
 
@@ -91,26 +98,6 @@
                     <button class="setup-btn size-btn" data-size="9">9 × 9</button>
                     <button class="setup-btn size-btn" data-size="13">13 × 13</button>
                     <button class="setup-btn size-btn active" data-size="19">19 × 19</button>
-                </div>
-            </div>
-
-            <div id="ai-settings" class="hidden">
-                <div class="setup-group">
-                    <h3 id="label-difficulty">Difficulty</h3>
-                    <div class="radio-group">
-                        <button class="setup-btn difficulty-btn" data-difficulty="EASY" id="diff-easy">Easy</button>
-                        <button class="setup-btn difficulty-btn active" data-difficulty="MEDIUM"
-                            id="diff-medium">Medium</button>
-                        <button class="setup-btn difficulty-btn" data-difficulty="HARD" id="diff-hard">Hard</button>
-                    </div>
-                </div>
-
-                <div class="setup-group">
-                    <h3 id="label-side">Play As</h3>
-                    <div class="radio-group">
-                        <button class="setup-btn side-btn active" data-side="BLACK" id="side-black">Black</button>
-                        <button class="setup-btn side-btn" data-side="WHITE" id="side-white">White</button>
-                    </div>
                 </div>
             </div>
 

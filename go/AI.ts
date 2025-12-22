@@ -1,14 +1,10 @@
-import type { GoGame, Difficulty, Player, Position } from './Game';
+import type { GoGame, Player, Position } from './Game';
 
 export class GoAI {
     private game: GoGame;
 
     constructor(gameInstance: GoGame) {
         this.game = gameInstance;
-    }
-
-    setDifficulty(_difficulty: Difficulty) {
-        // Simple heuristic AI doesn't use search depth yet
     }
 
     getBestMove(): Position | null {
@@ -21,6 +17,8 @@ export class GoAI {
         for (let r = 0; r < size; r++) {
             for (let c = 0; c < size; c++) {
                 if (board[r][c] === null) {
+                    // Basic rule check (prevent suicide/KO is handled by Game.placeStone, 
+                    // but AI should avoid obviously bad moves)
                     possibleMoves.push({ row: r, col: c });
                 }
             }
@@ -28,20 +26,27 @@ export class GoAI {
 
         if (possibleMoves.length === 0) return null;
 
-        // Shuffle moves
+        // Shuffle moves for variety
         possibleMoves.sort(() => Math.random() - 0.5);
 
         let bestMove: Position | null = null;
         let bestScore = -Infinity;
 
         for (const pos of possibleMoves) {
-            const score = this.evaluateMove(pos.row, pos.col, player, opponent);
+            let score = this.evaluateMove(pos.row, pos.col, player, opponent);
+
+            // Always use hard logic: avoid self-atari if it doesn't lead to a capture
+            if (this.isSelfAtari(pos.row, pos.col, player, opponent)) {
+                score -= 50; // Heavy penalty for putting self in atari
+            }
+
             if (score > bestScore) {
                 bestScore = score;
                 bestMove = pos;
             }
         }
 
+        // If even the best move is very bad, passing might be better (end of game)
         if (bestScore < -500) return null;
         return bestMove;
     }
@@ -49,35 +54,72 @@ export class GoAI {
     private evaluateMove(row: number, col: number, player: Player, opponent: Player): number {
         let score = 0;
         const neighbors = this.getNeighbors(row, col);
+        const board = this.game.getBoard();
 
         neighbors.forEach(n => {
-            const stone = this.game.getBoard()[n.row][n.col];
+            const stone = board[n.row][n.col];
             if (stone === opponent) {
-                if (this.countLiberties(n.row, n.col) === 1) {
-                    score += 10;
+                const liberties = this.countLiberties(n.row, n.col);
+                if (liberties === 1) {
+                    score += 20; // High priority: captured opponent!
+                } else if (liberties === 2) {
+                    score += 5; // Put opponent in atari (look ahead)
                 }
             } else if (stone === player) {
-                if (this.countLiberties(n.row, n.col) === 1) {
-                    score += 8;
+                const liberties = this.countLiberties(n.row, n.col);
+                if (liberties === 1) {
+                    score += 15; // High priority: save own group from capture
+                } else if (liberties === 2) {
+                    score += 3; // Strengthening own group
                 }
             }
         });
 
+        // Board position: bonus for playing near the center in early game
         const size = this.game.getBoardSize();
         const center = (size - 1) / 2;
         const dist = Math.abs(row - center) + Math.abs(col - center);
-        score += (size - dist) * 0.05;
+        score += (size - dist) * 0.1;
 
+        // Connectivity/Liberties
         let hasPotentialLiberties = false;
         neighbors.forEach(n => {
-            const s = this.game.getBoard()[n.row][n.col];
+            const s = board[n.row][n.col];
             if (s === null) hasPotentialLiberties = true;
             if (s === player && this.countLiberties(n.row, n.col) > 1) hasPotentialLiberties = true;
             if (s === opponent && this.countLiberties(n.row, n.col) === 1) hasPotentialLiberties = true;
         });
 
-        if (!hasPotentialLiberties) score -= 1000;
+        if (!hasPotentialLiberties) {
+            score -= 1000; // Likely suicide or immediate capture
+        }
+
         return score;
+    }
+
+    private isSelfAtari(row: number, col: number, player: Player, opponent: Player): boolean {
+        // Temporarily place stone
+        const board = this.game.getBoard();
+        const originalVal = board[row][col];
+        board[row][col] = player;
+
+        // Check if any opponent stones are captured (this makes self-atari okay/good)
+        const neighbors = this.getNeighbors(row, col);
+        let capturedOpponent = false;
+        for (const n of neighbors) {
+            if (board[n.row][n.col] === opponent && this.countLiberties(n.row, n.col) === 0) {
+                capturedOpponent = true;
+                break;
+            }
+        }
+
+        // Check if the group at (row, col) has only 1 liberty now
+        const liberties = this.countLiberties(row, col);
+
+        // Revert
+        board[row][col] = originalVal;
+
+        return !capturedOpponent && liberties === 1;
     }
 
     private countLiberties(row: number, col: number): number {

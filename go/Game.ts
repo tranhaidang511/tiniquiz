@@ -3,7 +3,7 @@ import { GoAI } from './AI';
 export type Player = 'BLACK' | 'WHITE';
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type BoardSize = 9 | 13 | 19;
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+
 
 export interface Position {
     row: number;
@@ -29,7 +29,6 @@ export class GoGame {
     // AI properties
     private mode: 'TWO_PLAYER' | 'VS_AI' = 'TWO_PLAYER';
     private aiPlayer: Player | null = null;
-    private aiDifficulty: Difficulty = 'MEDIUM';
 
     // Settings
     private komi: number = 6.5;
@@ -78,8 +77,7 @@ export class GoGame {
     setAISide(side: Player | null) { this.aiPlayer = side; }
     getAIPlayer() { return this.aiPlayer; }
 
-    setDifficulty(diff: Difficulty) { this.aiDifficulty = diff; }
-    getDifficulty() { return this.aiDifficulty; }
+
 
     setHandicap(h: number) { this.handicap = h; }
     getHandicap() { return this.handicap; }
@@ -362,7 +360,6 @@ export class GoGame {
         if (this.gameState !== 'PLAYING' || this.currentPlayer !== this.aiPlayer) return;
 
         const ai = new GoAI(this);
-        ai.setDifficulty(this.aiDifficulty);
         const bestMove = ai.getBestMove();
 
         if (bestMove) {

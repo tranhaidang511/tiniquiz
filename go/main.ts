@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { BoardSize, Difficulty, Player } from './Game';
+import type { BoardSize, Player } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import { en } from './i18n/en';
@@ -16,6 +16,8 @@ interface HighScore {
     date: number;
     size: number;
 }
+
+let hoverStone: SVGCircleElement | null = null;
 
 // Initialize Components
 new Consent();
@@ -51,14 +53,12 @@ function showView(viewId: string) {
 const saveSetup = () => {
     const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
     const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
-    const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
     const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
     const handicapSelect = document.getElementById('handicap-select') as HTMLSelectElement;
 
     const setup = {
         mode: modeBtn?.dataset.mode,
         size: sizeBtn?.dataset.size,
-        difficulty: diffBtn?.dataset.difficulty,
         side: sideBtn?.dataset.side,
         handicap: handicapSelect?.value
     };
@@ -69,24 +69,18 @@ const loadSetup = () => {
     try {
         const saved = localStorage.getItem('go_setup');
         if (saved) {
-            const { mode, size, difficulty, side, handicap } = JSON.parse(saved);
+            const { mode, size, side, handicap } = JSON.parse(saved);
 
             if (mode) {
                 document.querySelectorAll('.mode-btn').forEach(btn => {
                     btn.classList.toggle('active', (btn as HTMLElement).dataset.mode === mode);
                 });
-                if (mode === 'VS_AI') document.getElementById('ai-settings')?.classList.remove('hidden');
+                if (mode === 'VS_AI') document.getElementById('side-section')?.classList.remove('hidden');
             }
 
             if (size) {
                 document.querySelectorAll('.size-btn').forEach(btn => {
                     btn.classList.toggle('active', (btn as HTMLElement).dataset.size === size);
-                });
-            }
-
-            if (difficulty) {
-                document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                    btn.classList.toggle('active', (btn as HTMLElement).dataset.difficulty === difficulty);
                 });
             }
 
@@ -186,7 +180,38 @@ function renderBoard() {
     hitArea.setAttribute('width', '600');
     hitArea.setAttribute('height', '600');
     hitArea.setAttribute('fill', 'transparent');
-    hitArea.style.cursor = 'pointer';
+    hitArea.style.cursor = 'crosshair';
+
+    // Hover stone
+    hoverStone = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    hoverStone.setAttribute('r', (cellSize * 0.45).toString());
+    hoverStone.setAttribute('class', 'stone-hover');
+    hoverStone.style.opacity = '0';
+    hoverStone.style.pointerEvents = 'none';
+    svg.appendChild(hoverStone);
+
+    hitArea.addEventListener('mousemove', (e) => {
+        if (game.getState() !== 'PLAYING') return;
+        const rect = svg.getBoundingClientRect();
+        const scale = 600 / rect.width;
+        const col = Math.round(((e.clientX - rect.left) * scale - padding) / cellSize);
+        const row = Math.round(((e.clientY - rect.top) * scale - padding) / cellSize);
+
+        if (row >= 0 && row < size && col >= 0 && col < size && !game.getBoard()[row][col]) {
+            const player = game.getCurrentPlayer();
+            hoverStone?.setAttribute('cx', (padding + col * cellSize).toString());
+            hoverStone?.setAttribute('cy', (padding + row * cellSize).toString());
+            hoverStone?.setAttribute('class', `stone-hover ${player.toLowerCase()}`);
+            hoverStone?.style.setProperty('opacity', '0.4');
+        } else {
+            hoverStone?.style.setProperty('opacity', '0');
+        }
+    });
+
+    hitArea.addEventListener('mouseleave', () => {
+        if (hoverStone) hoverStone.style.opacity = '0';
+    });
+
     hitArea.addEventListener('click', (e) => {
         const rect = svg.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -280,7 +305,7 @@ function setupEventListeners() {
             target.classList.add('active');
 
             const mode = target.dataset.mode;
-            document.getElementById('ai-settings')?.classList.toggle('hidden', mode !== 'VS_AI');
+            document.getElementById('side-section')?.classList.toggle('hidden', mode !== 'VS_AI');
         });
     });
 
@@ -292,13 +317,7 @@ function setupEventListeners() {
         });
     });
 
-    document.querySelectorAll('.difficulty-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const target = e.target as HTMLElement;
-            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
-            target.classList.add('active');
-        });
-    });
+
 
     document.querySelectorAll('.side-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -311,19 +330,16 @@ function setupEventListeners() {
     document.getElementById('start-btn')?.addEventListener('click', () => {
         const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
         const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
-        const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
         const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
         const handicapSelect = document.getElementById('handicap-select') as HTMLSelectElement;
 
         const mode = modeBtn.dataset.mode as 'TWO_PLAYER' | 'VS_AI';
         const size = parseInt(sizeBtn.dataset.size || '19') as BoardSize;
-        const difficulty = diffBtn.dataset.difficulty as Difficulty;
         const side = sideBtn.dataset.side as Player;
         const handicap = parseInt(handicapSelect.value || '0');
 
         game.setGameMode(mode);
         game.setBoardSize(size);
-        game.setDifficulty(difficulty);
         game.setHandicap(handicap);
 
         if (mode === 'VS_AI') {
@@ -361,7 +377,6 @@ function updateTexts() {
     document.getElementById('menu-title')!.textContent = localization.getUIText('menuTitle');
     document.getElementById('label-mode')!.textContent = localization.getUIText('mode');
     document.getElementById('label-board-size')!.textContent = localization.getUIText('boardSize');
-    document.getElementById('label-difficulty')!.textContent = localization.getUIText('difficulty');
     document.getElementById('label-side')!.textContent = localization.getUIText('selectSide');
     document.getElementById('label-handicap')!.textContent = localization.getUIText('handicap');
     document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
@@ -388,11 +403,6 @@ function updateTexts() {
     document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
     document.getElementById('th-score')!.textContent = localization.getUIText('score');
     document.getElementById('th-date')!.textContent = localization.getUIText('date');
-
-    // Difficulty and Side Buttons
-    document.getElementById('diff-easy')!.textContent = localization.getUIText('EASY');
-    document.getElementById('diff-medium')!.textContent = localization.getUIText('MEDIUM');
-    document.getElementById('diff-hard')!.textContent = localization.getUIText('HARD');
 
     document.getElementById('side-black')!.textContent = localization.getUIText('BLACK');
     document.getElementById('side-white')!.textContent = localization.getUIText('WHITE');
@@ -431,12 +441,12 @@ function saveHighScore() {
         size: game.getBoardSize()
     };
 
-    const key = `go_highscores_${game.getBoardSize()}_${game.getDifficulty()}`;
+    const key = `go_highscores_${game.getBoardSize()}`;
     util.saveHighScore(key, highScore, (a, b) => b.score - a.score);
 }
 
 function renderHighScores() {
-    const key = `go_highscores_${game.getBoardSize()}_${game.getDifficulty()}`;
+    const key = `go_highscores_${game.getBoardSize()}`;
     const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
     if (tbody) {
