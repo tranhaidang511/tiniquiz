@@ -4,7 +4,7 @@ export type Player = 'WHITE' | 'BLACK';
 export type PieceType = 'PAWN' | 'ROOK' | 'KNIGHT' | 'BISHOP' | 'QUEEN' | 'KING';
 export type GameState = 'MENU' | 'PLAYING' | 'CHECK' | 'CHECKMATE' | 'STALEMATE' | 'RESULT';
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+
 
 export interface Position {
     row: number;
@@ -43,7 +43,7 @@ class ChessGame {
     // AI properties
     private gameMode: GameMode = 'TWO_PLAYER';
     private aiPlayer: Player | null = null;
-    private aiDifficulty: Difficulty = 'MEDIUM';
+
 
     // Timer
     private startTime: number = 0;
@@ -81,9 +81,7 @@ class ChessGame {
         }
     }
 
-    setDifficulty(difficulty: Difficulty) {
-        this.aiDifficulty = difficulty;
-    }
+
 
     setGameMode(mode: GameMode) {
         this.gameMode = mode;
@@ -675,9 +673,7 @@ class ChessGame {
         return this.gameMode;
     }
 
-    getDifficulty(): Difficulty {
-        return this.aiDifficulty;
-    }
+
 
     getAIPlayer(): Player | null {
         return this.aiPlayer;
@@ -769,7 +765,7 @@ class ChessGame {
         }
 
         const ai = new ChessAI(this);
-        ai.setDifficulty(this.aiDifficulty);
+
         const bestMove = ai.getBestMove(
             this.board,
             this.currentPlayer

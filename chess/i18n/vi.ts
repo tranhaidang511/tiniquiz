@@ -50,7 +50,7 @@ export const vi = {
         sideBlack: 'Đen',
         aiThinking: 'AI đang suy nghĩ...',
 
-        highScores: 'Điểm cao',
+        highScores: 'Bảng xếp hạng',
         rank: 'Hạng',
         date: 'Ngày',
     }

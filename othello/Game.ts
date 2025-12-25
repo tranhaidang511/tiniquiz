@@ -67,6 +67,10 @@ class OthelloGame {
         this.aiSide = side;
     }
 
+    getAISide(): Player | null {
+        return this.aiSide;
+    }
+
     getGameMode(): GameMode {
         return this.gameMode;
     }

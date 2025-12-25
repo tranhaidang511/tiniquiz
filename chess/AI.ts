@@ -1,4 +1,4 @@
-import type { Piece, Player, Position, Difficulty } from './Game';
+import type { Piece, Player, Position } from './Game';
 
 // Piece values for evaluation
 const PIECE_VALUES: Record<string, number> = {
@@ -90,25 +90,12 @@ export class ChessAI {
         this.game = gameInstance;
     }
 
-    setDifficulty(difficulty: Difficulty) {
-        switch (difficulty) {
-            case 'EASY':
-                this.searchDepth = 1;
-                break;
-            case 'MEDIUM':
-                this.searchDepth = 3;
-                break;
-            case 'HARD':
-                this.searchDepth = 5;
-                break;
-        }
-    }
+
 
     getBestMove(
         board: (Piece | null)[][],
         player: Player
     ): { from: Position; to: Position } | null {
-        const depth = this.searchDepth;
         let bestMove: { from: Position; to: Position } | null = null;
         let bestScore = player === 'WHITE' ? -Infinity : Infinity;
 
@@ -124,7 +111,7 @@ export class ChessAI {
             const newBoard = this.simulateMove(board, move.from, move.to);
             const score = this.minimax(
                 newBoard,
-                depth - 1,
+                this.searchDepth - 1,
                 -Infinity,
                 Infinity,
                 player === 'BLACK'

@@ -28,7 +28,7 @@ export const vi = {
         time: 'Thời gian',
         moves: 'Số nước đi',
         pass: 'Bỏ lượt',
-        highScores: 'Kỷ lục',
+        highScores: 'Bảng xếp hạng',
         rank: 'Hạng',
         score: 'Điểm',
         date: 'Ngày',

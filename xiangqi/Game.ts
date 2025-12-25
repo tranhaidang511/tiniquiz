@@ -5,7 +5,7 @@ export type Player = 'RED' | 'BLACK';
 export type PieceType = 'GENERAL' | 'ADVISOR' | 'ELEPHANT' | 'HORSE' | 'CHARIOT' | 'CANNON' | 'SOLDIER';
 export type GameState = 'MENU' | 'PLAYING' | 'CHECK' | 'CHECKMATE' | 'STALEMATE' | 'RESULT';
 export type GameMode = 'TWO_PLAYER' | 'VS_AI';
-export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+
 
 export interface Piece {
     type: PieceType;
@@ -35,7 +35,7 @@ export class XiangqiGame {
     // AI & Settings
     private mode: GameMode = 'TWO_PLAYER';
     private aiPlayer: Player = 'BLACK';
-    private difficulty: Difficulty = 'MEDIUM';
+
 
     // Timer
     private startTime: number = 0;
@@ -66,8 +66,7 @@ export class XiangqiGame {
     setGameMode(mode: GameMode) { this.mode = mode; }
     getGameMode(): GameMode { return this.mode; }
 
-    setDifficulty(diff: Difficulty) { this.difficulty = diff; }
-    getDifficulty(): Difficulty { return this.difficulty; }
+
 
     setAIPlayer(player: Player) { this.aiPlayer = player; }
     getAIPlayer(): Player { return this.aiPlayer; }
@@ -465,7 +464,7 @@ export class XiangqiGame {
     private makeAIMove() {
         if (this.mode === 'VS_AI' && this.turn === this.aiPlayer && !this.isGameOver()) {
             const ai = new XiangqiAI(this);
-            ai.setDifficulty(this.difficulty);
+
             const bestMove = ai.getBestMove();
             if (bestMove) {
                 this.makeMove(bestMove.from.row, bestMove.from.col, bestMove.to.row, bestMove.to.col);

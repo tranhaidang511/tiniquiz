@@ -75,22 +75,16 @@
         <!-- Menu View -->
         <div id="menu-view" class="card animate-fade-in">
             <h2 id="menu-title">Game Setup</h2>
-            
+
             <div class="setup-group">
                 <h3 id="label-mode">Game Mode</h3>
                 <div class="radio-group">
-                    <button class="setup-btn mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2 Players</button>
+                    <button class="setup-btn mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2
+                        Players</button>
                     <button class="setup-btn mode-btn" data-mode="VS_AI" id="mode-vs-ai">vs AI</button>
                 </div>
             </div>
-            <div class="setup-group hidden" id="difficulty-section">
-                <h3 id="label-difficulty">Difficulty</h3>
-                <div class="radio-group">
-                    <button class="setup-btn difficulty-btn" data-difficulty="EASY" id="diff-easy">Easy</button>
-                    <button class="setup-btn difficulty-btn active" data-difficulty="MEDIUM" id="diff-medium">Medium</button>
-                    <button class="setup-btn difficulty-btn" data-difficulty="HARD" id="diff-hard">Hard</button>
-                </div>
-            </div>
+
             <div class="setup-group hidden" id="side-section">
                 <h3 id="label-side">Play As</h3>
                 <div class="radio-group">
@@ -150,12 +144,14 @@
             <div class="high-scores-container">
                 <h3 id="high-scores-title">High Scores</h3>
                 <table id="high-scores-table">
-                    <thead><tr>
-                        <th id="th-rank">Rank</th>
-                        <th id="th-moves">Moves</th>
-                        <th id="th-time">Time</th>
-                        <th id="th-date">Date</th>
-                    </tr></thead>
+                    <thead>
+                        <tr>
+                            <th id="th-rank">Rank</th>
+                            <th id="th-moves">Moves</th>
+                            <th id="th-time">Time</th>
+                            <th id="th-date">Date</th>
+                        </tr>
+                    </thead>
                     <tbody id="high-scores-body">
                         <!-- High scores will be rendered here -->
                     </tbody>
@@ -194,7 +190,8 @@
                 </button>
                 <button class="promotion-piece" data-piece="KNIGHT">
                     <svg viewBox="0 0 100 100" width="60" height="60">
-                        <path class="piece-icon" fill="currentColor" d="M20 80h60l-10-10q6-20 8-35l-6-10l-6 5q-10 3-18 12l-6 8l5 8q6-3 10-5q-3 12 3 17L30 70l-10 10z"/>
+                        <path class="piece-icon" fill="currentColor"
+                            d="M20 80h60l-10-10q6-20 8-35l-6-10l-6 5q-10 3-18 12l-6 8l5 8q6-3 10-5q-3 12 3 17L30 70l-10 10z" />
                     </svg>
                     <span id="promotion-knight">Knight</span>
                 </button>

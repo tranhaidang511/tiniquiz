@@ -1,7 +1,7 @@
 
 import './style.css';
 import { game } from './Game.js';
-import type { Piece, GameState, PieceType, Player, GameMode, Difficulty } from './Game.js';
+import type { Piece, GameState, PieceType, Player, GameMode } from './Game.js';
 import { Localization } from '../common/Localization.js';
 import type { Language } from '../common/Localization.js';
 import { Consent } from '../common/Consent.js';
@@ -91,15 +91,7 @@ function setupEventListeners() {
         });
     });
 
-    // Menu: Difficulty
-    const diffBtns = document.querySelectorAll('.difficulty-btn');
-    diffBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const diff = (btn as HTMLElement).dataset.difficulty as Difficulty;
-            game.setDifficulty(diff);
-            updateMenuUI();
-        });
-    });
+
 
     // Menu: Side Selection
     const sideBtns = document.querySelectorAll('.side-btn');
@@ -168,7 +160,6 @@ game.onBoardUpdate(() => {
 function saveSetup() {
     const setup = {
         mode: game.getGameMode(),
-        difficulty: game.getDifficulty(),
         aiPlayer: game.getAIPlayer()
     };
     localStorage.setItem('xiangqi_setup', JSON.stringify(setup));
@@ -178,9 +169,8 @@ function loadSetup() {
     try {
         const saved = localStorage.getItem('xiangqi_setup');
         if (saved) {
-            const { mode, difficulty, aiPlayer } = JSON.parse(saved);
+            const { mode, aiPlayer } = JSON.parse(saved);
             if (mode) game.setGameMode(mode);
-            if (difficulty) game.setDifficulty(difficulty);
             if (aiPlayer) game.setAIPlayer(aiPlayer);
             updateMenuUI();
         }
@@ -191,7 +181,6 @@ function loadSetup() {
 
 function updateMenuUI() {
     const mode = game.getGameMode();
-    const difficulty = game.getDifficulty();
     const aiPlayer = game.getAIPlayer();
     const playerSide = aiPlayer === 'RED' ? 'BLACK' : 'RED';
 
@@ -201,11 +190,7 @@ function updateMenuUI() {
         btn.classList.toggle('active', m === mode);
     });
 
-    // Difficulty
-    document.querySelectorAll('.difficulty-btn').forEach(btn => {
-        const d = (btn as HTMLElement).dataset.difficulty;
-        btn.classList.toggle('active', d === difficulty);
-    });
+
 
     // Side
     document.querySelectorAll('.side-btn').forEach(btn => {
@@ -460,7 +445,6 @@ function updateGameInfo() {
         indicatorEl.className = `turn-indicator ${turn.toLowerCase()}`;
 
         let textKey = turn === 'RED' ? 'redTurn' : 'blackTurn';
-        if (state === 'CHECK') textKey = 'check'; // Or combine e.g. "Red Turn (Check)"? 
         // Localization keys: 'redTurn', 'blackTurn', 'check'
         // If check, usually we say "Check!" or "Red - Check!". 
         // Let's stick to turn, and maybe append check status.
@@ -494,10 +478,7 @@ function updateTexts() {
     document.getElementById('label-mode')!.textContent = localization.getUIText('labelMode');
     document.getElementById('mode-two-player')!.textContent = localization.getUIText('TWO_PLAYER');
     document.getElementById('mode-vs-ai')!.textContent = localization.getUIText('VS_AI');
-    document.getElementById('label-difficulty')!.textContent = localization.getUIText('labelDifficulty');
-    document.getElementById('diff-easy')!.textContent = localization.getUIText('EASY');
-    document.getElementById('diff-medium')!.textContent = localization.getUIText('MEDIUM');
-    document.getElementById('diff-hard')!.textContent = localization.getUIText('HARD');
+
     document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
     document.getElementById('side-red')!.textContent = localization.getUIText('RED');
     document.getElementById('side-black')!.textContent = localization.getUIText('BLACK');
@@ -550,7 +531,7 @@ function saveHighScore() {
             time: game.getElapsedTime(),
             date: Date.now()
         };
-        const key = `xiangqi_highscores_${game.getDifficulty()}`;
+        const key = `xiangqi_highscores_${userSide}`;
         util.saveHighScore(key, score, (a, b) => {
             // Sort by moves asc, then time asc
             if (a.moves !== b.moves) return a.moves - b.moves;
@@ -567,7 +548,8 @@ function displayHighScores() {
     }
     if (container) container.classList.remove('hidden');
 
-    const key = `xiangqi_highscores_${game.getDifficulty()}`;
+    const userSide = game.getAIPlayer() === 'RED' ? 'BLACK' : 'RED';
+    const key = `xiangqi_highscores_${userSide}`;
     const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
     if (tbody) {

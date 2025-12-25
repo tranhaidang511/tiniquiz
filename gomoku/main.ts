@@ -521,8 +521,10 @@ const saveHighScore = () => {
     // Only save for VS_AI mode
     if (game.getGameMode() !== 'VS_AI') return;
 
-    // Only save if Player (Black) won
-    if (game.getWinner() !== 'BLACK') return;
+    const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+
+    // Only save if User won
+    if (game.getWinner() !== userSide) return;
 
     const totalMovesCount = game.getMoves().length;
     const time = game.getElapsedTime();
@@ -530,7 +532,7 @@ const saveHighScore = () => {
     const boardSize = game.getBoardSize();
 
     const newScore: HighScore = { moves: totalMovesCount, time, date, boardSize };
-    const key = 'gomoku_highscores';
+    const key = `gomoku_highscores_${userSide}`;
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.moves !== b.moves) return a.moves - b.moves;
@@ -539,7 +541,17 @@ const saveHighScore = () => {
 };
 
 const getHighScores = (): HighScore[] => {
-    const key = 'gomoku_highscores';
+    // Determine key based on current settings
+    // If not VS_AI, we might not have a meaningful key, but this is only called in context of results/viewing
+    // Default to current board size and assumed user side (BLACK if not set) logic if needed, 
+    // but typically we want the current game's context.
+
+    let userSide = 'BLACK';
+    if (game.getGameMode() === 'VS_AI') {
+        userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+    }
+
+    const key = `gomoku_highscores_${userSide}`;
     return util.getHighScores<HighScore>(key);
 };
 
@@ -599,8 +611,9 @@ const displayResult = () => {
                 // Note: Simple matching might highlight duplicates
                 const currentMoves = game.getMoves().length;
                 const currentTime = game.getElapsedTime();
+                const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
 
-                if (game.getWinner() === 'BLACK' &&
+                if (game.getWinner() === userSide &&
                     s.moves === currentMoves &&
                     s.time === currentTime &&
                     // Check if date is very recent (within last second) to avoid highlighting old identical scores

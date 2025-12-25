@@ -1,6 +1,6 @@
 import './style.css';
 import { game } from './Game';
-import type { GameState, Piece, Difficulty, GameMode, Player } from './Game';
+import type { GameState, Piece, GameMode, Player } from './Game';
 import { Localization } from '../common/Localization';
 import type { Language } from '../common/Localization';
 import { Consent } from '../common/Consent';
@@ -41,13 +41,12 @@ function renderApp() {
 
 const saveSetup = () => {
     const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
-    const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
+
     const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
 
-    if (modeBtn && diffBtn && sideBtn) {
+    if (modeBtn && sideBtn) {
         const setup = {
             mode: modeBtn.dataset.mode,
-            difficulty: diffBtn.dataset.difficulty,
             side: sideBtn.dataset.side
         };
         localStorage.setItem('chess_setup', JSON.stringify(setup));
@@ -58,7 +57,7 @@ const loadSetup = () => {
     try {
         const saved = localStorage.getItem('chess_setup');
         if (saved) {
-            const { mode, difficulty, side } = JSON.parse(saved);
+            const { mode, side } = JSON.parse(saved);
 
             // Restore Mode
             if (mode) {
@@ -72,28 +71,18 @@ const loadSetup = () => {
                 });
 
                 // Show/hide difficulty and side sections based on mode
-                const diffSection = document.getElementById('difficulty-section');
+
                 const sideSection = document.getElementById('side-section');
                 if (mode === 'VS_AI') {
-                    diffSection?.classList.remove('hidden');
+                    // diffSection?.classList.remove('hidden'); // Removed difficulty
                     sideSection?.classList.remove('hidden');
                 } else {
-                    diffSection?.classList.add('hidden');
+                    // diffSection?.classList.add('hidden'); // Removed difficulty
                     sideSection?.classList.add('hidden');
                 }
             }
 
-            // Restore Difficulty
-            if (difficulty) {
-                document.querySelectorAll('.difficulty-btn').forEach(btn => {
-                    const btnDiff = (btn as HTMLElement).dataset.difficulty;
-                    if (btnDiff === difficulty) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-            }
+
 
             // Restore Side
             if (side) {
@@ -153,28 +142,21 @@ function setupEventListeners() {
     // Game mode selection
     const twoPlayersBtn = document.getElementById('mode-two-player');
     const vsAiBtn = document.getElementById('mode-vs-ai');
-    const difficultySection = document.getElementById('difficulty-section');
+
     const sideSection = document.getElementById('side-section');
     twoPlayersBtn?.addEventListener('click', () => {
         twoPlayersBtn.classList.add('active');
         vsAiBtn?.classList.remove('active');
-        difficultySection?.classList.add('hidden');
+        // difficultySection?.classList.add('hidden');
         sideSection?.classList.add('hidden');
     });
     vsAiBtn?.addEventListener('click', () => {
         vsAiBtn.classList.add('active');
         twoPlayersBtn?.classList.remove('active');
-        difficultySection?.classList.remove('hidden');
+        // difficultySection?.classList.remove('hidden');
         sideSection?.classList.remove('hidden');
     });
-    // Difficulty selection
-    const difficultyBtns = document.querySelectorAll('.difficulty-btn');
-    difficultyBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            difficultyBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
+
     // Side selection
     const sideBtns = document.querySelectorAll('.side-btn');
     sideBtns.forEach(btn => {
@@ -191,20 +173,20 @@ function setupEventListeners() {
         const mode = (modeBtn?.getAttribute('data-mode') as GameMode) || 'TWO_PLAYER';
 
         let aiSide: Player | null = null;
-        let difficulty: Difficulty = 'MEDIUM';
+        // let difficulty: Difficulty = 'MEDIUM'; // Removed
 
         if (mode === 'VS_AI') {
             const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
             const selectedSide = sideBtn?.dataset.side;
             aiSide = selectedSide === 'white' ? 'BLACK' : 'WHITE'; // AI plays opposite
 
-            const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
-            difficulty = (diffBtn?.dataset.difficulty || 'MEDIUM') as Difficulty;
+            // const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
+            // difficulty = (diffBtn?.dataset.difficulty || 'MEDIUM') as Difficulty;
         }
 
         game.setGameMode(mode);
         game.setAISide(aiSide);
-        game.setDifficulty(difficulty);
+        // game.setDifficulty(difficulty); // Removed
         game.start();
     });
 }
@@ -595,10 +577,7 @@ function updateTexts() {
     document.getElementById('label-mode')!.textContent = localization.getUIText('labelMode');
     document.getElementById('mode-two-player')!.textContent = localization.getUIText('twoPlayers');
     document.getElementById('mode-vs-ai')!.textContent = localization.getUIText('vsAI');
-    document.getElementById('label-difficulty')!.textContent = localization.getUIText('labelDifficulty');
-    document.getElementById('diff-easy')!.textContent = localization.getUIText('difficultyEasy');
-    document.getElementById('diff-medium')!.textContent = localization.getUIText('difficultyMedium');
-    document.getElementById('diff-hard')!.textContent = localization.getUIText('difficultyHard');
+
     document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
     document.getElementById('side-white')!.textContent = localization.getUIText('sideWhite');
     document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
@@ -673,16 +652,18 @@ const saveHighScore = () => {
     const winner = game.getWinner();
     if (!winner) return;
 
-    // Only save for VS_AI mode when White (human) wins
+    // Only save for VS_AI mode when human wins
     if (game.getGameMode() !== 'VS_AI') return;
-    if (winner !== 'WHITE') return;
+
+    const userSide = game.getAIPlayer() === 'WHITE' ? 'BLACK' : 'WHITE';
+    if (winner !== userSide) return;
 
     const moves = game.getMoveCount();
     const time = game.getElapsedTime();
     const date = Date.now();
 
     const newScore: HighScore = { moves, time, date };
-    const key = `chess_highscores_${game.getDifficulty()}`;
+    const key = `chess_highscores_${userSide}`;
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.moves !== b.moves) return a.moves - b.moves;
@@ -693,7 +674,8 @@ const saveHighScore = () => {
 const getHighScores = (): HighScore[] => {
     if (game.getGameMode() !== 'VS_AI') return [];
 
-    const key = `chess_highscores_${game.getDifficulty()}`;
+    const userSide = game.getAIPlayer() === 'WHITE' ? 'BLACK' : 'WHITE';
+    const key = `chess_highscores_${userSide}`;
     return util.getHighScores<HighScore>(key);
 };
 

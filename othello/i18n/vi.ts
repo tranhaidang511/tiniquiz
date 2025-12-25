@@ -16,7 +16,7 @@ export default {
         moves: "Số nước",
         blackScore: "Đen",
         whiteScore: "Trắng",
-        highScores: "Điểm cao",
+        highScores: "Bảng xếp hạng",
         rank: "Hạng",
         date: "Ngày",
         gameMode: "Chế độ chơi",

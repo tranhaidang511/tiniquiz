@@ -554,7 +554,8 @@ const displayResult = () => {
     }
 
     // Save and Render High Scores
-    if (winner === 'BLACK' && game.getGameMode() === 'VS_AI') {
+    const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+    if (winner === userSide && game.getGameMode() === 'VS_AI') {
         saveHighScore();
     }
 
@@ -573,7 +574,7 @@ const displayResult = () => {
                 const currentMoves = game.getMoves().length;
                 const currentTime = game.getElapsedTime();
 
-                if (winner === 'BLACK' &&
+                if (winner === userSide &&
                     s.moves === currentMoves &&
                     s.time === currentTime &&
                     (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
@@ -599,7 +600,8 @@ const displayResult = () => {
 
 const saveHighScore = () => {
     const difficulty = game.getDifficulty();
-    const key = `othello_highscores_${difficulty}`;
+    const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+    const key = `othello_highscores_${difficulty}_${userSide}`;
 
     const newScore: HighScore = {
         moves: game.getMoves().length,
@@ -617,7 +619,8 @@ const getHighScores = (): HighScore[] => {
     if (game.getGameMode() !== 'VS_AI') return [];
 
     const difficulty = game.getDifficulty();
-    const key = `othello_highscores_${difficulty}`;
+    const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+    const key = `othello_highscores_${difficulty}_${userSide}`;
     return util.getHighScores<HighScore>(key);
 };
 

@@ -1,6 +1,6 @@
 
 import { XiangqiGame } from './Game';
-import type { PieceType, Move, Player, Difficulty } from './Game';
+import type { PieceType, Move, Player } from './Game';
 
 export class XiangqiAI {
     game: XiangqiGame;
@@ -11,22 +11,7 @@ export class XiangqiAI {
         this.game = game;
     }
 
-    setDifficulty(difficulty: Difficulty) {
-        switch (difficulty) {
-            case 'EASY':
-                this.searchDepth = 1;
-                break;
-            case 'MEDIUM':
-                this.searchDepth = 3;
-                break;
-            case 'HARD':
-                this.searchDepth = 5;
-                break;
-        }
-    }
-
     getBestMove(): Move | null {
-        const depth = this.searchDepth;
         const moves = this.getAllValidMoves(this.game.getCurrentPlayer());
         if (moves.length === 0) return null;
 
@@ -40,7 +25,7 @@ export class XiangqiAI {
 
         for (const move of moves) {
             this.game.makeMove(move.from.row, move.from.col, move.to.row, move.to.col, true);
-            const score = -this.minimax(depth - 1, -beta, -alpha);
+            const score = -this.minimax(this.searchDepth - 1, -beta, -alpha);
             this.game.undoLastMove();
 
             if (score > bestScore) {

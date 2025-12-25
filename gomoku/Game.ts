@@ -47,6 +47,10 @@ export class Game {
         this.aiSide = side;
     }
 
+    getAISide(): Player | null {
+        return this.aiSide;
+    }
+
     // --- Setup ---
 
     private initializeBoard() {

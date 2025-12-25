@@ -618,9 +618,10 @@ const saveHighScore = () => {
     const winner = game.getWinner();
     if (!winner) return;
 
-    // Only save high scores for VS_AI mode when Player (RED) wins
+    // Only save high scores for VS_AI mode when User wins
+    const userSide = game.getAISide() === 'RED' ? 'BLACK' : 'RED';
     if (game.getGameMode() === 'VS_AI') {
-        if (winner !== 'RED') return;
+        if (winner !== userSide) return;
     } else {
         // In Two Player mode, maybe we don't save high scores?
         // Or we save for both? Gomoku only saves for VS_AI.
@@ -636,7 +637,7 @@ const saveHighScore = () => {
     const difficulty = game.getDifficulty();
 
     const newScore: HighScore = { moves, time, date };
-    const key = `checkers_highscores_${difficulty}_${boardSize}_${forceJump}`;
+    const key = `checkers_highscores_${difficulty}_${boardSize}_${userSide}_${forceJump}`;
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.moves !== b.moves) return a.moves - b.moves;
@@ -651,7 +652,8 @@ const getHighScores = (): HighScore[] => {
     const boardSize = game.getBoardSize();
     const forceJump = game.getForceJump();
     const difficulty = game.getDifficulty();
-    const key = `checkers_highscores_${difficulty}_${boardSize}_${forceJump}`;
+    const userSide = game.getAISide() === 'RED' ? 'BLACK' : 'RED';
+    const key = `checkers_highscores_${difficulty}_${boardSize}_${userSide}_${forceJump}`;
     return util.getHighScores<HighScore>(key);
 };
 
@@ -705,7 +707,9 @@ const displayResult = () => {
                 const currentMoves = game.getMoves().length;
                 const currentTime = game.getElapsedTime();
 
-                if (winner === 'RED' &&
+                const userSide = game.getAISide() === 'RED' ? 'BLACK' : 'RED';
+
+                if (winner === userSide &&
                     s.moves === currentMoves &&
                     s.time === currentTime &&
                     (typeof s.date === 'number' && Date.now() - s.date < 1000)) {

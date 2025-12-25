@@ -18,7 +18,7 @@ export default {
         hitMine: "Bạn đã đạp phải mìn!",
         totalTime: "Tổng thời gian",
         playAgain: "Chơi lại",
-        highScores: "Điểm cao",
+        highScores: "Bảng xếp hạng",
         rank: "Hạng",
         date: "Ngày"
     }

@@ -12,7 +12,7 @@ export default {
         totalTime: "Tổng thời gian",
         totalMoves: "Tổng số nước",
         playAgain: "Chơi lại",
-        highScores: "Điểm cao",
+        highScores: "Bảng xếp hạng",
         rank: "Hạng",
         date: "Ngày",
         reference: "Mục tiêu:"

@@ -34,7 +34,7 @@ export default {
         player1Score: "Điểm Người chơi 1",
         player2Score: "Điểm Người chơi 2",
         playAgain: "Chơi lại",
-        highScores: "Điểm cao",
+        highScores: "Bảng xếp hạng",
         rank: "Hạng",
         moves: "Nước",
         date: "Ngày"

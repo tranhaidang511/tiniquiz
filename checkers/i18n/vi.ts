@@ -15,7 +15,7 @@ export default {
         playAgain: "Chơi lại",
         time: "Thời gian",
         moves: "Số nước",
-        highScores: "Điểm cao",
+        highScores: "Bảng xếp hạng",
         rank: "Hạng",
         date: "Ngày",
         selectPiece: "Chọn quân cờ để di chuyển",
