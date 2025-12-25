@@ -92,7 +92,7 @@ export class GoGame {
         this.notifyStateChange();
         this.notifyBoardUpdate();
 
-        if (this.mode === 'VS_AI' && this.aiPlayer === 'BLACK') {
+        if (this.mode === 'VS_AI' && this.currentPlayer === this.aiPlayer) {
             setTimeout(() => this.makeAIMove(), 500);
         }
     }

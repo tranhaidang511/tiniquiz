@@ -14,7 +14,6 @@ interface HighScore {
     moves: number;
     time: number;
     date: number;
-    size: number;
 }
 
 let hoverStone: SVGCircleElement | null = null;
@@ -26,6 +25,29 @@ const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 
 // --- State and UI ---
 
+function updateHandicapOptions(size: BoardSize) {
+    const handicapSelect = document.getElementById('handicap-select') as HTMLSelectElement;
+    if (!handicapSelect) return;
+
+    const maxHandicap = size === 9 ? 5 : 9;
+    const options = handicapSelect.querySelectorAll('option');
+
+    options.forEach(opt => {
+        const value = parseInt(opt.value);
+        if (value > maxHandicap) {
+            opt.disabled = true;
+        } else {
+            opt.disabled = false;
+        }
+    });
+
+    // Reset to valid value if current selection is disabled
+    const currentValue = parseInt(handicapSelect.value);
+    if (currentValue > maxHandicap) {
+        handicapSelect.value = '0';
+    }
+}
+
 function init() {
     setupEventListeners();
     updateTexts();
@@ -34,6 +56,13 @@ function init() {
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
     });
+
+    // Initialize handicap options based on default board size
+    const activeSizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
+    if (activeSizeBtn) {
+        const size = parseInt(activeSizeBtn.dataset.size || '19') as BoardSize;
+        updateHandicapOptions(size);
+    }
 }
 
 function showView(viewId: string) {
@@ -55,12 +84,14 @@ const saveSetup = () => {
     const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
     const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
     const handicapSelect = document.getElementById('handicap-select') as HTMLSelectElement;
+    const komiSelect = document.getElementById('komi-select') as HTMLSelectElement;
 
     const setup = {
         mode: modeBtn?.dataset.mode,
         size: sizeBtn?.dataset.size,
         side: sideBtn?.dataset.side,
-        handicap: handicapSelect?.value
+        handicap: handicapSelect?.value,
+        komi: komiSelect?.value
     };
     localStorage.setItem('go_setup', JSON.stringify(setup));
 };
@@ -69,7 +100,7 @@ const loadSetup = () => {
     try {
         const saved = localStorage.getItem('go_setup');
         if (saved) {
-            const { mode, size, side, handicap } = JSON.parse(saved);
+            const { mode, size, side, handicap, komi } = JSON.parse(saved);
 
             if (mode) {
                 document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -93,6 +124,11 @@ const loadSetup = () => {
             if (handicap) {
                 const select = document.getElementById('handicap-select') as HTMLSelectElement;
                 if (select) select.value = handicap;
+            }
+
+            if (komi) {
+                const select = document.getElementById('komi-select') as HTMLSelectElement;
+                if (select) select.value = komi;
             }
         }
     } catch (e) {
@@ -317,8 +353,10 @@ function setupEventListeners() {
             const target = e.target as HTMLElement;
             document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
             target.classList.add('active');
+            updateHandicapOptions(parseInt(target.dataset.size || '19') as BoardSize);
         });
     });
+
 
 
 
@@ -335,15 +373,18 @@ function setupEventListeners() {
         const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
         const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
         const handicapSelect = document.getElementById('handicap-select') as HTMLSelectElement;
+        const komiSelect = document.getElementById('komi-select') as HTMLSelectElement;
 
         const mode = modeBtn.dataset.mode as 'TWO_PLAYER' | 'VS_AI';
         const size = parseInt(sizeBtn.dataset.size || '19') as BoardSize;
         const side = sideBtn.dataset.side as Player;
         const handicap = parseInt(handicapSelect.value || '0');
+        const komi = parseFloat(komiSelect.value || '6.5');
 
         game.setGameMode(mode);
         game.setBoardSize(size);
         game.setHandicap(handicap);
+        game.setKomi(komi);
 
         if (mode === 'VS_AI') {
             game.setAISide(side === 'BLACK' ? 'WHITE' : 'BLACK');
@@ -382,6 +423,7 @@ function updateTexts() {
     document.getElementById('label-board-size')!.textContent = localization.getUIText('boardSize');
     document.getElementById('label-side')!.textContent = localization.getUIText('selectSide');
     document.getElementById('label-handicap')!.textContent = localization.getUIText('handicap');
+    document.getElementById('label-komi')!.textContent = localization.getUIText('komi');
     document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
 
     document.getElementById('mode-two-player')!.textContent = localization.getUIText('TWO_PLAYER');
@@ -405,6 +447,8 @@ function updateTexts() {
 
     document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
     document.getElementById('th-score')!.textContent = localization.getUIText('score');
+    document.getElementById('th-moves')!.textContent = localization.getUIText('moves');
+    document.getElementById('th-time')!.textContent = localization.getUIText('time');
     document.getElementById('th-date')!.textContent = localization.getUIText('date');
 
     document.getElementById('side-black')!.textContent = localization.getUIText('BLACK');
@@ -440,16 +484,41 @@ function saveHighScore() {
         score: score,
         moves: game.getMoveCount(),
         time: game.getElapsedTime(),
-        date: Date.now(),
-        size: game.getBoardSize()
+        date: Date.now()
     };
 
-    const key = `go_highscores_${game.getBoardSize()}`;
-    util.saveHighScore(key, highScore, (a, b) => b.score - a.score);
+    // key: size_side_handicap_komi
+    // Note: If user selected "BLACK" in VS_AI, they play first (unless handicap).
+    // The requirement says "side". In VS_AI mode:
+    // If I chose BLACK, aiPlayer is WHITE. Side is BLACK.
+    // If I chose WHITE, aiPlayer is BLACK. Side is WHITE.
+    const side = game.getAIPlayer() === 'BLACK' ? 'WHITE' : 'BLACK';
+    const key = `go_highscores_${game.getBoardSize()}_${side}_${game.getHandicap()}_${game.getKomi()}`;
+
+    // Sort: Score (desc) > Moves (asc) > Time (asc)
+    util.saveHighScore(key, highScore, (a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        if (a.moves !== b.moves) return a.moves - b.moves;
+        return a.time - b.time;
+    });
 }
 
 function renderHighScores() {
-    const key = `go_highscores_${game.getBoardSize()}`;
+    // Reconstruct key from current settings to show relevant high scores
+    // This assumes we want to show high scores for the *currently selected* settings in the menu
+    const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
+    const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
+    const handicapSelect = document.getElementById('handicap-select') as HTMLSelectElement;
+    const komiSelect = document.getElementById('komi-select') as HTMLSelectElement;
+
+    if (!sizeBtn || !sideBtn || !handicapSelect || !komiSelect) return;
+
+    const size = sizeBtn.dataset.size || '19';
+    const side = sideBtn.dataset.side || 'BLACK';
+    const handicap = handicapSelect.value || '0';
+    const komi = komiSelect.value || '6.5';
+
+    const key = `go_highscores_${size}_${side}_${handicap}_${komi}`;
     const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
     if (tbody) {
@@ -459,6 +528,8 @@ function renderHighScores() {
             tr.innerHTML = `
                 <td>${i + 1}</td>
                 <td>${s.score.toFixed(1)}</td>
+                <td>${s.moves}</td>
+                <td>${util.formatTime(s.time)}</td>
                 <td>${util.formatDate(s.date, localization.language)}</td>
             `;
             tbody.appendChild(tr);

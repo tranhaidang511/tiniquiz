@@ -79,7 +79,8 @@
             <div class="setup-group">
                 <h3 id="label-mode">Game Mode</h3>
                 <div class="radio-group">
-                    <button class="setup-btn mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2 Players</button>
+                    <button class="setup-btn mode-btn active" data-mode="TWO_PLAYER" id="mode-two-player">2
+                        Players</button>
                     <button class="setup-btn mode-btn" data-mode="VS_AI" id="mode-vs-ai">vs AI</button>
                 </div>
             </div>
@@ -113,6 +114,22 @@
                     <option value="7">7 Stones</option>
                     <option value="8">8 Stones</option>
                     <option value="9">9 Stones</option>
+                </select>
+            </div>
+
+            <div class="setup-group">
+                <h3 id="label-komi">Komi</h3>
+                <select id="komi-select" class="styled-select">
+                    <option value="0.5">0.5</option>
+                    <option value="1.5">1.5</option>
+                    <option value="2.5">2.5</option>
+                    <option value="3.5">3.5</option>
+                    <option value="4.5">4.5</option>
+                    <option value="5.5">5.5</option>
+                    <option value="6.5" selected>6.5</option>
+                    <option value="7.5">7.5</option>
+                    <option value="8.5">8.5</option>
+                    <option value="9.5">9.5</option>
                 </select>
             </div>
 
@@ -184,6 +201,8 @@
                         <tr>
                             <th id="th-rank">Rank</th>
                             <th id="th-score">Score</th>
+                            <th id="th-moves">Moves</th>
+                            <th id="th-time">Time</th>
                             <th id="th-date">Date</th>
                         </tr>
                     </thead>
