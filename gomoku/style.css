@@ -3,6 +3,14 @@
 /* Import common styles */
 @import url('../common/style.css');
 
+:root {
+    /* Go board colors */
+    --board-color: #deb887;
+    --board-line: #3d2b1f;
+    --stone-black: #1a1a1a;
+    --stone-white: #f0f0f0;
+}
+
 #app {
     max-width: 900px;
 }
@@ -55,6 +63,10 @@
     width: 100%;
     max-width: 600px;
     aspect-ratio: 1;
+    background-color: var(--board-color);
+    box-shadow: var(--shadow);
+    border-radius: 4px;
+    overflow: hidden;
 }
 
 #board {

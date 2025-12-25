@@ -245,6 +245,7 @@ const renderBoard = () => {
     if (!svg) return;
 
     svg.innerHTML = '';
+    svg.setAttribute('viewBox', '0 0 600 600');
 
     const boardSize = game.getBoardSize();
     const padding = 30;
@@ -255,13 +256,13 @@ const renderBoard = () => {
     const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     bg.setAttribute('width', '600');
     bg.setAttribute('height', '600');
-    bg.setAttribute('fill', '#2d3748');
+    bg.setAttribute('fill', 'var(--board-color)');
     bg.setAttribute('rx', '8');
     svg.appendChild(bg);
 
     // Grid lines
     const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    gridGroup.setAttribute('stroke', '#4a5568');
+    gridGroup.setAttribute('stroke', 'var(--board-line)');
     gridGroup.setAttribute('stroke-width', '1.5');
 
     for (let i = 0; i < boardSize; i++) {
@@ -300,7 +301,7 @@ const renderBoard = () => {
         circle.setAttribute('cx', (padding + col * cellSize).toString());
         circle.setAttribute('cy', (padding + row * cellSize).toString());
         circle.setAttribute('r', '4');
-        circle.setAttribute('fill', '#4a5568');
+        circle.setAttribute('fill', 'var(--board-line)');
         svg.appendChild(circle);
     });
 
@@ -309,71 +310,69 @@ const renderBoard = () => {
     stonesGroup.setAttribute('id', 'stones-group');
     svg.appendChild(stonesGroup);
 
-    // Click handler
-    svg.style.cursor = 'crosshair';
-    svg.addEventListener('click', (e) => {
+    // Hover stone
+    const hoverStone = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    hoverStone.setAttribute('r', (cellSize * 0.42).toString());
+    hoverStone.setAttribute('class', 'stone-hover');
+    hoverStone.style.opacity = '0';
+    hoverStone.style.pointerEvents = 'none';
+    svg.appendChild(hoverStone);
+
+    // Create transparent hit area for mouse events
+    const hitArea = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    hitArea.setAttribute('x', '0');
+    hitArea.setAttribute('y', '0');
+    hitArea.setAttribute('width', '600');
+    hitArea.setAttribute('height', '600');
+    hitArea.setAttribute('fill', 'transparent');
+    hitArea.style.cursor = 'crosshair';
+
+    hitArea.addEventListener('mousemove', (e) => {
+        if (game.getState() !== 'PLAYING') {
+            hoverStone.style.opacity = '0';
+            return;
+        }
+
+        const rect = svg.getBoundingClientRect();
+        const scale = 600 / rect.width;
+        const col = Math.round(((e.clientX - rect.left) * scale - padding) / cellSize);
+        const row = Math.round(((e.clientY - rect.top) * scale - padding) / cellSize);
+
+        if (row >= 0 && row < boardSize && col >= 0 && col < boardSize && !game.getBoard()[row][col]) {
+            const currentPlayer = game.getCurrentPlayer();
+            hoverStone.setAttribute('cx', (padding + col * cellSize).toString());
+            hoverStone.setAttribute('cy', (padding + row * cellSize).toString());
+            hoverStone.setAttribute('class', `stone-hover ${currentPlayer.toLowerCase()}`);
+            hoverStone.style.opacity = '0.4';
+        } else {
+            hoverStone.style.opacity = '0';
+        }
+    });
+
+    hitArea.addEventListener('mouseleave', () => {
+        hoverStone.style.opacity = '0';
+    });
+
+    hitArea.addEventListener('click', (e) => {
         if (game.getState() !== 'PLAYING') return;
 
         const rect = svg.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        // Scale to viewBox coordinates
-        const svgX = (x / rect.width) * 600;
-        const svgY = (y / rect.height) * 600;
+        const scale = 600 / rect.width;
+        const boardX = x * scale;
+        const boardY = y * scale;
 
-        // Find nearest intersection
-        const col = Math.round((svgX - padding) / cellSize);
-        const row = Math.round((svgY - padding) / cellSize);
+        const col = Math.round((boardX - padding) / cellSize);
+        const row = Math.round((boardY - padding) / cellSize);
 
         if (row >= 0 && row < boardSize && col >= 0 && col < boardSize) {
             game.makeMove(row, col);
         }
     });
 
-    // Hover effect
-    const hoverStone = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    hoverStone.setAttribute('r', (cellSize * 0.4).toString());
-    hoverStone.setAttribute('fill', 'none');
-    hoverStone.setAttribute('stroke', '#8ab4f8');
-    hoverStone.setAttribute('stroke-width', '2');
-    hoverStone.setAttribute('opacity', '0');
-    hoverStone.setAttribute('pointer-events', 'none');
-    svg.appendChild(hoverStone);
-
-    svg.addEventListener('mousemove', (e) => {
-        if (game.getState() !== 'PLAYING') {
-            hoverStone.setAttribute('opacity', '0');
-            return;
-        }
-
-        const rect = svg.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const svgX = (x / rect.width) * 600;
-        const svgY = (y / rect.height) * 600;
-
-        const col = Math.round((svgX - padding) / cellSize);
-        const row = Math.round((svgY - padding) / cellSize);
-
-        if (row >= 0 && row < boardSize && col >= 0 && col < boardSize) {
-            const board = game.getBoard();
-            if (board[row][col] === null) {
-                hoverStone.setAttribute('cx', (padding + col * cellSize).toString());
-                hoverStone.setAttribute('cy', (padding + row * cellSize).toString());
-                hoverStone.setAttribute('opacity', '0.6');
-            } else {
-                hoverStone.setAttribute('opacity', '0');
-            }
-        } else {
-            hoverStone.setAttribute('opacity', '0');
-        }
-    });
-
-    svg.addEventListener('mouseleave', () => {
-        hoverStone.setAttribute('opacity', '0');
-    });
+    svg.appendChild(hitArea);
 };
 
 const addStone = (stone: Stone) => {

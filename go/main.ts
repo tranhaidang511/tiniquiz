@@ -164,10 +164,13 @@ function renderBoard() {
                 circle.setAttribute('cy', (padding + r * cellSize).toString());
                 circle.setAttribute('r', stoneRadius.toString());
 
-                let className = `stone ${player.toLowerCase()} animate`;
+                let className = `stone ${player.toLowerCase()}`;
+
+                // Only animate the stone that was just placed
                 if (lastMove && lastMove.row === r && lastMove.col === c) {
-                    className += ' last-move';
+                    className += ' animate last-move';
                 }
+
                 circle.setAttribute('class', className);
                 svg.appendChild(circle);
             }
