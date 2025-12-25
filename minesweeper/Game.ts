@@ -1,5 +1,5 @@
 export type GameState = 'MENU' | 'PLAYING' | 'WON' | 'LOST';
-export type Difficulty = 'BEGINNER' | 'EASY' | 'MEDIUM' | 'HARD' | 'EXPERT';
+export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD' | 'CUSTOM';
 
 export interface Cell {
     row: number;
@@ -10,25 +10,23 @@ export interface Cell {
     neighborMines: number;
 }
 
-interface DifficultyConfig {
+export interface DifficultyConfig {
     rows: number;
     cols: number;
     mines: number;
 }
 
-const DIFFICULTY_CONFIGS: Record<Difficulty, DifficultyConfig> = {
-    BEGINNER: { rows: 5, cols: 5, mines: 2 },
-    EASY: { rows: 10, cols: 10, mines: 12 },
-    MEDIUM: { rows: 15, cols: 15, mines: 36 },
-    HARD: { rows: 20, cols: 20, mines: 80 },
-    EXPERT: { rows: 25, cols: 25, mines: 150 }
+const DIFFICULTY_CONFIGS: Record<Exclude<Difficulty, 'CUSTOM'>, DifficultyConfig> = {
+    EASY: { rows: 9, cols: 9, mines: 10 },
+    MEDIUM: { rows: 16, cols: 16, mines: 40 },
+    HARD: { rows: 16, cols: 30, mines: 99 }
 };
 
 export class Game {
     private state: GameState = 'MENU';
-    private difficulty: Difficulty = 'BEGINNER';
+    private difficulty: Difficulty = 'EASY';
     private board: Cell[][] = [];
-    private config: DifficultyConfig = DIFFICULTY_CONFIGS.BEGINNER;
+    private config: DifficultyConfig = DIFFICULTY_CONFIGS.EASY;
     private flagsPlaced: number = 0;
     private cellsRevealed: number = 0;
     private startTime: number = 0;
@@ -66,7 +64,25 @@ export class Game {
 
     setDifficulty(diff: Difficulty) {
         this.difficulty = diff;
-        this.config = DIFFICULTY_CONFIGS[diff];
+        if (diff !== 'CUSTOM') {
+            this.config = DIFFICULTY_CONFIGS[diff];
+        }
+    }
+
+    setCustomConfig(config: DifficultyConfig) {
+        // Validate constraints
+        const rows = Math.max(5, Math.min(30, config.rows));
+        const cols = Math.max(5, Math.min(30, config.cols));
+
+        // Ensure max mines is not > cell count - 1 (leave at least 1 open spot)
+        // Practical limit is usually much lower, but let's just ensure it's solvable-ish.
+        // Let's cap at 80% density or similar?
+        // Standard allows high density. Let's just ensure rows*cols > mines.
+        const maxMines = (rows * cols) - 1;
+        const mines = Math.max(1, Math.min(maxMines, config.mines));
+
+        this.config = { rows, cols, mines };
+        this.difficulty = 'CUSTOM';
     }
 
     getDifficulty(): Difficulty {
@@ -80,7 +96,9 @@ export class Game {
     // --- Game Flow ---
 
     start() {
-        this.config = DIFFICULTY_CONFIGS[this.difficulty];
+        if (this.difficulty !== 'CUSTOM') {
+            this.config = DIFFICULTY_CONFIGS[this.difficulty];
+        }
         this.initializeEmptyBoard();
         this.flagsPlaced = 0;
         this.cellsRevealed = 0;

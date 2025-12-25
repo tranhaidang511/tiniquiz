@@ -21,6 +21,8 @@ new Consent();
 const savedLang = localStorage.getItem('language') as Language | null;
 const localization = new Localization({ en, ja, vi }, savedLang || 'en');
 
+let savedCustomConfig: { rows: number; cols: number; mines: number } = { rows: 10, cols: 10, mines: 10 };
+
 // --- UI Templates ---
 
 const renderApp = () => {
@@ -42,7 +44,24 @@ const saveSetup = () => {
     const activeDiffBtn = document.querySelector('.diff-btn.active') as HTMLElement;
     if (activeDiffBtn) {
         const difficulty = activeDiffBtn.dataset.diff as Difficulty;
-        localStorage.setItem('minesweeper_setup', JSON.stringify({ difficulty }));
+
+        // Update saved config if in custom mode
+        if (difficulty === 'CUSTOM') {
+            const rowInput = document.getElementById('custom-rows') as HTMLInputElement;
+            const colInput = document.getElementById('custom-cols') as HTMLInputElement;
+            const minesInput = document.getElementById('custom-mines') as HTMLInputElement;
+
+            savedCustomConfig = {
+                rows: parseInt(rowInput.value),
+                cols: parseInt(colInput.value),
+                mines: parseInt(minesInput.value)
+            };
+        }
+
+        localStorage.setItem('minesweeper_setup', JSON.stringify({
+            difficulty,
+            customConfig: savedCustomConfig
+        }));
     }
 };
 
@@ -50,13 +69,30 @@ const loadSetup = () => {
     try {
         const saved = localStorage.getItem('minesweeper_setup');
         if (saved) {
-            const { difficulty } = JSON.parse(saved);
+            const { difficulty, customConfig } = JSON.parse(saved);
+
+            // Restore custom inputs if present
+            if (customConfig) {
+                const rowInput = document.getElementById('custom-rows') as HTMLInputElement;
+                const colInput = document.getElementById('custom-cols') as HTMLInputElement;
+                const minesInput = document.getElementById('custom-mines') as HTMLInputElement;
+
+                if (rowInput && customConfig.rows) rowInput.value = customConfig.rows;
+                if (colInput && customConfig.cols) colInput.value = customConfig.cols;
+                if (minesInput && customConfig.mines) minesInput.value = customConfig.mines;
+
+                if (difficulty === 'CUSTOM') {
+                    game.setCustomConfig(customConfig);
+                }
+            }
+
             // Set active difficulty button
             document.querySelectorAll('.diff-btn').forEach(btn => {
                 const btnDiff = (btn as HTMLElement).dataset.diff;
                 if (btnDiff === difficulty) {
                     btn.classList.add('active');
                     game.setDifficulty(difficulty);
+                    updateCustomInputs(difficulty);
                 } else {
                     btn.classList.remove('active');
                 }
@@ -75,9 +111,11 @@ const updateTexts = () => {
     document.getElementById('label-difficulty')!.textContent = localization.getUIText('difficulty');
 
     const diffButtons = document.querySelectorAll('.diff-btn');
-    diffButtons.forEach((btn, i) => {
-        const difficulties = ['beginner', 'easy', 'medium', 'hard', 'expert'];
-        btn.textContent = localization.getUIText(difficulties[i]);
+    diffButtons.forEach((btn) => {
+        const diff = (btn as HTMLElement).dataset.diff;
+        if (diff) {
+            btn.textContent = localization.getUIText(diff.toLowerCase());
+        }
     });
 
     document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
@@ -92,6 +130,15 @@ const updateTexts = () => {
     document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
     document.getElementById('th-time')!.textContent = localization.getUIText('time');
     document.getElementById('th-date')!.textContent = localization.getUIText('date');
+
+    // Custom Setup Labels
+    const rowsLabel = document.querySelector('label[for="custom-rows"]');
+    const colsLabel = document.querySelector('label[for="custom-cols"]');
+    const minesLabel = document.querySelector('label[for="custom-mines"]');
+
+    if (rowsLabel) rowsLabel.textContent = localization.getUIText('rows');
+    if (colsLabel) colsLabel.textContent = localization.getUIText('cols');
+    if (minesLabel) minesLabel.textContent = localization.getUIText('mines');
 };
 
 // --- Event Listeners ---
@@ -123,11 +170,27 @@ const setupEventListeners = () => {
             target.classList.add('active');
 
             game.setDifficulty(diff);
+            updateCustomInputs(diff);
         });
     });
 
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
+        const activeDiffBtn = document.querySelector('.diff-btn.active') as HTMLElement;
+        const diff = activeDiffBtn?.dataset.diff as Difficulty;
+
+        if (diff === 'CUSTOM') {
+            const rowInput = document.getElementById('custom-rows') as HTMLInputElement;
+            const colInput = document.getElementById('custom-cols') as HTMLInputElement;
+            const minesInput = document.getElementById('custom-mines') as HTMLInputElement;
+
+            const rows = parseInt(rowInput.value);
+            const cols = parseInt(colInput.value);
+            const mines = parseInt(minesInput.value);
+
+            game.setCustomConfig({ rows, cols, mines });
+        }
+
         saveSetup();
         game.start();
     });
@@ -143,6 +206,38 @@ const setupEventListeners = () => {
     });
 };
 
+const updateCustomInputs = (diff: Difficulty) => {
+    const customSetup = document.getElementById('custom-setup');
+    const rowInput = document.getElementById('custom-rows') as HTMLInputElement;
+    const colInput = document.getElementById('custom-cols') as HTMLInputElement;
+    const minesInput = document.getElementById('custom-mines') as HTMLInputElement;
+
+    if (customSetup && rowInput && colInput && minesInput) {
+        customSetup.classList.remove('hidden');
+
+        if (diff === 'CUSTOM') {
+            rowInput.disabled = false;
+            colInput.disabled = false;
+            minesInput.disabled = false;
+
+            // Restore saved values
+            rowInput.value = savedCustomConfig.rows.toString();
+            colInput.value = savedCustomConfig.cols.toString();
+            minesInput.value = savedCustomConfig.mines.toString();
+        } else {
+            rowInput.disabled = true;
+            colInput.disabled = true;
+            minesInput.disabled = true;
+
+            // Show config for selected difficulty
+            const config = game.getConfig();
+            rowInput.value = config.rows.toString();
+            colInput.value = config.cols.toString();
+            minesInput.value = config.mines.toString();
+        }
+    }
+};
+
 // --- Board Rendering ---
 
 const renderBoard = () => {
@@ -155,6 +250,21 @@ const renderBoard = () => {
 
     // Set grid template
     boardElement.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+
+    // Calculate dynamic cell size
+    const containerWidth = Math.min(window.innerWidth - 32, 800); // 32px padding, max 800px width
+    const maxCellSize = 50;
+    const minCellSize = 20;
+
+    // Calculate potential size based on width
+    // We substract a bit of gap space (config.cols - 1) * 1px
+    const availableWidth = containerWidth - (config.cols * 1); // rough estimate
+    let cellSize = Math.floor(availableWidth / config.cols);
+
+    // Clamp
+    cellSize = Math.max(minCellSize, Math.min(maxCellSize, cellSize));
+
+    boardElement.style.setProperty('--cell-size', `${cellSize}px`);
 
     board.forEach(row => {
         row.forEach(cell => {
@@ -312,20 +422,23 @@ game.onMinesUpdate(() => {
     updateGameInfo();
 });
 
+const getHighScoreKey = () => {
+    const config = game.getConfig();
+    return `minesweeper_highscores_${config.rows}_${config.cols}_${config.mines}`;
+};
+
 const saveHighScore = () => {
-    const difficulty = game.getDifficulty();
     const time = game.getElapsedTime();
     const date = Date.now();
 
     const newScore: HighScore = { time, date };
-    const key = `minesweeper_highscores_${difficulty}`;
+    const key = getHighScoreKey();
 
     util.saveHighScore(key, newScore, (a, b) => a.time - b.time);
 };
 
 const getHighScores = (): HighScore[] => {
-    const difficulty = game.getDifficulty();
-    const key = `minesweeper_highscores_${difficulty}`;
+    const key = getHighScoreKey();
     return util.getHighScores<HighScore>(key);
 };
 
@@ -352,7 +465,10 @@ const displayResult = () => {
         finalTime.textContent = util.formatTime(game.getElapsedTime());
     }
 
-    // Render High Scores
+    renderHighScores(isWin);
+};
+
+const renderHighScores = (isWin: boolean) => {
     const scores = getHighScores();
     const tbody = document.getElementById('high-scores-body');
     const container = document.querySelector('.high-scores-container');
