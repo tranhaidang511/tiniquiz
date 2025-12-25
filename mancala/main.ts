@@ -479,6 +479,13 @@ game.onTimerUpdate(() => {
     updateGameInfo();
 });
 
+const getHighScoreKey = () => {
+    const pitCount = game.getPitCount();
+    const difficulty = game.getDifficulty();
+    const initialStones = game.getInitialStones();
+    return `mancala_highscores_${difficulty}_${pitCount}_${initialStones}`;
+};
+
 const saveHighScore = () => {
     const winner = game.getWinner();
     // Only save high scores for VS_AI mode when Player (PLAYER1) wins
@@ -490,28 +497,15 @@ const saveHighScore = () => {
     const moves = game.getMoves().length;
     const time = game.getElapsedTime();
     const date = Date.now();
-    const pitCount = game.getPitCount();
-    const difficulty = game.getDifficulty();
-    const initialStones = game.getInitialStones();
 
     const newScore: HighScore = { score, moves, time, date };
-    const key = `mancala_highscores_${difficulty}_${pitCount}_${initialStones}`;
+    const key = getHighScoreKey();
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.score !== b.score) return b.score - a.score; // Descending score
         if (a.moves !== b.moves) return a.moves - b.moves; // Ascending moves
         return a.time - b.time; // Ascending time
     });
-};
-
-const getHighScores = (): HighScore[] => {
-    if (game.getGameMode() !== 'VS_AI') return [];
-
-    const pitCount = game.getPitCount();
-    const difficulty = game.getDifficulty();
-    const initialStones = game.getInitialStones();
-    const key = `mancala_highscores_${difficulty}_${pitCount}_${initialStones}`;
-    return util.getHighScores<HighScore>(key);
 };
 
 const displayResult = () => {
@@ -591,45 +585,51 @@ const displayResult = () => {
         }
     }
 
-    // Render High Scores
-    const scores = getHighScores();
-    const tbody = document.getElementById('high-scores-body');
+    renderHighScores();
+};
+
+const renderHighScores = () => {
     const container = document.querySelector('.high-scores-container');
-
-    if (game.getGameMode() === 'VS_AI') {
-        if (container) container.classList.remove('hidden');
-        if (tbody) {
-            tbody.innerHTML = '';
-            scores.forEach((s, index) => {
-                const tr = document.createElement('tr');
-
-                // Highlight current run if it matches
-                const currentScore = game.getPlayerScore('PLAYER1');
-                const currentMoves = game.getMoves().length;
-                const currentTime = game.getElapsedTime();
-
-                if (winner === 'PLAYER1' &&
-                    s.score === currentScore &&
-                    s.moves === currentMoves &&
-                    s.time === currentTime &&
-                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
-                    tr.classList.add('current-run');
-                }
-
-                const dateStr = util.formatDate(s.date, localization.language);
-
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${s.score}</td>
-                    <td>${s.moves}</td>
-                    <td>${util.formatTime(s.time)}</td>
-                    <td>${dateStr}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    } else {
+    if (game.getGameMode() !== 'VS_AI') {
         if (container) container.classList.add('hidden');
+        return;
+    }
+    if (container) container.classList.remove('hidden');
+
+    const key = getHighScoreKey();
+    const scores = util.getHighScores<HighScore>(key);
+    const tbody = document.getElementById('high-scores-body');
+
+    if (tbody) {
+        tbody.innerHTML = '';
+        scores.forEach((s, index) => {
+            const tr = document.createElement('tr');
+
+            // Highlight current run if it matches
+            const currentScore = game.getPlayerScore('PLAYER1');
+            const currentMoves = game.getMoves().length;
+            const currentTime = game.getElapsedTime();
+            const winner = game.getWinner();
+
+            if (winner === 'PLAYER1' &&
+                s.score === currentScore &&
+                s.moves === currentMoves &&
+                s.time === currentTime &&
+                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                tr.classList.add('current-run');
+            }
+
+            const dateStr = util.formatDate(s.date, localization.language);
+
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${s.score}</td>
+                <td>${s.moves}</td>
+                <td>${util.formatTime(s.time)}</td>
+                <td>${dateStr}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 };
 

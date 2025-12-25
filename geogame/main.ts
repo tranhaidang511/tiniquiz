@@ -394,17 +394,23 @@ const handleAnswer = (choice: Country | Province, btn: HTMLElement, target: Coun
 
 // --- High Score Logic ---
 
-const saveHighScore = () => {
-  const { score, total } = game.getScore();
-  const time = game.getElapsedTime();
-  const mode = game.getGameMode();
+// --- High Score Logic ---
 
+const getHighScoreKey = () => {
+  const mode = game.getGameMode();
   // For provinces mode, use country filter; for other modes, use region
   const filterValue = mode === 'PROVINCES'
     ? (game.getCountryFilter() || 'allCountries')
     : game.getRegion();
 
-  const key = `geogame_highscores_${mode}_${filterValue}`;
+  return `geogame_highscores_${mode}_${filterValue}`;
+};
+
+const saveHighScore = () => {
+  const { score, total } = game.getScore();
+  const time = game.getElapsedTime();
+
+  const key = getHighScoreKey();
   const date = Date.now();
 
   const newScore: HighScore = { score, total, time, date };
@@ -413,18 +419,6 @@ const saveHighScore = () => {
     if (b.score !== a.score) return b.score - a.score;
     return a.time - b.time;
   });
-};
-
-const getHighScores = (): HighScore[] => {
-  const mode = game.getGameMode();
-
-  // For provinces mode, use country filter; for other modes, use region
-  const filterValue = mode === 'PROVINCES'
-    ? (game.getCountryFilter() || 'allCountries')
-    : game.getRegion();
-
-  const key = `geogame_highscores_${mode}_${filterValue}`;
-  return util.getHighScores<HighScore>(key);
 };
 
 const displayResult = () => {
@@ -437,31 +431,37 @@ const displayResult = () => {
   const formattedTime = util.formatTime(elapsedSeconds);
   document.getElementById('elapsed-time')!.textContent = formattedTime;
 
-  // Render High Scores
-  const scores = getHighScores();
+  renderHighScores();
+};
+
+const renderHighScores = () => {
+  const key = getHighScoreKey();
+  const scores = util.getHighScores<HighScore>(key);
   const tbody = document.getElementById('high-scores-body');
   if (tbody) {
     tbody.innerHTML = '';
     scores.forEach((s, index) => {
       const tr = document.createElement('tr');
 
-      // Highlight current score if it matches (simple check)
-      // Note: This isn't perfect if there are duplicate scores, but good enough for now
-      if (s.score === score && s.time === elapsedSeconds && s.total === total) {
-        // We could add a class, but since we just saved it, it might be one of the top 5.
-        // To strictly highlight *this* run, we'd need a unique ID.
-        // For now, let's just render.
+      // Highlight current score if it matches
+      const { score, total } = game.getScore();
+      const elapsedSeconds = game.getElapsedTime();
+
+      if (s.score === score &&
+        s.total === total &&
+        s.time === elapsedSeconds &&
+        (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
         tr.classList.add('current-run');
       }
 
       const dateStr = util.formatDate(s.date, localization.language);
 
       tr.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${s.score}/${s.total}</td>
-          <td>${util.formatTime(s.time)}</td>
-          <td>${dateStr}</td>
-        `;
+              <td>${index + 1}</td>
+              <td>${s.score}/${s.total}</td>
+              <td>${util.formatTime(s.time)}</td>
+              <td>${dateStr}</td>
+            `;
       tbody.appendChild(tr);
     });
   }

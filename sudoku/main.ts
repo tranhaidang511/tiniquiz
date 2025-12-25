@@ -339,30 +339,28 @@ game.onTimeUpdate(() => {
     updateGameInfo();
 });
 
+const getHighScoreKey = () => {
+    const difficulty = game.getDifficulty();
+    return `sudoku_highscores_${difficulty}`;
+};
+
 const saveHighScore = () => {
     // Only save if the player won
     if (!game.isWin()) return;
 
-    const difficulty = game.getDifficulty();
     const time = game.getElapsedTime();
     const mistakes = game.getMistakes();
     const hintsUsed = game.getHintsUsed();
     const date = Date.now();
 
     const newScore: HighScore = { time, mistakes, hintsUsed, date };
-    const key = `sudoku_highscores_${difficulty}`;
+    const key = getHighScoreKey();
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.hintsUsed !== b.hintsUsed) return a.hintsUsed - b.hintsUsed;
         if (a.time !== b.time) return a.time - b.time;
         return a.mistakes - b.mistakes;
     });
-};
-
-const getHighScores = (): HighScore[] => {
-    const difficulty = game.getDifficulty();
-    const key = `sudoku_highscores_${difficulty}`;
-    return util.getHighScores<HighScore>(key);
 };
 
 const displayResult = () => {
@@ -398,46 +396,43 @@ const displayResult = () => {
         finalHints.textContent = game.getHintsUsed().toString();
     }
 
-    // Render High Scores
-    const scores = getHighScores();
+    renderHighScores();
+};
+
+const renderHighScores = () => {
+    const key = getHighScoreKey();
+    const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
-    const container = document.querySelector('.high-scores-container');
 
-    // Only show high scores if player won
-    if (isWin) {
-        if (container) container.classList.remove('hidden');
-        if (tbody) {
-            tbody.innerHTML = '';
-            scores.forEach((s, index) => {
-                const tr = document.createElement('tr');
+    if (tbody) {
+        tbody.innerHTML = '';
+        scores.forEach((s, index) => {
+            const tr = document.createElement('tr');
 
-                // Highlight current run if it matches
-                const currentTime = game.getElapsedTime();
-                const currentMistakes = game.getMistakes();
-                const currentHints = game.getHintsUsed();
+            // Highlight current run if it matches
+            const currentTime = game.getElapsedTime();
+            const currentMistakes = game.getMistakes();
+            const currentHints = game.getHintsUsed();
 
-                if (s.time === currentTime &&
-                    s.mistakes === currentMistakes &&
-                    s.hintsUsed === currentHints &&
-                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
-                    tr.classList.add('current-run');
-                }
+            if (s.time === currentTime &&
+                s.mistakes === currentMistakes &&
+                s.hintsUsed === currentHints &&
+                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                tr.classList.add('current-run');
+            }
 
 
-                const dateStr = util.formatDate(s.date, localization.language);
+            const dateStr = util.formatDate(s.date, localization.language);
 
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${s.hintsUsed}</td>
-                    <td>${util.formatTime(s.time)}</td>
-                    <td>${s.mistakes}</td>
-                    <td>${dateStr}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    } else {
-        if (container) container.classList.add('hidden');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${s.hintsUsed}</td>
+                <td>${util.formatTime(s.time)}</td>
+                <td>${s.mistakes}</td>
+                <td>${dateStr}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 };
 

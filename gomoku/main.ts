@@ -517,6 +517,14 @@ game.onTimerUpdate(() => {
 });
 
 
+const getHighScoreKey = () => {
+    let userSide = 'BLACK';
+    if (game.getGameMode() === 'VS_AI') {
+        userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+    }
+    return `gomoku_highscores_${userSide}`;
+};
+
 const saveHighScore = () => {
     // Only save for VS_AI mode
     if (game.getGameMode() !== 'VS_AI') return;
@@ -532,27 +540,12 @@ const saveHighScore = () => {
     const boardSize = game.getBoardSize();
 
     const newScore: HighScore = { moves: totalMovesCount, time, date, boardSize };
-    const key = `gomoku_highscores_${userSide}`;
+    const key = getHighScoreKey();
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.moves !== b.moves) return a.moves - b.moves;
         return a.time - b.time;
     });
-};
-
-const getHighScores = (): HighScore[] => {
-    // Determine key based on current settings
-    // If not VS_AI, we might not have a meaningful key, but this is only called in context of results/viewing
-    // Default to current board size and assumed user side (BLACK if not set) logic if needed, 
-    // but typically we want the current game's context.
-
-    let userSide = 'BLACK';
-    if (game.getGameMode() === 'VS_AI') {
-        userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
-    }
-
-    const key = `gomoku_highscores_${userSide}`;
-    return util.getHighScores<HighScore>(key);
 };
 
 const displayResult = () => {
@@ -594,46 +587,50 @@ const displayResult = () => {
         }
     }
 
-    // Render High Scores
-    const scores = getHighScores();
-    const tbody = document.getElementById('high-scores-body');
+    renderHighScores();
+};
+
+const renderHighScores = () => {
     const container = document.querySelector('.high-scores-container');
-
-    // Only show high scores in VS_AI mode
-    if (game.getGameMode() === 'VS_AI') {
-        if (container) container.classList.remove('hidden');
-        if (tbody) {
-            tbody.innerHTML = '';
-            scores.forEach((s, index) => {
-                const tr = document.createElement('tr');
-
-                // Highlight current run if it matches
-                // Note: Simple matching might highlight duplicates
-                const currentMoves = game.getMoves().length;
-                const currentTime = game.getElapsedTime();
-                const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
-
-                if (game.getWinner() === userSide &&
-                    s.moves === currentMoves &&
-                    s.time === currentTime &&
-                    // Check if date is very recent (within last second) to avoid highlighting old identical scores
-                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
-                    tr.classList.add('current-run');
-                }
-
-                const dateStr = util.formatDate(s.date, localization.language);
-
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${s.moves}</td>
-                    <td>${util.formatTime(s.time)}</td>
-                    <td>${dateStr}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    } else {
+    if (game.getGameMode() !== 'VS_AI') {
         if (container) container.classList.add('hidden');
+        return;
+    }
+    if (container) container.classList.remove('hidden');
+
+    const key = getHighScoreKey();
+    const scores = util.getHighScores<HighScore>(key);
+    const tbody = document.getElementById('high-scores-body');
+
+    if (tbody) {
+        tbody.innerHTML = '';
+        scores.forEach((s, index) => {
+            const tr = document.createElement('tr');
+
+            // Highlight current run if it matches
+            // Note: Simple matching might highlight duplicates
+            const currentMoves = game.getMoves().length;
+            const currentTime = game.getElapsedTime();
+            const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+
+            if (game.getWinner() === userSide &&
+                s.moves === currentMoves &&
+                s.time === currentTime &&
+                // Check if date is very recent (within last second) to avoid highlighting old identical scores
+                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                tr.classList.add('current-run');
+            }
+
+            const dateStr = util.formatDate(s.date, localization.language);
+
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${s.moves}</td>
+                <td>${util.formatTime(s.time)}</td>
+                <td>${dateStr}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 };
 

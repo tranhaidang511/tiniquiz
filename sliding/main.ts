@@ -267,25 +267,23 @@ game.onMovesUpdate(() => {
     updateGameInfo();
 });
 
-const saveHighScore = () => {
+const getHighScoreKey = () => {
     const size = game.getBoardSize();
+    return `sliding_highscores_${size}x${size}`;
+};
+
+const saveHighScore = () => {
     const moves = game.getMoves();
     const time = game.getElapsedTime();
     const date = Date.now();
 
     const newScore: HighScore = { moves, time, date };
-    const key = `sliding_highscores_${size}x${size}`;
+    const key = getHighScoreKey();
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.moves !== b.moves) return a.moves - b.moves;
         return a.time - b.time;
     });
-};
-
-const getHighScores = (): HighScore[] => {
-    const size = game.getBoardSize();
-    const key = `sliding_highscores_${size}x${size}`;
-    return util.getHighScores<HighScore>(key);
 };
 
 const displayResult = () => {
@@ -300,8 +298,12 @@ const displayResult = () => {
         finalMoves.textContent = game.getMoves().toString();
     }
 
-    // Render High Scores
-    const scores = getHighScores();
+    renderHighScores();
+};
+
+const renderHighScores = () => {
+    const key = getHighScoreKey();
+    const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
 
     if (tbody) {

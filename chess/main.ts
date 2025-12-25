@@ -645,6 +645,13 @@ function showPromotionModal() {
     });
 }
 
+// --- High Score Logic ---
+
+const getHighScoreKey = () => {
+    const userSide = game.getAIPlayer() === 'WHITE' ? 'BLACK' : 'WHITE';
+    return `chess_highscores_${userSide}`;
+};
+
 const saveHighScore = () => {
     const finalState = game.getFinalGameState();
     if (finalState !== 'CHECKMATE') return;
@@ -663,20 +670,12 @@ const saveHighScore = () => {
     const date = Date.now();
 
     const newScore: HighScore = { moves, time, date };
-    const key = `chess_highscores_${userSide}`;
+    const key = getHighScoreKey();
 
     util.saveHighScore(key, newScore, (a, b) => {
         if (a.moves !== b.moves) return a.moves - b.moves;
         return a.time - b.time;
     });
-};
-
-const getHighScores = (): HighScore[] => {
-    if (game.getGameMode() !== 'VS_AI') return [];
-
-    const userSide = game.getAIPlayer() === 'WHITE' ? 'BLACK' : 'WHITE';
-    const key = `chess_highscores_${userSide}`;
-    return util.getHighScores<HighScore>(key);
 };
 
 function displayResult() {
@@ -713,44 +712,49 @@ function displayResult() {
         totalMoves.textContent = game.getMoveCount().toString();
     }
 
-    // Render High Scores (add at end of displayResult function)
-    const scores = getHighScores();
-    const tbody = document.getElementById('high-scores-body');
+    renderHighScores();
+}
+
+function renderHighScores() {
     const container = document.querySelector('.high-scores-container');
-
-    if (game.getGameMode() === 'VS_AI') {
-        if (container) container.classList.remove('hidden');
-        if (tbody) {
-            tbody.innerHTML = '';
-            scores.forEach((s, index) => {
-                const tr = document.createElement('tr');
-
-                // Highlight current run if it matches
-                const currentMoves = game.getMoveCount();
-                const currentTime = game.getElapsedTime();
-                const winner = game.getWinner();
-
-                if (winner === 'WHITE' &&
-                    s.moves === currentMoves &&
-                    s.time === currentTime &&
-                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
-                    tr.classList.add('current-run');
-                }
-
-
-                const dateStr = util.formatDate(s.date, localization.language);
-
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${s.moves}</td>
-                    <td>${util.formatTime(s.time)}</td>
-                    <td>${dateStr}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    } else {
+    if (game.getGameMode() !== 'VS_AI') {
         if (container) container.classList.add('hidden');
+        return;
+    }
+    if (container) container.classList.remove('hidden');
+
+    const key = getHighScoreKey();
+    const scores = util.getHighScores<HighScore>(key);
+    const tbody = document.getElementById('high-scores-body');
+
+    if (tbody) {
+        tbody.innerHTML = '';
+        scores.forEach((s, index) => {
+            const tr = document.createElement('tr');
+
+            // Highlight current run if it matches
+            const currentMoves = game.getMoveCount();
+            const currentTime = game.getElapsedTime();
+            const winner = game.getWinner();
+
+            if (winner === 'WHITE' &&
+                s.moves === currentMoves &&
+                s.time === currentTime &&
+                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                tr.classList.add('current-run');
+            }
+
+
+            const dateStr = util.formatDate(s.date, localization.language);
+
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${s.moves}</td>
+                <td>${util.formatTime(s.time)}</td>
+                <td>${dateStr}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 }
 

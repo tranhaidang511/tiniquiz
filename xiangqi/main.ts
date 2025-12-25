@@ -514,10 +514,16 @@ function displayResult() {
     document.getElementById('total-time')!.textContent = util.formatTime(game.getElapsedTime());
     document.getElementById('total-moves')!.textContent = game.getMoveCount().toString();
 
-    displayHighScores();
+    renderHighScores();
 }
 
 // --- High Scores ---
+
+const getHighScoreKey = () => {
+    const userSide = game.getAIPlayer() === 'RED' ? 'BLACK' : 'RED';
+    return `xiangqi_highscores_${userSide}`;
+};
+
 function saveHighScore() {
     if (game.getGameMode() !== 'VS_AI') return;
 
@@ -531,7 +537,7 @@ function saveHighScore() {
             time: game.getElapsedTime(),
             date: Date.now()
         };
-        const key = `xiangqi_highscores_${userSide}`;
+        const key = getHighScoreKey();
         util.saveHighScore(key, score, (a, b) => {
             // Sort by moves asc, then time asc
             if (a.moves !== b.moves) return a.moves - b.moves;
@@ -540,7 +546,7 @@ function saveHighScore() {
     }
 }
 
-function displayHighScores() {
+function renderHighScores() {
     const container = document.querySelector('.high-scores-container');
     if (game.getGameMode() !== 'VS_AI') {
         if (container) container.classList.add('hidden');
@@ -548,8 +554,7 @@ function displayHighScores() {
     }
     if (container) container.classList.remove('hidden');
 
-    const userSide = game.getAIPlayer() === 'RED' ? 'BLACK' : 'RED';
-    const key = `xiangqi_highscores_${userSide}`;
+    const key = getHighScoreKey();
     const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
     if (tbody) {

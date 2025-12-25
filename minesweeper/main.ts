@@ -437,11 +437,6 @@ const saveHighScore = () => {
     util.saveHighScore(key, newScore, (a, b) => a.time - b.time);
 };
 
-const getHighScores = (): HighScore[] => {
-    const key = getHighScoreKey();
-    return util.getHighScores<HighScore>(key);
-};
-
 const displayResult = () => {
     const resultTitle = document.getElementById('result-title');
     const resultMessage = document.getElementById('result-message');
@@ -465,43 +460,37 @@ const displayResult = () => {
         finalTime.textContent = util.formatTime(game.getElapsedTime());
     }
 
-    renderHighScores(isWin);
+    renderHighScores();
 };
 
-const renderHighScores = (isWin: boolean) => {
-    const scores = getHighScores();
+const renderHighScores = () => {
+    const key = getHighScoreKey();
+    const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
-    const container = document.querySelector('.high-scores-container');
 
-    // Only show high scores if player won
-    if (isWin) {
-        if (container) container.classList.remove('hidden');
-        if (tbody) {
-            tbody.innerHTML = '';
-            scores.forEach((s, index) => {
-                const tr = document.createElement('tr');
+    if (tbody) {
+        tbody.innerHTML = '';
+        scores.forEach((s, index) => {
+            const tr = document.createElement('tr');
 
-                // Highlight current run if it matches
-                const currentTime = game.getElapsedTime();
+            // Highlight current run if it matches
+            const currentTime = game.getElapsedTime();
 
-                if (s.time === currentTime &&
-                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
-                    tr.classList.add('current-run');
-                }
+            if (s.time === currentTime &&
+                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                tr.classList.add('current-run');
+            }
 
 
-                const dateStr = util.formatDate(s.date, localization.language);
+            const dateStr = util.formatDate(s.date, localization.language);
 
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${util.formatTime(s.time)}</td>
-                    <td>${dateStr}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    } else {
-        if (container) container.classList.add('hidden');
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${util.formatTime(s.time)}</td>
+                <td>${dateStr}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 };
 

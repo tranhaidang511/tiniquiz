@@ -559,49 +559,61 @@ const displayResult = () => {
         saveHighScore();
     }
 
-    const scores = getHighScores();
-    const tbody = document.getElementById('high-scores-body');
+    renderHighScores();
+};
+
+const renderHighScores = () => {
     const container = document.querySelector('.high-scores-container');
-
-    if (game.getGameMode() === 'VS_AI') {
-        if (container) container.classList.remove('hidden');
-        if (tbody) {
-            tbody.innerHTML = '';
-            scores.forEach((s, index) => {
-                const tr = document.createElement('tr');
-
-                // Highlight current run if it matches
-                const currentMoves = game.getMoves().length;
-                const currentTime = game.getElapsedTime();
-
-                if (winner === userSide &&
-                    s.moves === currentMoves &&
-                    s.time === currentTime &&
-                    (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
-                    tr.classList.add('current-run');
-                }
-
-
-                const dateStr = util.formatDate(s.date, localization.language);
-
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${s.moves}</td>
-                    <td>${util.formatTime(s.time)}</td>
-                    <td>${dateStr}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    } else {
+    if (game.getGameMode() !== 'VS_AI') {
         if (container) container.classList.add('hidden');
+        return;
+    }
+    if (container) container.classList.remove('hidden');
+
+    const key = getHighScoreKey();
+    const scores = util.getHighScores<HighScore>(key);
+    const tbody = document.getElementById('high-scores-body');
+
+    if (tbody) {
+        tbody.innerHTML = '';
+        scores.forEach((s, index) => {
+            const tr = document.createElement('tr');
+
+            // Highlight current run if it matches
+            const currentMoves = game.getMoves().length;
+            const currentTime = game.getElapsedTime();
+            const winner = game.getWinner();
+            const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+
+            if (winner === userSide &&
+                s.moves === currentMoves &&
+                s.time === currentTime &&
+                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+                tr.classList.add('current-run');
+            }
+
+
+            const dateStr = util.formatDate(s.date, localization.language);
+
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${s.moves}</td>
+                <td>${util.formatTime(s.time)}</td>
+                <td>${dateStr}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
 };
 
-const saveHighScore = () => {
+const getHighScoreKey = () => {
     const difficulty = game.getDifficulty();
     const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
-    const key = `othello_highscores_${difficulty}_${userSide}`;
+    return `othello_highscores_${difficulty}_${userSide}`;
+};
+
+const saveHighScore = () => {
+    const key = getHighScoreKey();
 
     const newScore: HighScore = {
         moves: game.getMoves().length,
@@ -613,15 +625,6 @@ const saveHighScore = () => {
         if (a.moves !== b.moves) return a.moves - b.moves;
         return a.time - b.time;
     });
-};
-
-const getHighScores = (): HighScore[] => {
-    if (game.getGameMode() !== 'VS_AI') return [];
-
-    const difficulty = game.getDifficulty();
-    const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
-    const key = `othello_highscores_${difficulty}_${userSide}`;
-    return util.getHighScores<HighScore>(key);
 };
 
 // Subscribe to language changes

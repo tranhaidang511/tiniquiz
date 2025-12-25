@@ -73,7 +73,7 @@ function showView(viewId: string) {
         renderBoard();
         updateGameInfo();
     } else if (viewId === 'result-view') {
-        renderResult();
+        displayResult();
     }
 }
 
@@ -313,7 +313,7 @@ function updateGameInfo() {
     document.getElementById('turn-text')!.textContent = localization.getUIText(turnTextKey);
 }
 
-function renderResult() {
+function displayResult() {
     const { black, white } = game.calculateScore();
     const winner = black > white ? 'BLACK' : (white > black ? 'WHITE' : null);
 
@@ -468,7 +468,7 @@ function updateTexts() {
     }
 
     updateGameInfo();
-    if (game.getState() === 'RESULT') renderResult();
+    if (game.getState() === 'RESULT') displayResult();
 }
 
 // --- High Scores ---
@@ -488,12 +488,7 @@ function saveHighScore() {
     };
 
     // key: size_side_handicap_komi
-    // Note: If user selected "BLACK" in VS_AI, they play first (unless handicap).
-    // The requirement says "side". In VS_AI mode:
-    // If I chose BLACK, aiPlayer is WHITE. Side is BLACK.
-    // If I chose WHITE, aiPlayer is BLACK. Side is WHITE.
-    const side = game.getAIPlayer() === 'BLACK' ? 'WHITE' : 'BLACK';
-    const key = `go_highscores_${game.getBoardSize()}_${side}_${game.getHandicap()}_${game.getKomi()}`;
+    const key = getHighScoreKey();
 
     // Sort: Score (desc) > Moves (asc) > Time (asc)
     util.saveHighScore(key, highScore, (a, b) => {
@@ -503,22 +498,23 @@ function saveHighScore() {
     });
 }
 
+const getHighScoreKey = () => {
+    const size = game.getBoardSize();
+    const side = game.getAIPlayer() === 'BLACK' ? 'WHITE' : 'BLACK';
+    const handicap = game.getHandicap();
+    const komi = game.getKomi();
+    return `go_highscores_${size}_${side}_${handicap}_${komi}`;
+};
+
 function renderHighScores() {
-    // Reconstruct key from current settings to show relevant high scores
-    // This assumes we want to show high scores for the *currently selected* settings in the menu
-    const sizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
-    const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
-    const handicapSelect = document.getElementById('handicap-select') as HTMLSelectElement;
-    const komiSelect = document.getElementById('komi-select') as HTMLSelectElement;
+    const container = document.querySelector('.high-scores-container');
+    if (game.getGameMode() !== 'VS_AI') {
+        if (container) container.classList.add('hidden');
+        return;
+    }
+    if (container) container.classList.remove('hidden');
 
-    if (!sizeBtn || !sideBtn || !handicapSelect || !komiSelect) return;
-
-    const size = sizeBtn.dataset.size || '19';
-    const side = sideBtn.dataset.side || 'BLACK';
-    const handicap = handicapSelect.value || '0';
-    const komi = komiSelect.value || '6.5';
-
-    const key = `go_highscores_${size}_${side}_${handicap}_${komi}`;
+    const key = getHighScoreKey();
     const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
     if (tbody) {
