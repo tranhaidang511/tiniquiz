@@ -9,6 +9,8 @@ import vi from './i18n/vi';
 import { Consent } from '../common/Consent';
 import { util } from '../common/util';
 
+const IMAGE_URL = './assets/nature.png';
+
 interface HighScore {
     moves: number;
     time: number;
@@ -43,9 +45,11 @@ const renderApp = () => {
 
 const saveSetup = () => {
     const activeSizeBtn = document.querySelector('.size-btn.active') as HTMLElement;
-    if (activeSizeBtn) {
+    const activeTypeBtn = document.querySelector('.type-btn.active') as HTMLElement;
+    if (activeSizeBtn && activeTypeBtn) {
         const size = parseInt(activeSizeBtn.dataset.size || '3') as BoardSize;
-        localStorage.setItem('sliding_setup', JSON.stringify({ size }));
+        const type = (activeTypeBtn.dataset.type || 'NUMBERS') as any;
+        localStorage.setItem('sliding_setup', JSON.stringify({ size, type }));
     }
 };
 
@@ -53,7 +57,7 @@ const loadSetup = () => {
     try {
         const saved = localStorage.getItem('sliding_setup');
         if (saved) {
-            const { size } = JSON.parse(saved);
+            const { size, type } = JSON.parse(saved);
             document.querySelectorAll('.size-btn').forEach(btn => {
                 const btnSize = parseInt((btn as HTMLElement).dataset.size || '0');
                 if (btnSize === size) {
@@ -63,6 +67,18 @@ const loadSetup = () => {
                     btn.classList.remove('active');
                 }
             });
+
+            if (type) {
+                document.querySelectorAll('.type-btn').forEach(btn => {
+                    const btnType = (btn as HTMLElement).dataset.type;
+                    if (btnType === type) {
+                        btn.classList.add('active');
+                        game.setPuzzleType(type);
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
         }
     } catch (e) {
         console.error('Failed to load sliding puzzle setup:', e);
@@ -92,6 +108,10 @@ const updateTexts = () => {
     document.getElementById('th-time')!.textContent = localization.getUIText('time');
     document.getElementById('th-date')!.textContent = localization.getUIText('date');
     document.getElementById('reference-label')!.textContent = localization.getUIText('reference');
+    document.getElementById('label-puzzle-type')!.textContent = localization.getUIText('puzzleType');
+    document.getElementById('btn-type-numbers')!.textContent = localization.getUIText('typeNumbers');
+    document.getElementById('btn-type-image')!.textContent = localization.getUIText('typeImage');
+    document.getElementById('label-show-numbers')!.textContent = localization.getUIText('showNumbers') || 'Show Numbers';
 };
 
 // --- Event Listeners ---
@@ -126,11 +146,29 @@ const setupEventListeners = () => {
         });
     });
 
+    // Puzzle type selection
+    document.querySelectorAll('.type-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLButtonElement;
+            const type = target.dataset.type as any;
+
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+            target.classList.add('active');
+
+            game.setPuzzleType(type);
+        });
+    });
+
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
         saveSetup();
         lastScoreDate = null;
         game.start();
+    });
+
+    // Show numbers toggle
+    document.getElementById('show-numbers-check')?.addEventListener('change', () => {
+        renderBoard();
     });
 
     // New game
@@ -152,6 +190,7 @@ const renderReferenceBoard = () => {
 
     referenceBoardElement.innerHTML = '';
     const size = game.getBoardSize();
+    const type = game.getPuzzleType();
     const totalTiles = size * size;
 
     // Set grid template
@@ -162,6 +201,12 @@ const renderReferenceBoard = () => {
     for (let i = 1; i < totalTiles; i++) {
         const tileDiv = document.createElement('div');
         tileDiv.className = 'tile';
+        if (type === 'IMAGE') {
+            tileDiv.classList.add('image-mode');
+            tileDiv.style.backgroundImage = `url(${IMAGE_URL})`;
+            const { x, y } = getBackgroundPosition(i - 1, size);
+            tileDiv.style.backgroundPosition = `${x}% ${y}%`;
+        }
         tileDiv.textContent = i.toString();
         referenceBoardElement.appendChild(tileDiv);
     }
@@ -179,10 +224,18 @@ const renderBoard = () => {
     boardElement.innerHTML = '';
     const board = game.getBoard();
     const size = game.getBoardSize();
+    const type = game.getPuzzleType();
+    const showNumbers = (document.getElementById('show-numbers-check') as HTMLInputElement)?.checked;
 
     // Set grid template
     boardElement.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     boardElement.dataset.size = size.toString();
+
+    // Toggle image controls
+    const imageControls = document.getElementById('image-controls');
+    if (imageControls) {
+        imageControls.classList.toggle('hidden', type !== 'IMAGE');
+    }
 
     board.forEach((value, index) => {
         const tileDiv = document.createElement('div');
@@ -191,6 +244,13 @@ const renderBoard = () => {
             tileDiv.className = 'tile empty';
         } else {
             tileDiv.className = 'tile';
+            if (type === 'IMAGE') {
+                tileDiv.classList.add('image-mode');
+                if (showNumbers) tileDiv.classList.add('show-numbers');
+                tileDiv.style.backgroundImage = `url(${IMAGE_URL})`;
+                const { x, y } = getBackgroundPosition(value - 1, size);
+                tileDiv.style.backgroundPosition = `${x}% ${y}%`;
+            }
             tileDiv.textContent = value.toString();
             tileDiv.dataset.value = value.toString();
 
@@ -205,6 +265,14 @@ const renderBoard = () => {
 
         boardElement.appendChild(tileDiv);
     });
+};
+
+const getBackgroundPosition = (value: number, size: number) => {
+    const row = Math.floor(value / size);
+    const col = value % size;
+    const x = (col / (size - 1)) * 100;
+    const y = (row / (size - 1)) * 100;
+    return { x, y };
 };
 
 const animateTileMove = (tile: HTMLElement) => {

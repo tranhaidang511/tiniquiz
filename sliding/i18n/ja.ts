@@ -15,6 +15,10 @@ export default {
         highScores: "ハイスコア",
         rank: "順位",
         date: "日付",
-        reference: "目標:"
+        reference: "目標:",
+        puzzleType: "パズルの種類",
+        typeNumbers: "数字",
+        typeImage: "画像",
+        showNumbers: "数字を表示"
     }
 };

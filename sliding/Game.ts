@@ -1,5 +1,6 @@
 export type GameState = 'MENU' | 'PLAYING' | 'WON';
 export type BoardSize = 3 | 4 | 5 | 6 | 7;
+export type PuzzleType = 'NUMBERS' | 'IMAGE';
 
 export class Game {
     private state: GameState = 'MENU';
@@ -7,6 +8,7 @@ export class Game {
     private board: (number | null)[] = [];
     private emptyIndex: number = 0;
     private moves: number = 0;
+    private puzzleType: PuzzleType = 'NUMBERS';
     private startTime: number = 0;
     private elapsedTime: number = 0;
 
@@ -22,6 +24,10 @@ export class Game {
 
     setBoardSize(size: BoardSize) {
         this.boardSize = size;
+    }
+
+    setPuzzleType(type: PuzzleType) {
+        this.puzzleType = type;
     }
 
     getBoardSize(): BoardSize {
@@ -159,6 +165,10 @@ export class Game {
 
     getState(): GameState {
         return this.state;
+    }
+
+    getPuzzleType(): PuzzleType {
+        return this.puzzleType;
     }
 
     getBoard(): (number | null)[] {

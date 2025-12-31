@@ -63,7 +63,7 @@
     gap: 2px;
     background: var(--bg-primary);
     padding: 2px;
-    border-radius: 0.25rem;
+    border-radius: 0;
     box-shadow: var(--shadow-md);
 }
 
@@ -121,39 +121,105 @@
     gap: 4px;
     background: var(--bg-primary);
     padding: 4px;
-    border-radius: 0.5rem;
+    border-radius: 0;
     box-shadow: var(--shadow-lg);
 }
 
 /* Tile sizing based on board size */
 .puzzle-board[data-size="2"] {
-    width: 300px;
-    height: 300px;
+    --board-size-px: 300px;
+    width: var(--board-size-px);
+    height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="3"] {
-    width: 360px;
-    height: 360px;
+    --board-size-px: 360px;
+    width: var(--board-size-px);
+    height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="4"] {
-    width: 400px;
-    height: 400px;
+    --board-size-px: 400px;
+    width: var(--board-size-px);
+    height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="5"] {
-    width: 450px;
-    height: 450px;
+    --board-size-px: 450px;
+    width: var(--board-size-px);
+    height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="6"] {
-    width: 480px;
-    height: 480px;
+    --board-size-px: 480px;
+    width: var(--board-size-px);
+    height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="7"] {
-    width: 500px;
-    height: 500px;
+    --board-size-px: 500px;
+    width: var(--board-size-px);
+    height: var(--board-size-px);
+}
+
+/* Reference board sizing vars */
+.reference-board[data-size="2"] {
+    --ref-size-px: 80px;
+    width: var(--ref-size-px);
+    height: var(--ref-size-px);
+}
+
+.reference-board[data-size="3"] {
+    --ref-size-px: 90px;
+    width: var(--ref-size-px);
+    height: var(--ref-size-px);
+}
+
+.reference-board[data-size="4"] {
+    --ref-size-px: 100px;
+    width: var(--ref-size-px);
+    height: var(--ref-size-px);
+}
+
+.reference-board[data-size="5"] {
+    --ref-size-px: 110px;
+    width: var(--ref-size-px);
+    height: var(--ref-size-px);
+}
+
+.reference-board[data-size="6"] {
+    --ref-size-px: 120px;
+    width: var(--ref-size-px);
+    height: var(--ref-size-px);
+}
+
+.reference-board[data-size="7"] {
+    --ref-size-px: 130px;
+    width: var(--ref-size-px);
+    height: var(--ref-size-px);
+}
+
+/* Controls */
+#image-controls {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.toggle-container input {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
 }
 
 .tile {
@@ -165,7 +231,7 @@
     font-weight: 700;
     color: white;
     cursor: pointer;
-    border-radius: 0.375rem;
+    border-radius: 0;
     transition: all 0.2s ease;
     user-select: none;
     box-shadow: var(--shadow-md);
@@ -177,9 +243,25 @@
 }
 
 .tile.empty {
-    background: transparent;
+    background: transparent !important;
     cursor: default;
     box-shadow: none;
+}
+
+.tile.image-mode {
+    background-size: var(--board-size-px, 360px) var(--board-size-px, 360px);
+    background-repeat: no-repeat;
+    color: transparent;
+    text-shadow: none;
+}
+
+.tile.image-mode.show-numbers {
+    color: white;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.8);
+}
+
+.reference-board .tile.image-mode {
+    background-size: var(--ref-size-px, 90px) var(--ref-size-px, 90px);
 }
 
 .tile.empty:hover {

@@ -15,6 +15,10 @@ export default {
         highScores: "High Scores",
         rank: "Rank",
         date: "Date",
-        reference: "Goal:"
+        reference: "Goal:",
+        puzzleType: "Puzzle Type",
+        typeNumbers: "Numbers",
+        typeImage: "Image",
+        showNumbers: "Show Numbers"
     }
 };

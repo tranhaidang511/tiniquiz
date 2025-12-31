@@ -86,6 +86,14 @@
                 </div>
             </div>
 
+            <div class="setup-group">
+                <h3 id="label-puzzle-type">Puzzle Type</h3>
+                <div class="radio-group">
+                    <button class="setup-btn type-btn active" data-type="NUMBERS" id="btn-type-numbers">Numbers</button>
+                    <button class="setup-btn type-btn" data-type="IMAGE" id="btn-type-image">Image</button>
+                </div>
+            </div>
+
             <button id="start-btn" class="primary">Start Game</button>
         </div>
 
@@ -116,6 +124,13 @@
                 <div id="puzzle-board" class="puzzle-board">
                     <!-- Board tiles will be rendered here -->
                 </div>
+            </div>
+
+            <div id="image-controls" class="hidden">
+                <label class="toggle-container">
+                    <input type="checkbox" id="show-numbers-check">
+                    <span id="label-show-numbers">Show Numbers</span>
+                </label>
             </div>
         </div>
 

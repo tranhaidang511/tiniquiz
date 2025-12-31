@@ -15,6 +15,10 @@ export default {
         highScores: "Bảng xếp hạng",
         rank: "Hạng",
         date: "Ngày",
-        reference: "Mục tiêu:"
+        reference: "Mục tiêu:",
+        puzzleType: "Loại câu đố",
+        typeNumbers: "Số",
+        typeImage: "Hình ảnh",
+        showNumbers: "Hiện số"
     }
 };
