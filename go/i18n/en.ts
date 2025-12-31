@@ -6,7 +6,7 @@ export const en = {
         newGame: "New Game",
         playAgain: 'Play Again',
         mainMenu: 'Main Menu',
-        TWO_PLAYER: 'Two Players',
+        TWO_PLAYER: '2 Players',
         VS_AI: 'Vs AI',
         mode: 'Mode',
         difficulty: 'Difficulty',

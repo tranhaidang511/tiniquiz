@@ -12,8 +12,10 @@ import { util } from '../common/util';
 interface HighScore {
     score: number;
     time: number;
-    date: number | string;
+    date: number;
 }
+
+let lastScoreDate: number | null = null;
 
 // Initialize Consent Banner
 new Consent();
@@ -226,6 +228,7 @@ const setupEventListeners = () => {
             game.setAISide(null);
         }
 
+        lastScoreDate = null;
         game.start();
     });
 
@@ -579,16 +582,7 @@ const renderHighScores = () => {
         scores.forEach((s, index) => {
             const tr = document.createElement('tr');
 
-            // Highlight current run if it matches
-            const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
-            const currentScore = game.getDiscCount(userSide);
-            const currentTime = game.getElapsedTime();
-            const winner = game.getWinner();
-
-            if (winner === userSide &&
-                s.score === currentScore &&
-                s.time === currentTime &&
-                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+            if (s.date === lastScoreDate) {
                 tr.classList.add('current-run');
             }
 
@@ -624,6 +618,8 @@ const saveHighScore = () => {
         if (b.score !== a.score) return b.score - a.score;
         return a.time - b.time;
     });
+
+    lastScoreDate = newScore.date;
 };
 
 // Subscribe to language changes

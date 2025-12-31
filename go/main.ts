@@ -17,6 +17,7 @@ interface HighScore {
 }
 
 let hoverStone: SVGCircleElement | null = null;
+let lastScoreDate: number | null = null;
 
 // Initialize Components
 new Consent();
@@ -393,6 +394,7 @@ function setupEventListeners() {
         }
 
         saveSetup();
+        lastScoreDate = null;
         game.start();
     });
 
@@ -487,6 +489,8 @@ function saveHighScore() {
         date: Date.now()
     };
 
+    lastScoreDate = highScore.date;
+
     // key: size_side_handicap_komi
     const key = getHighScoreKey();
 
@@ -521,6 +525,9 @@ function renderHighScores() {
         tbody.innerHTML = '';
         scores.forEach((s, i) => {
             const tr = document.createElement('tr');
+            if (s.date === lastScoreDate) {
+                tr.classList.add('current-run');
+            }
             tr.innerHTML = `
                 <td>${i + 1}</td>
                 <td>${s.score.toFixed(1)}</td>

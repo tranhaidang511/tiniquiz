@@ -16,6 +16,8 @@ interface HighScore {
     date: number | string;
 }
 
+let lastScoreDate: number | null = null;
+
 // Initialize Consent Banner
 new Consent();
 
@@ -187,6 +189,7 @@ function setupEventListeners() {
         game.setGameMode(mode);
         game.setAISide(aiSide);
         // game.setDifficulty(difficulty); // Removed
+        lastScoreDate = null;
         game.start();
     });
 }
@@ -668,6 +671,7 @@ const saveHighScore = () => {
     const moves = game.getMoveCount();
     const time = game.getElapsedTime();
     const date = Date.now();
+    lastScoreDate = date;
 
     const newScore: HighScore = { moves, time, date };
     const key = getHighScoreKey();
@@ -733,14 +737,7 @@ function renderHighScores() {
             const tr = document.createElement('tr');
 
             // Highlight current run if it matches
-            const currentMoves = game.getMoveCount();
-            const currentTime = game.getElapsedTime();
-            const winner = game.getWinner();
-
-            if (winner === 'WHITE' &&
-                s.moves === currentMoves &&
-                s.time === currentTime &&
-                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+            if (s.date === lastScoreDate) {
                 tr.classList.add('current-run');
             }
 

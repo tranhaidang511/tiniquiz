@@ -15,6 +15,8 @@ interface HighScore {
     date: number | string;
 }
 
+let lastScoreDate: number | null = null;
+
 // Initialize Consent Banner
 new Consent();
 
@@ -127,6 +129,7 @@ const setupEventListeners = () => {
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
         saveSetup();
+        lastScoreDate = null;
         game.start();
     });
 
@@ -276,6 +279,7 @@ const saveHighScore = () => {
     const moves = game.getMoves();
     const time = game.getElapsedTime();
     const date = Date.now();
+    lastScoreDate = date;
 
     const newScore: HighScore = { moves, time, date };
     const key = getHighScoreKey();
@@ -312,12 +316,7 @@ const renderHighScores = () => {
             const tr = document.createElement('tr');
 
             // Highlight current run if it matches
-            const currentMoves = game.getMoves();
-            const currentTime = game.getElapsedTime();
-
-            if (s.moves === currentMoves &&
-                s.time === currentTime &&
-                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+            if (s.date === lastScoreDate) {
                 tr.classList.add('current-run');
             }
 

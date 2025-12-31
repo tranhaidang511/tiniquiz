@@ -18,6 +18,8 @@ interface HighScore {
     date: number | string;
 }
 
+let lastScoreDate: number | null = null;
+
 // --- Constants ---
 const CELL_SIZE = 50;
 const PADDING = 25;
@@ -106,6 +108,7 @@ function setupEventListeners() {
     // Start Game
     document.getElementById('start-btn')?.addEventListener('click', () => {
         saveSetup();
+        lastScoreDate = null;
         game.start();
     });
 
@@ -532,10 +535,12 @@ function saveHighScore() {
     const userSide = game.getAIPlayer() === 'RED' ? 'BLACK' : 'RED';
 
     if (winner === userSide) {
+        const date = Date.now();
+        lastScoreDate = date;
         const score: HighScore = {
             moves: game.getMoveCount(),
             time: game.getElapsedTime(),
-            date: Date.now()
+            date: date
         };
         const key = getHighScoreKey();
         util.saveHighScore(key, score, (a, b) => {
@@ -561,6 +566,9 @@ function renderHighScores() {
         tbody.innerHTML = '';
         scores.forEach((s, i) => {
             const tr = document.createElement('tr');
+            if (s.date === lastScoreDate) {
+                tr.classList.add('current-run');
+            }
             tr.innerHTML = `
                 <td>${i + 1}</td>
                 <td>${s.moves}</td>

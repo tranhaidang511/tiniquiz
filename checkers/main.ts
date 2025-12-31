@@ -15,6 +15,8 @@ interface HighScore {
     date: number | string;
 }
 
+let lastScoreDate: number | null = null;
+
 // Initialize Consent Banner
 new Consent();
 
@@ -254,6 +256,7 @@ const setupEventListeners = () => {
             game.setAISide(null);
         }
 
+        lastScoreDate = null;
         game.start();
     });
 
@@ -640,6 +643,7 @@ const saveHighScore = () => {
     const moves = game.getMoves().length;
     const time = game.getElapsedTime();
     const date = Date.now();
+    lastScoreDate = date;
 
     const newScore: HighScore = { moves, time, date };
     const key = getHighScoreKey();
@@ -699,10 +703,6 @@ const renderHighScores = () => {
     const scores = util.getHighScores<HighScore>(key);
     const tbody = document.getElementById('high-scores-body');
 
-    const currentMoves = game.getMoves().length;
-    const currentTime = game.getElapsedTime();
-    const winner = game.getWinner();
-    const userSide = game.getAISide() === 'RED' ? 'BLACK' : 'RED';
 
     if (tbody) {
         tbody.innerHTML = '';
@@ -710,10 +710,7 @@ const renderHighScores = () => {
             const tr = document.createElement('tr');
 
             // Highlight current run if it matches
-            if (winner === userSide &&
-                s.moves === currentMoves &&
-                s.time === currentTime &&
-                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+            if (s.date === lastScoreDate) {
                 tr.classList.add('current-run');
             }
 

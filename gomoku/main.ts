@@ -16,6 +16,8 @@ interface HighScore {
     boardSize: number;
 }
 
+let lastScoreDate: number | null = null;
+
 // Initialize Consent Banner
 new Consent();
 
@@ -224,6 +226,7 @@ const setupEventListeners = () => {
             game.setAISide(null);
         }
 
+        lastScoreDate = null;
         game.start();
     });
 
@@ -537,9 +540,9 @@ const saveHighScore = () => {
     const totalMovesCount = game.getMoves().length;
     const time = game.getElapsedTime();
     const date = Date.now();
-    const boardSize = game.getBoardSize();
+    lastScoreDate = date;
 
-    const newScore: HighScore = { moves: totalMovesCount, time, date, boardSize };
+    const newScore: HighScore = { moves: totalMovesCount, time, date, boardSize: game.getBoardSize() };
     const key = getHighScoreKey();
 
     util.saveHighScore(key, newScore, (a, b) => {
@@ -608,16 +611,7 @@ const renderHighScores = () => {
             const tr = document.createElement('tr');
 
             // Highlight current run if it matches
-            // Note: Simple matching might highlight duplicates
-            const currentMoves = game.getMoves().length;
-            const currentTime = game.getElapsedTime();
-            const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
-
-            if (game.getWinner() === userSide &&
-                s.moves === currentMoves &&
-                s.time === currentTime &&
-                // Check if date is very recent (within last second) to avoid highlighting old identical scores
-                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+            if (s.date === lastScoreDate) {
                 tr.classList.add('current-run');
             }
 

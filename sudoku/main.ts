@@ -16,6 +16,8 @@ interface HighScore {
     hintsUsed: number;
 }
 
+let lastScoreDate: number | null = null;
+
 // Initialize Consent Banner
 new Consent();
 
@@ -139,6 +141,7 @@ const setupEventListeners = () => {
     // Start game
     document.getElementById('start-btn')?.addEventListener('click', () => {
         saveSetup();
+        lastScoreDate = null;
         game.start();
     });
 
@@ -352,6 +355,7 @@ const saveHighScore = () => {
     const mistakes = game.getMistakes();
     const hintsUsed = game.getHintsUsed();
     const date = Date.now();
+    lastScoreDate = date;
 
     const newScore: HighScore = { time, mistakes, hintsUsed, date };
     const key = getHighScoreKey();
@@ -410,14 +414,7 @@ const renderHighScores = () => {
             const tr = document.createElement('tr');
 
             // Highlight current run if it matches
-            const currentTime = game.getElapsedTime();
-            const currentMistakes = game.getMistakes();
-            const currentHints = game.getHintsUsed();
-
-            if (s.time === currentTime &&
-                s.mistakes === currentMistakes &&
-                s.hintsUsed === currentHints &&
-                (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+            if (s.date === lastScoreDate) {
                 tr.classList.add('current-run');
             }
 

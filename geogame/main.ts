@@ -15,6 +15,8 @@ interface HighScore {
   date: number | string; // timestamp or legacy string
 }
 
+let lastScoreDate: number | null = null;
+
 // Initialize Consent Banner
 new Consent();
 
@@ -217,6 +219,7 @@ const setupEventListeners = () => {
       game.setFilter('region', filterVal);
     }
 
+    lastScoreDate = null;
     game.start(countVal);
   });
 
@@ -412,6 +415,7 @@ const saveHighScore = () => {
 
   const key = getHighScoreKey();
   const date = Date.now();
+  lastScoreDate = date;
 
   const newScore: HighScore = { score, total, time, date };
 
@@ -444,13 +448,7 @@ const renderHighScores = () => {
       const tr = document.createElement('tr');
 
       // Highlight current score if it matches
-      const { score, total } = game.getScore();
-      const elapsedSeconds = game.getElapsedTime();
-
-      if (s.score === score &&
-        s.total === total &&
-        s.time === elapsedSeconds &&
-        (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
+      if (s.date === lastScoreDate) {
         tr.classList.add('current-run');
       }
 
