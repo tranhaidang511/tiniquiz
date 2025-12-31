@@ -14,6 +14,9 @@
     --accent-checkers: #fb923c;
     --accent-othello: #4ade80;
     --accent-mancala: #8B4513;
+    --accent-chess: #6366f1;
+    --accent-xiangqi: #dc2626;
+    --accent-go: #475569;
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
     --shadow-glow: 0 0 30px rgba(138, 180, 248, 0.3);
@@ -201,6 +204,18 @@ h1 {
 
 .game-card.mancala {
     --card-accent: var(--accent-mancala);
+}
+
+.game-card.chess {
+    --card-accent: var(--accent-chess);
+}
+
+.game-card.xiangqi {
+    --card-accent: var(--accent-xiangqi);
+}
+
+.game-card.go {
+    --card-accent: var(--accent-go);
 }
 
 .game-card:hover {
