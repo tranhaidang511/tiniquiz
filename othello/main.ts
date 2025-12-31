@@ -518,7 +518,6 @@ const displayResult = () => {
     const winnerDisplay = document.getElementById('winner-display');
     const totalMoves = document.getElementById('total-moves');
     const totalTime = document.getElementById('total-time');
-    const resultTitle = document.getElementById('result-title');
     const finalBlack = document.getElementById('final-black');
     const finalWhite = document.getElementById('final-white');
 
@@ -539,12 +538,6 @@ const displayResult = () => {
     }
 
     if (winner) {
-        if (resultTitle) {
-            resultTitle.textContent = winner === 'BLACK'
-                ? localization.getUIText('blackWins')
-                : localization.getUIText('whiteWins');
-        }
-
         if (winnerDisplay) {
             const winnerText = winner === 'BLACK'
                 ? localization.getUIText('blackWins')
@@ -557,7 +550,6 @@ const displayResult = () => {
         }
     } else {
         // Draw
-        if (resultTitle) resultTitle.textContent = localization.getUIText('draw');
         if (winnerDisplay) {
             winnerDisplay.innerHTML = `<span>${localization.getUIText('draw')}</span>`;
         }

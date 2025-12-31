@@ -557,7 +557,6 @@ const displayResult = () => {
     const winnerDisplay = document.getElementById('winner-display');
     const totalMoves = document.getElementById('total-moves');
     const totalTime = document.getElementById('total-time');
-    const resultTitle = document.getElementById('result-title');
 
     if (totalMoves) {
         totalMoves.textContent = game.getMoves().length.toString();
@@ -568,12 +567,6 @@ const displayResult = () => {
     }
 
     if (winner) {
-        if (resultTitle) {
-            resultTitle.textContent = winner === 'BLACK'
-                ? localization.getUIText('blackWins')
-                : localization.getUIText('whiteWins');
-        }
-
         if (winnerDisplay) {
             const playerWinsText = winner === 'BLACK'
                 ? localization.getUIText('blackPlayerWins')
@@ -585,7 +578,6 @@ const displayResult = () => {
       `;
         }
     } else {
-        if (resultTitle) resultTitle.textContent = localization.getUIText('draw');
         if (winnerDisplay) {
             winnerDisplay.innerHTML = `<span>${localization.getUIText('boardFull')}</span>`;
         }

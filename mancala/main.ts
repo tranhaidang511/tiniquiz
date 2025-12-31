@@ -520,7 +520,6 @@ const displayResult = () => {
     const player2Score = document.getElementById('player2-score');
     const totalMoves = document.getElementById('total-moves');
     const totalTime = document.getElementById('total-time');
-    const resultTitle = document.getElementById('result-title');
 
     // Update score labels for AI mode
     const isAIMode = game.getGameMode() === 'VS_AI';
@@ -555,19 +554,6 @@ const displayResult = () => {
     }
 
     if (winner) {
-        if (resultTitle) {
-            const isAIMode = game.getGameMode() === 'VS_AI';
-            if (isAIMode) {
-                resultTitle.textContent = winner === 'PLAYER1'
-                    ? localization.getUIText('youWin')
-                    : localization.getUIText('aiWins');
-            } else {
-                resultTitle.textContent = winner === 'PLAYER1'
-                    ? localization.getUIText('player1Wins')
-                    : localization.getUIText('player2Wins');
-            }
-        }
-
         if (winnerDisplay) {
             const isAIMode = game.getGameMode() === 'VS_AI';
             const playerWinsText = isAIMode
@@ -584,7 +570,6 @@ const displayResult = () => {
             `;
         }
     } else {
-        if (resultTitle) resultTitle.textContent = localization.getUIText('draw');
         if (winnerDisplay) {
             winnerDisplay.innerHTML = `<span>${localization.getUIText('draw')}</span>`;
         }

@@ -660,7 +660,6 @@ const displayResult = () => {
     const winnerDisplay = document.getElementById('winner-display');
     const totalMoves = document.getElementById('total-moves');
     const totalTime = document.getElementById('total-time');
-    const resultTitle = document.getElementById('result-title');
 
     if (totalMoves) {
         totalMoves.textContent = game.getMoves().length.toString();
@@ -671,12 +670,6 @@ const displayResult = () => {
     }
 
     if (winner) {
-        if (resultTitle) {
-            resultTitle.textContent = winner === 'RED'
-                ? localization.getUIText('redWins')
-                : localization.getUIText('blackWins');
-        }
-
         if (winnerDisplay) {
             const playerWinsText = winner === 'RED'
                 ? localization.getUIText('redPlayerWins')
