@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/chess/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: './dist',
+        outDir: '../dist/chess',
         emptyOutDir: true,
     }
 });

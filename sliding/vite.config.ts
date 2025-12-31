@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/sliding/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: './dist',
+        outDir: '../dist/sliding',
         emptyOutDir: true,
     }
 });

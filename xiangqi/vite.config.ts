@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/xiangqi/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: 'dist',
+        outDir: '../dist/xiangqi',
         emptyOutDir: true
     }
 });

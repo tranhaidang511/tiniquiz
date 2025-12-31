@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/geogame/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: './dist',
+        outDir: '../dist/geogame',
         emptyOutDir: true,
     }
 });

@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/othello/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: './dist',
+        outDir: '../dist/othello',
         emptyOutDir: true,
     }
 });

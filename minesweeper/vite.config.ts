@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/minesweeper/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: './dist',
+        outDir: '../dist/minesweeper',
         emptyOutDir: true,
     }
 });

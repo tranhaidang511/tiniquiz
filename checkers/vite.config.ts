@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/checkers/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: './dist',
+        outDir: '../dist/checkers',
         emptyOutDir: true,
     }
 });

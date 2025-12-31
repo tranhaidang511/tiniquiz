@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/go/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: 'dist',
+        outDir: '../dist/go',
         emptyOutDir: true
     }
 });

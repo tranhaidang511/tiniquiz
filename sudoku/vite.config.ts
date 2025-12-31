@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/sudoku/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: './dist',
+        outDir: '../dist/sudoku',
         emptyOutDir: true,
     }
 });

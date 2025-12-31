@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/mancala/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: 'dist',
+        outDir: '../dist/mancala',
         emptyOutDir: true
     }
 });

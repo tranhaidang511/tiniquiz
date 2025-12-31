@@ -6,7 +6,7 @@ export default defineConfig({
     base: '/gomoku/',
     plugins: [viteSingleFile()],
     build: {
-        outDir: './dist',
+        outDir: '../dist/gomoku',
         emptyOutDir: true,
     }
 });
