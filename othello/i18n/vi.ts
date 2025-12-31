@@ -14,6 +14,7 @@ export default {
         playAgain: "Chơi lại",
         time: "Thời gian",
         moves: "Số nước",
+        score: "Điểm",
         blackScore: "Đen",
         whiteScore: "Trắng",
         highScores: "Bảng xếp hạng",

@@ -14,6 +14,7 @@ export default {
         playAgain: "Play Again",
         time: "Time",
         moves: "Moves",
+        score: "Score",
         blackScore: "Black",
         whiteScore: "White",
         highScores: "High Scores",

@@ -11,9 +11,9 @@ export class MancalaAI {
 
     private getMaxDepth(difficulty: Difficulty): number {
         switch (difficulty) {
-            case 'EASY': return 2;
-            case 'MEDIUM': return 4;
-            case 'HARD': return 6;
+            case 'EASY': return 1;
+            case 'MEDIUM': return 7;
+
         }
     }
 

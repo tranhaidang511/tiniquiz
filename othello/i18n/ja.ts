@@ -14,6 +14,7 @@ export default {
         playAgain: "もう一度プレイ",
         time: "時間",
         moves: "手数",
+        score: "スコア",
         blackScore: "黒",
         whiteScore: "白",
         highScores: "ハイスコア",

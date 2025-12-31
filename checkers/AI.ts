@@ -11,14 +11,12 @@ export class CheckersAI {
     setDifficulty(difficulty: Difficulty) {
         switch (difficulty) {
             case 'EASY':
-                this.maxDepth = 2;
+                this.maxDepth = 1;
                 break;
             case 'MEDIUM':
-                this.maxDepth = 4;
+                this.maxDepth = 7;
                 break;
-            case 'HARD':
-                this.maxDepth = 6;
-                break;
+
         }
     }
 

@@ -155,7 +155,7 @@ const updateTexts = () => {
     document.getElementById('label-difficulty')!.textContent = localization.getUIText('difficulty');
     document.getElementById('diff-easy')!.textContent = localization.getUIText('easy');
     document.getElementById('diff-medium')!.textContent = localization.getUIText('medium');
-    document.getElementById('diff-hard')!.textContent = localization.getUIText('hard');
+
     document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
     document.getElementById('side-red')!.textContent = localization.getUIText('sideRed');
     document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');

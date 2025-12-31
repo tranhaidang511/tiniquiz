@@ -10,7 +10,7 @@ import { Consent } from '../common/Consent';
 import { util } from '../common/util';
 
 interface HighScore {
-    moves: number;
+    score: number;
     time: number;
     date: number | string;
 }
@@ -134,7 +134,7 @@ const updateTexts = () => {
     document.getElementById('label-difficulty')!.textContent = localization.getUIText('difficulty');
     document.getElementById('difficulty-easy')!.textContent = localization.getUIText('easy');
     document.getElementById('difficulty-medium')!.textContent = localization.getUIText('medium');
-    document.getElementById('difficulty-hard')!.textContent = localization.getUIText('hard');
+
     document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
     document.getElementById('new-game-btn')!.textContent = localization.getUIText('newGame');
     document.getElementById('label-time')!.textContent = localization.getUIText('time');
@@ -145,9 +145,9 @@ const updateTexts = () => {
     document.getElementById('label-final-black')!.textContent = localization.getUIText('blackScore');
     document.getElementById('label-final-white')!.textContent = localization.getUIText('whiteScore');
     document.getElementById('restart-btn')!.textContent = localization.getUIText('playAgain');
-    document.getElementById('label-high-scores')!.textContent = localization.getUIText('highScores');
+    document.getElementById('high-scores-title')!.textContent = localization.getUIText('highScores');
     document.getElementById('label-rank')!.textContent = localization.getUIText('rank');
-    document.getElementById('label-moves')!.textContent = localization.getUIText('moves');
+    document.getElementById('label-moves')!.textContent = localization.getUIText('score');
     document.getElementById('label-date')!.textContent = localization.getUIText('date');
     document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
     document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
@@ -480,6 +480,12 @@ game.onStateChange((state: GameState) => {
     }
     if (state === 'RESULT') {
         showView('result-view');
+        // Save score only when transitioning to RESULT state, not on every display update
+        const winner = game.getWinner();
+        const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+        if (winner === userSide && game.getGameMode() === 'VS_AI') {
+            saveHighScore();
+        }
         displayResult();
     }
 });
@@ -553,12 +559,6 @@ const displayResult = () => {
         }
     }
 
-    // Save and Render High Scores
-    const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
-    if (winner === userSide && game.getGameMode() === 'VS_AI') {
-        saveHighScore();
-    }
-
     renderHighScores();
 };
 
@@ -580,24 +580,22 @@ const renderHighScores = () => {
             const tr = document.createElement('tr');
 
             // Highlight current run if it matches
-            const currentMoves = game.getMoves().length;
+            const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
+            const currentScore = game.getDiscCount(userSide);
             const currentTime = game.getElapsedTime();
             const winner = game.getWinner();
-            const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
 
             if (winner === userSide &&
-                s.moves === currentMoves &&
+                s.score === currentScore &&
                 s.time === currentTime &&
                 (typeof s.date === 'number' && Date.now() - s.date < 1000)) {
                 tr.classList.add('current-run');
             }
 
-
             const dateStr = util.formatDate(s.date, localization.language);
-
             tr.innerHTML = `
                 <td>${index + 1}</td>
-                <td>${s.moves}</td>
+                <td>${s.score}</td>
                 <td>${util.formatTime(s.time)}</td>
                 <td>${dateStr}</td>
             `;
@@ -614,15 +612,16 @@ const getHighScoreKey = () => {
 
 const saveHighScore = () => {
     const key = getHighScoreKey();
+    const userSide = game.getAISide() === 'WHITE' ? 'BLACK' : 'WHITE';
 
     const newScore: HighScore = {
-        moves: game.getMoves().length,
+        score: game.getDiscCount(userSide),
         time: game.getElapsedTime(),
         date: Date.now()
     };
 
     util.saveHighScore(key, newScore, (a, b) => {
-        if (a.moves !== b.moves) return a.moves - b.moves;
+        if (b.score !== a.score) return b.score - a.score;
         return a.time - b.time;
     });
 };

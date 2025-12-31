@@ -142,7 +142,7 @@ const updateTexts = () => {
     document.getElementById('label-difficulty')!.textContent = localization.getUIText('difficulty');
     document.getElementById('difficulty-easy')!.textContent = localization.getUIText('easy');
     document.getElementById('difficulty-medium')!.textContent = localization.getUIText('medium');
-    document.getElementById('difficulty-hard')!.textContent = localization.getUIText('hard');
+
     document.getElementById('label-pit-count')!.textContent = localization.getUIText('pitCount');
     document.getElementById('label-initial-stones')!.textContent = localization.getUIText('initialStones');
     document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
