@@ -499,6 +499,7 @@ const highlightMoves = (isFlipped: boolean, boardSize: number) => {
 };
 
 const handleBoardClick = (e: MouseEvent) => {
+    if (game.getGameMode() === 'VS_AI' && game.getCurrentPlayer() === game.getAISide()) return;
     const target = e.target as SVGElement;
 
     // Find the clicked square or piece

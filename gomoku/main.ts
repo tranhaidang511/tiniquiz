@@ -357,6 +357,7 @@ const renderBoard = () => {
     });
 
     hitArea.addEventListener('click', (e) => {
+        if (game.getGameMode() === 'VS_AI' && game.isAITurn()) return;
         if (game.getState() !== 'PLAYING') return;
 
         const rect = svg.getBoundingClientRect();

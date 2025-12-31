@@ -300,6 +300,7 @@ const renderBoard = () => {
             rect.dataset.col = col.toString();
 
             rect.addEventListener('click', () => {
+                if (game.getGameMode() === 'VS_AI' && game.getCurrentPlayer() === game.getAISide()) return;
                 game.makeMove(row, col);
             });
 

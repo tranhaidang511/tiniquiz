@@ -393,6 +393,7 @@ const createPit = (stones: number, index: number, owner: Player): HTMLElement =>
 };
 
 const handlePitClick = (index: number) => {
+    if (game.getGameMode() === 'VS_AI' && game.getCurrentPlayer() === 'PLAYER2') return;
     if (game.makeMove(index)) {
         renderBoard();
         updateGameInfo();

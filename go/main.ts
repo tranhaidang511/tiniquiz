@@ -253,6 +253,8 @@ function renderBoard() {
     });
 
     hitArea.addEventListener('click', (e) => {
+        if (game.getGameMode() === 'VS_AI' && game.getCurrentPlayer() === game.getAIPlayer()) return;
+
         const rect = svg.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
@@ -398,7 +400,10 @@ function setupEventListeners() {
         game.start();
     });
 
-    document.getElementById('pass-btn')?.addEventListener('click', () => game.pass());
+    document.getElementById('pass-btn')?.addEventListener('click', () => {
+        if (game.getGameMode() === 'VS_AI' && game.getCurrentPlayer() === game.getAIPlayer()) return;
+        game.pass();
+    });
     document.getElementById('new-game-btn')?.addEventListener('click', () => game.restart());
     document.getElementById('restart-btn')?.addEventListener('click', () => game.restart());
     document.getElementById('home-btn')?.addEventListener('click', () => window.location.href = '../');
