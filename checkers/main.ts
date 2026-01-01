@@ -516,14 +516,14 @@ const handleBoardClick = (e: MouseEvent) => {
   const pieceGroup = target.closest(".piece");
 
   if (pieceGroup) {
-    const row = parseInt(pieceGroup.dataset.row || "-1");
-    const col = parseInt(pieceGroup.dataset.col || "-1");
+    const row = parseInt((pieceGroup as HTMLElement).dataset.row || "-1");
+    const col = parseInt((pieceGroup as HTMLElement).dataset.col || "-1");
     if (row !== -1 && col !== -1) {
       handlePieceClick(row, col);
     }
   } else if (square) {
-    const row = parseInt(square.dataset.row || "-1");
-    const col = parseInt(square.dataset.col || "-1");
+    const row = parseInt((square as HTMLElement).dataset.row || "-1");
+    const col = parseInt((square as HTMLElement).dataset.col || "-1");
     if (row !== -1 && col !== -1) {
       handleSquareClick(row, col);
     }

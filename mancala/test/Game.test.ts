@@ -12,9 +12,9 @@ describe("Mancala Game Logic", () => {
   });
 
   test("Initial board should have 4 stones in each pit and 0 in stores", () => {
-    const board = game.getBoard();
     // [P1-0, P1-1, P1-2, P1-3, P1-4, P1-5, S1, P2-0, P2-1, P2-2, P2-3, P2-4, P2-5, S2]
     // Total 14 pits for 6 pits/player
+    const board = game.getBoard();
     expect(board.length).toBe(14);
     for (let i = 0; i < 6; i++) {
       expect(board[i]).toBe(4); // Player 1 pits
@@ -48,7 +48,6 @@ describe("Mancala Game Logic", () => {
   test("Capturing stones", () => {
     // Setup a capture scenario
     // [0, 1, 2, 3, 4, 5, S, 7, 8, 9, 10, 11, 12, S]
-    const board = game.getBoard();
     // Manually set board state
     (game as any).board = [1, 0, 4, 4, 4, 4, 0, 4, 4, 4, 4, 4, 4, 0];
     // Player 1 moves pit 0 -> lands in pit 1 (empty), opposite is pit 11 (index 7 + (6 - 1 - 1) = 11)

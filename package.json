@@ -11,7 +11,10 @@
     "format:write": "prettier --write .",
     "test": "vitest",
     "test:run": "vitest run",
-    "build:all": "tsc && vite build --config geogame/vite.config.ts && vite build --config gomoku/vite.config.ts && vite build --config sudoku/vite.config.ts && vite build --config minesweeper/vite.config.ts && vite build --config sliding/vite.config.ts && vite build --config checkers/vite.config.ts && vite build --config mancala/vite.config.ts && vite build --config othello/vite.config.ts && vite build --config chess/vite.config.ts && vite build --config xiangqi/vite.config.ts && vite build --config go/vite.config.ts",
+    "build:all": "node scripts/build-all.js && vite build",
+    "cap:sync": "npx cap sync",
+    "android:open": "npx cap open android",
+    "ios:open": "npx cap open ios",
     "dev:geogame": "vite --config geogame/vite.config.ts",
     "build:geogame": "tsc && vite build --config geogame/vite.config.ts",
     "preview:geogame": "vite preview --config geogame/vite.config.ts",
@@ -47,6 +50,10 @@
     "preview:go": "vite preview --config go/vite.config.ts"
   },
   "devDependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
     "@eslint/js": "^9.39.2",
     "@typescript-eslint/eslint-plugin": "^8.51.0",
     "@typescript-eslint/parser": "^8.51.0",
