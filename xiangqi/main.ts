@@ -10,6 +10,7 @@ import { util } from '../common/util.js';
 import { en } from './i18n/en.js';
 import { ja } from './i18n/ja.js';
 import { vi } from './i18n/vi.js';
+import { zh } from './i18n/zh.js';
 
 // --- Types ---
 interface HighScore {
@@ -31,7 +32,7 @@ const BOARD_HEIGHT = PADDING * 2 + (ROWS - 1) * CELL_SIZE;
 // --- Initialization ---
 new Consent();
 const savedLang = localStorage.getItem('language') as Language | null;
-const localization = new Localization({ en, ja, vi }, savedLang || 'en');
+const localization = new Localization({ en, ja, vi, zh }, savedLang || 'en');
 
 function init() {
     setupEventListeners();

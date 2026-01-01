@@ -7,6 +7,7 @@ import type { Language } from '../common/Localization';
 import en from './i18n/en';
 import ja from './i18n/ja';
 import vi from './i18n/vi';
+import zh from './i18n/zh';
 
 class GeogameLocalization extends Localization {
     getCountryName(code: string): string {
@@ -42,7 +43,7 @@ class GeogameLocalization extends Localization {
 
 // Initialize Localization
 const savedLang = localStorage.getItem('language') as Language | null;
-export const localization = new GeogameLocalization({ en, ja, vi }, savedLang || 'en');
+export const localization = new GeogameLocalization({ en, ja, vi, zh }, savedLang || 'en');
 
 export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
 export type GameMode = 'CAPITALS' | 'FLAGS' | 'PROVINCES';

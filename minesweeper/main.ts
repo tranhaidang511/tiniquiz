@@ -6,6 +6,7 @@ import type { Language } from '../common/Localization';
 import en from './i18n/en';
 import ja from './i18n/ja';
 import vi from './i18n/vi';
+import zh from './i18n/zh';
 import { Consent } from '../common/Consent';
 import { util } from '../common/util';
 
@@ -21,7 +22,7 @@ new Consent();
 
 // Initialize Localization
 const savedLang = localStorage.getItem('language') as Language | null;
-const localization = new Localization({ en, ja, vi }, savedLang || 'en');
+const localization = new Localization({ en, ja, vi, zh }, savedLang || 'en');
 
 let savedCustomConfig: { rows: number; cols: number; mines: number } = { rows: 10, cols: 10, mines: 10 };
 

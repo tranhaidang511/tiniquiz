@@ -1,4 +1,4 @@
-export type Language = 'en' | 'ja' | 'vi';
+export type Language = 'en' | 'ja' | 'vi' | 'zh';
 
 export class Localization<T = any> {
     protected currentLang: Language = 'en';
