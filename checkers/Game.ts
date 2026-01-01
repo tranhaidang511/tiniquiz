@@ -25,7 +25,7 @@ export interface Position {
   col: number;
 }
 
-class CheckersGame {
+export class CheckersGame {
   private boardSize: BoardSize = 8;
   private forceJump: boolean = true;
   private difficulty: Difficulty = "MEDIUM";

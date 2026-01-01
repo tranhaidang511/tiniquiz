@@ -26,7 +26,7 @@ export interface Move {
   castlingSide?: "KINGSIDE" | "QUEENSIDE";
 }
 
-class ChessGame {
+export class ChessGame {
   private board: (Piece | null)[][] = [];
   private currentPlayer: Player = "WHITE";
   private gameState: GameState = "MENU";

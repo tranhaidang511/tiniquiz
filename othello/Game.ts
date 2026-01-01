@@ -16,7 +16,7 @@ export interface Move {
   flipped: Position[];
 }
 
-class OthelloGame {
+export class OthelloGame {
   private boardSize: number = 8;
   private board: (Player | null)[][] = [];
   private currentPlayer: Player = "BLACK";

@@ -13,7 +13,7 @@ export interface Move {
   extraTurn: boolean;
 }
 
-class MancalaGame {
+export class MancalaGame {
   private pitCount: PitCount = 6;
   private initialStones: number = 4;
   private gameMode: GameMode = "TWO_PLAYER";
