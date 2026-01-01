@@ -1,12 +1,12 @@
-import './style.css';
-import { game } from './Game';
-import type { GameState, Question } from './Game';
-import { localization } from './Game';
-import type { Language } from '../common/Localization';
-import type { Country } from './data/countries';
-import type { Province } from './data/provinces';
-import { Consent } from '../common/Consent';
-import { util } from '../common/util';
+import "./style.css";
+import { game } from "./Game";
+import type { GameState, Question } from "./Game";
+import { localization } from "./Game";
+import type { Language } from "../common/Localization";
+import type { Country } from "./data/countries";
+import type { Province } from "./data/provinces";
+import { Consent } from "../common/Consent";
+import { util } from "../common/util";
 
 interface HighScore {
   score: number;
@@ -28,8 +28,8 @@ const renderApp = () => {
   updateTexts();
 
   // Set active language button
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", (btn as HTMLElement).dataset.lang === localization.language);
   });
 
   // Load saved setup
@@ -39,67 +39,67 @@ const renderApp = () => {
 // --- Setup Persistence ---
 
 const saveSetup = () => {
-  const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
-  const regionFilter = document.getElementById('region-filter') as HTMLSelectElement;
-  const countFilter = document.getElementById('count-filter') as HTMLInputElement;
+  const modeBtn = document.querySelector(".mode-btn.active") as HTMLElement;
+  const regionFilter = document.getElementById("region-filter") as HTMLSelectElement;
+  const countFilter = document.getElementById("count-filter") as HTMLInputElement;
 
   if (modeBtn && regionFilter && countFilter) {
     const setup = {
       mode: modeBtn.dataset.mode,
       region: regionFilter.value,
-      count: countFilter.value
+      count: countFilter.value,
     };
-    localStorage.setItem('geogame_setup', JSON.stringify(setup));
+    localStorage.setItem("geogame_setup", JSON.stringify(setup));
   }
 };
 
 const loadSetup = () => {
   try {
-    const saved = localStorage.getItem('geogame_setup');
+    const saved = localStorage.getItem("geogame_setup");
     if (saved) {
       const { mode, region, count } = JSON.parse(saved);
 
       // Restore Mode
       if (mode) {
-        document.querySelectorAll('.mode-btn').forEach(btn => {
+        document.querySelectorAll(".mode-btn").forEach((btn) => {
           const btnMode = (btn as HTMLElement).dataset.mode;
           if (btnMode === mode) {
-            btn.classList.add('active');
+            btn.classList.add("active");
             game.setGameMode(mode);
           } else {
-            btn.classList.remove('active');
+            btn.classList.remove("active");
           }
         });
 
         // Show/hide appropriate filters based on saved mode
-        const countryFilterContainer = document.getElementById('country-filter-container');
-        const regionFilterContainer = document.getElementById('region-filter-container');
+        const countryFilterContainer = document.getElementById("country-filter-container");
+        const regionFilterContainer = document.getElementById("region-filter-container");
 
-        if (mode === 'PROVINCES') {
+        if (mode === "PROVINCES") {
           // Show country filter, hide region filter
-          if (countryFilterContainer) countryFilterContainer.classList.remove('hidden');
-          if (regionFilterContainer) regionFilterContainer.classList.add('hidden');
+          if (countryFilterContainer) countryFilterContainer.classList.remove("hidden");
+          if (regionFilterContainer) regionFilterContainer.classList.add("hidden");
         } else {
           // Show region filter, hide country filter
-          if (countryFilterContainer) countryFilterContainer.classList.add('hidden');
-          if (regionFilterContainer) regionFilterContainer.classList.remove('hidden');
+          if (countryFilterContainer) countryFilterContainer.classList.add("hidden");
+          if (regionFilterContainer) regionFilterContainer.classList.remove("hidden");
         }
       }
 
       // Restore Region
-      const regionSelect = document.getElementById('region-filter') as HTMLSelectElement;
+      const regionSelect = document.getElementById("region-filter") as HTMLSelectElement;
       if (regionSelect && region) {
         regionSelect.value = region;
       }
 
       // Restore Count
-      const countInput = document.getElementById('count-filter') as HTMLInputElement;
+      const countInput = document.getElementById("count-filter") as HTMLInputElement;
       if (countInput && count) {
         countInput.value = count;
       }
     }
   } catch (e) {
-    console.error('Failed to load Geogame setup:', e);
+    console.error("Failed to load Geogame setup:", e);
   }
 };
 
@@ -107,99 +107,100 @@ const loadSetup = () => {
 
 const updateTexts = () => {
   // Menu
-  document.getElementById('menu-title')!.textContent = localization.getUIText('gameSetup');
-  document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
-  document.getElementById('label-filter')!.textContent = localization.getUIText('filterByRegion');
-  document.getElementById('label-count')!.textContent = localization.getUIText('numberOfQuestions');
-  document.getElementById('label-mode')!.textContent = localization.getUIText('gameMode');
-  document.getElementById('mode-capitals')!.textContent = localization.getUIText('modeCapitals');
-  document.getElementById('mode-flags')!.textContent = localization.getUIText('modeFlags');
-  document.getElementById('mode-provinces')!.textContent = localization.getUIText('modeProvinces');
-  document.getElementById('label-country-filter')!.textContent = localization.getUIText('filterByCountry');
+  document.getElementById("menu-title")!.textContent = localization.getUIText("gameSetup");
+  document.getElementById("start-btn")!.textContent = localization.getUIText("startGame");
+  document.getElementById("label-filter")!.textContent = localization.getUIText("filterByRegion");
+  document.getElementById("label-count")!.textContent = localization.getUIText("numberOfQuestions");
+  document.getElementById("label-mode")!.textContent = localization.getUIText("gameMode");
+  document.getElementById("mode-capitals")!.textContent = localization.getUIText("modeCapitals");
+  document.getElementById("mode-flags")!.textContent = localization.getUIText("modeFlags");
+  document.getElementById("mode-provinces")!.textContent = localization.getUIText("modeProvinces");
+  document.getElementById("label-country-filter")!.textContent =
+    localization.getUIText("filterByCountry");
 
   // Filter Options
-  document.getElementById('option-all-world')!.textContent = localization.getUIText('allWorld');
-  const optGroupContinents = document.getElementById('continent-options') as HTMLOptGroupElement;
-  if (optGroupContinents) optGroupContinents.label = localization.getUIText('continents');
-  const optGroupRegions = document.getElementById('region-options') as HTMLOptGroupElement;
-  if (optGroupRegions) optGroupRegions.label = localization.getUIText('regions');
+  document.getElementById("option-all-world")!.textContent = localization.getUIText("allWorld");
+  const optGroupContinents = document.getElementById("continent-options") as HTMLOptGroupElement;
+  if (optGroupContinents) optGroupContinents.label = localization.getUIText("continents");
+  const optGroupRegions = document.getElementById("region-options") as HTMLOptGroupElement;
+  if (optGroupRegions) optGroupRegions.label = localization.getUIText("regions");
 
   // Result
-  document.getElementById('result-title')!.textContent = localization.getUIText('gameOver');
-  document.getElementById('restart-btn')!.textContent = localization.getUIText('playAgain');
-  document.getElementById('time-label')!.textContent = localization.getUIText('totalTime');
-  document.getElementById('game-time-label')!.textContent = localization.getUIText('time');
-  document.getElementById('new-game-btn')!.textContent = localization.getUIText('newGame');
+  document.getElementById("result-title")!.textContent = localization.getUIText("gameOver");
+  document.getElementById("restart-btn")!.textContent = localization.getUIText("playAgain");
+  document.getElementById("time-label")!.textContent = localization.getUIText("totalTime");
+  document.getElementById("game-time-label")!.textContent = localization.getUIText("time");
+  document.getElementById("new-game-btn")!.textContent = localization.getUIText("newGame");
 
   // High Score Table Headers
-  document.getElementById('high-scores-title')!.textContent = localization.getUIText('highScores');
-  document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
-  document.getElementById('th-score')!.textContent = localization.getUIText('score');
-  document.getElementById('th-time')!.textContent = localization.getUIText('time');
-  document.getElementById('th-date')!.textContent = localization.getUIText('date');
+  document.getElementById("high-scores-title")!.textContent = localization.getUIText("highScores");
+  document.getElementById("th-rank")!.textContent = localization.getUIText("rank");
+  document.getElementById("th-score")!.textContent = localization.getUIText("score");
+  document.getElementById("th-time")!.textContent = localization.getUIText("time");
+  document.getElementById("th-date")!.textContent = localization.getUIText("date");
 };
 
 // --- Event Listeners ---
 
 const setupEventListeners = () => {
   // Home button
-  document.getElementById('home-btn')?.addEventListener('click', () => {
-    window.location.href = '/';
+  document.getElementById("home-btn")?.addEventListener("click", () => {
+    window.location.href = "/";
   });
 
   // Language
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
       const lang = (e.target as HTMLElement).dataset.lang as Language;
       localization.setLanguage(lang);
     });
   });
 
   // Mode Selection
-  document.querySelectorAll('.mode-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+  document.querySelectorAll(".mode-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
       const target = e.target as HTMLButtonElement;
       const mode = target.dataset.mode as any;
 
       // Update active state
-      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-      target.classList.add('active');
+      document.querySelectorAll(".mode-btn").forEach((b) => b.classList.remove("active"));
+      target.classList.add("active");
 
       game.setGameMode(mode);
 
       // Show/hide appropriate filters based on mode
-      const countryFilterContainer = document.getElementById('country-filter-container');
-      const regionFilterContainer = document.getElementById('region-filter-container');
+      const countryFilterContainer = document.getElementById("country-filter-container");
+      const regionFilterContainer = document.getElementById("region-filter-container");
 
-      if (mode === 'PROVINCES') {
+      if (mode === "PROVINCES") {
         // Show country filter, hide region filter
-        if (countryFilterContainer) countryFilterContainer.classList.remove('hidden');
-        if (regionFilterContainer) regionFilterContainer.classList.add('hidden');
+        if (countryFilterContainer) countryFilterContainer.classList.remove("hidden");
+        if (regionFilterContainer) regionFilterContainer.classList.add("hidden");
 
-        const countryFilter = document.getElementById('country-filter') as HTMLSelectElement;
+        const countryFilter = document.getElementById("country-filter") as HTMLSelectElement;
         if (countryFilter) {
           game.setCountryFilter(null);
         }
       } else {
         // Show region filter, hide country filter
-        if (countryFilterContainer) countryFilterContainer.classList.add('hidden');
-        if (regionFilterContainer) regionFilterContainer.classList.remove('hidden');
+        if (countryFilterContainer) countryFilterContainer.classList.add("hidden");
+        if (regionFilterContainer) regionFilterContainer.classList.remove("hidden");
       }
     });
   });
 
   // Country Filter for Provinces Mode
-  document.getElementById('country-filter')?.addEventListener('change', (e) => {
+  document.getElementById("country-filter")?.addEventListener("change", (e) => {
     const select = e.target as HTMLSelectElement;
-    const country = select.value === 'allCountries' ? null : select.value;
+    const country = select.value === "allCountries" ? null : select.value;
     game.setCountryFilter(country);
   });
 
   // Start
-  document.getElementById('start-btn')?.addEventListener('click', () => {
+  document.getElementById("start-btn")?.addEventListener("click", () => {
     saveSetup();
-    const filterVal = (document.getElementById('region-filter') as HTMLSelectElement).value;
-    const countInput = document.getElementById('count-filter') as HTMLInputElement;
+    const filterVal = (document.getElementById("region-filter") as HTMLSelectElement).value;
+    const countInput = document.getElementById("count-filter") as HTMLInputElement;
     let countVal = parseInt(countInput.value, 10);
 
     if (isNaN(countVal) || countVal < 1) {
@@ -207,12 +208,12 @@ const setupEventListeners = () => {
       countInput.value = "5";
     }
 
-    if (filterVal === 'allWorld') {
-      game.setFilter('allWorld');
+    if (filterVal === "allWorld") {
+      game.setFilter("allWorld");
     } else if (game.getContinents().includes(filterVal)) {
-      game.setFilter('continent', filterVal);
+      game.setFilter("continent", filterVal);
     } else {
-      game.setFilter('region', filterVal);
+      game.setFilter("region", filterVal);
     }
 
     lastScoreDate = null;
@@ -220,40 +221,39 @@ const setupEventListeners = () => {
   });
 
   // New Game (during gameplay)
-  document.getElementById('new-game-btn')?.addEventListener('click', () => {
+  document.getElementById("new-game-btn")?.addEventListener("click", () => {
     game.restart();
   });
 
-
   // Restart
-  document.getElementById('restart-btn')?.addEventListener('click', () => {
+  document.getElementById("restart-btn")?.addEventListener("click", () => {
     game.restart();
   });
 };
 
 const populateFilters = () => {
-  const continentGroup = document.getElementById('continent-options')!;
-  const regionGroup = document.getElementById('region-options')!;
-  const countryFilterSelect = document.getElementById('country-filter') as HTMLSelectElement;
+  const continentGroup = document.getElementById("continent-options")!;
+  const regionGroup = document.getElementById("region-options")!;
+  const countryFilterSelect = document.getElementById("country-filter") as HTMLSelectElement;
 
   // Clear existing options first (in case of language switch)
-  continentGroup.innerHTML = '';
-  regionGroup.innerHTML = '';
+  continentGroup.innerHTML = "";
+  regionGroup.innerHTML = "";
   if (countryFilterSelect) {
-    countryFilterSelect.innerHTML = `<option value="allCountries">${localization.getUIText('allCountries')}</option>`;
+    countryFilterSelect.innerHTML = `<option value="allCountries">${localization.getUIText("allCountries")}</option>`;
   }
 
   // Populate continents
-  game.getContinents().forEach(c => {
-    const opt = document.createElement('option');
+  game.getContinents().forEach((c) => {
+    const opt = document.createElement("option");
     opt.value = c;
     opt.textContent = localization.getRegionName(c);
     continentGroup.appendChild(opt);
   });
 
   // Populate regions
-  game.getRegions().forEach(r => {
-    const opt = document.createElement('option');
+  game.getRegions().forEach((r) => {
+    const opt = document.createElement("option");
     opt.value = r;
     opt.textContent = localization.getRegionName(r);
     regionGroup.appendChild(opt);
@@ -262,8 +262,8 @@ const populateFilters = () => {
   // Populate country filter for provinces mode
   if (countryFilterSelect) {
     const countries = game.getProvinceCountries();
-    countries.forEach(code => {
-      const option = document.createElement('option');
+    countries.forEach((code) => {
+      const option = document.createElement("option");
       option.value = code;
       option.textContent = localization.getCountryName(code);
       countryFilterSelect.appendChild(option);
@@ -272,11 +272,11 @@ const populateFilters = () => {
 };
 
 const showView = (viewId: string) => {
-  ['menu-view', 'game-view', 'result-view'].forEach(id => {
+  ["menu-view", "game-view", "result-view"].forEach((id) => {
     const el = document.getElementById(id);
     if (el) {
-      if (id === viewId) el.classList.remove('hidden');
-      else el.classList.add('hidden');
+      if (id === viewId) el.classList.remove("hidden");
+      else el.classList.add("hidden");
     }
   });
 };
@@ -284,14 +284,14 @@ const showView = (viewId: string) => {
 // --- Game Logic Integration ---
 
 game.onStateChange((state: GameState) => {
-  if (state === 'MENU') {
-    showView('menu-view');
+  if (state === "MENU") {
+    showView("menu-view");
   }
-  if (state === 'PLAYING') {
-    showView('game-view');
+  if (state === "PLAYING") {
+    showView("game-view");
   }
-  if (state === 'RESULT') {
-    showView('result-view');
+  if (state === "RESULT") {
+    showView("result-view");
     // Save score and update display
     saveHighScore();
     displayResult();
@@ -301,45 +301,51 @@ game.onStateChange((state: GameState) => {
 game.onTimerUpdate(() => {
   const elapsed = game.getElapsedTime();
   const formatted = util.formatTime(elapsed);
-  const timerEl = document.getElementById('game-timer');
+  const timerEl = document.getElementById("game-timer");
   if (timerEl) timerEl.textContent = formatted;
 });
 
 game.onQuestionChange((q: Question, index: number, total: number) => {
   // Update Progress
   const progress = ((index - 1) / total) * 100;
-  document.getElementById('progress-fill')!.style.width = `${progress}%`;
+  document.getElementById("progress-fill")!.style.width = `${progress}%`;
 
   // Update Question Text and Flag Display based on game mode
-  const qText = document.getElementById('question-text');
-  const flagContainer = document.getElementById('flag-container');
-  const flagImage = document.getElementById('flag-image') as HTMLImageElement;
+  const qText = document.getElementById("question-text");
+  const flagContainer = document.getElementById("flag-container");
+  const flagImage = document.getElementById("flag-image") as HTMLImageElement;
 
-  if (game.getGameMode() === 'FLAGS' && q.flagUrl) {
+  if (game.getGameMode() === "FLAGS" && q.flagUrl) {
     // Flag Mode
-    if (flagContainer) flagContainer.classList.remove('hidden');
+    if (flagContainer) flagContainer.classList.remove("hidden");
     if (flagImage) flagImage.src = q.flagUrl;
-    if (qText) qText.textContent = localization.getUIText('guessTheFlag');
+    if (qText) qText.textContent = localization.getUIText("guessTheFlag");
   } else if (q.isProvince) {
     // Province Mode
-    if (flagContainer) flagContainer.classList.add('hidden');
+    if (flagContainer) flagContainer.classList.add("hidden");
     const provinceName = localization.getProvinceName(q.target.code);
-    if (qText) qText.textContent = localization.getUIText('questionProvinceTemplate', { province: provinceName });
+    if (qText)
+      qText.textContent = localization.getUIText("questionProvinceTemplate", {
+        province: provinceName,
+      });
   } else {
     // Capital Mode
-    if (flagContainer) flagContainer.classList.add('hidden');
-    if (qText) qText.textContent = localization.getUIText('questionTemplate', { country: localization.getCountryName(q.target.code) });
+    if (flagContainer) flagContainer.classList.add("hidden");
+    if (qText)
+      qText.textContent = localization.getUIText("questionTemplate", {
+        country: localization.getCountryName(q.target.code),
+      });
   }
 
   // Render Choices
-  const container = document.getElementById('choices-container')!;
-  container.innerHTML = '';
+  const container = document.getElementById("choices-container")!;
+  container.innerHTML = "";
 
-  q.choices.forEach(choice => {
-    const btn = document.createElement('button');
-    btn.className = 'choice-btn';
+  q.choices.forEach((choice) => {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
     // For Flag mode, choices are country names. For Capital/Province modes, choices are capitals.
-    if (game.getGameMode() === 'FLAGS') {
+    if (game.getGameMode() === "FLAGS") {
       btn.textContent = localization.getCountryName(choice.code);
     } else if (q.isProvince) {
       btn.textContent = localization.getProvinceCapital(choice.code);
@@ -347,7 +353,7 @@ game.onQuestionChange((q: Question, index: number, total: number) => {
       btn.textContent = localization.getCapital(choice.code);
     }
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener("click", () => {
       handleAnswer(choice, btn, q.target);
     });
 
@@ -357,30 +363,30 @@ game.onQuestionChange((q: Question, index: number, total: number) => {
 
 const handleAnswer = (choice: Country | Province, btn: HTMLElement, target: Country | Province) => {
   // Disable all buttons
-  const buttons = document.querySelectorAll('.choice-btn');
-  buttons.forEach(b => (b as HTMLButtonElement).disabled = true);
+  const buttons = document.querySelectorAll(".choice-btn");
+  buttons.forEach((b) => ((b as HTMLButtonElement).disabled = true));
 
   const isCorrect = game.submitAnswer(choice);
 
   if (isCorrect) {
-    btn.classList.add('correct');
+    btn.classList.add("correct");
   } else {
-    btn.classList.add('wrong');
+    btn.classList.add("wrong");
     // Highlight correct one
-    buttons.forEach(b => {
-      let correctText = '';
+    buttons.forEach((b) => {
+      let correctText = "";
       const mode = game.getGameMode();
 
-      if (mode === 'FLAGS') {
+      if (mode === "FLAGS") {
         correctText = localization.getCountryName(target.code);
-      } else if (mode === 'PROVINCES') {
+      } else if (mode === "PROVINCES") {
         correctText = localization.getProvinceCapital(target.code);
       } else {
         correctText = localization.getCapital(target.code);
       }
 
       if (b.textContent === correctText) {
-        b.classList.add('correct');
+        b.classList.add("correct");
       }
     });
   }
@@ -398,9 +404,8 @@ const handleAnswer = (choice: Country | Province, btn: HTMLElement, target: Coun
 const getHighScoreKey = () => {
   const mode = game.getGameMode();
   // For provinces mode, use country filter; for other modes, use region
-  const filterValue = mode === 'PROVINCES'
-    ? (game.getCountryFilter() || 'allCountries')
-    : game.getRegion();
+  const filterValue =
+    mode === "PROVINCES" ? game.getCountryFilter() || "allCountries" : game.getRegion();
 
   return `geogame_highscores_${mode}_${filterValue}`;
 };
@@ -423,13 +428,13 @@ const saveHighScore = () => {
 
 const displayResult = () => {
   const { score, total } = game.getScore();
-  document.getElementById('final-score')!.textContent = score.toString();
-  document.getElementById('total-questions')!.textContent = total.toString();
+  document.getElementById("final-score")!.textContent = score.toString();
+  document.getElementById("total-questions")!.textContent = total.toString();
 
   // Display elapsed time
   const elapsedSeconds = game.getElapsedTime();
   const formattedTime = util.formatTime(elapsedSeconds);
-  document.getElementById('elapsed-time')!.textContent = formattedTime;
+  document.getElementById("elapsed-time")!.textContent = formattedTime;
 
   renderHighScores();
 };
@@ -437,15 +442,15 @@ const displayResult = () => {
 const renderHighScores = () => {
   const key = getHighScoreKey();
   const scores = util.getHighScores<HighScore>(key);
-  const tbody = document.getElementById('high-scores-body');
+  const tbody = document.getElementById("high-scores-body");
   if (tbody) {
-    tbody.innerHTML = '';
+    tbody.innerHTML = "";
     scores.forEach((s, index) => {
-      const tr = document.createElement('tr');
+      const tr = document.createElement("tr");
 
       // Highlight current score if it matches
       if (s.date === lastScoreDate) {
-        tr.classList.add('current-run');
+        tr.classList.add("current-run");
       }
 
       const dateStr = util.formatDate(s.date, localization.language as any);
@@ -462,13 +467,13 @@ const renderHighScores = () => {
 };
 
 localization.subscribe((lang) => {
-  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === lang);
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", (btn as HTMLElement).dataset.lang === lang);
   });
   updateTexts();
   populateFilters();
-  if (game.getState() === 'RESULT') {
+  if (game.getState() === "RESULT") {
     displayResult();
   }
 });

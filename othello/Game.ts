@@ -1,343 +1,347 @@
-import { OthelloAI } from './AI';
+import { OthelloAI } from "./AI";
 
-export type Player = 'BLACK' | 'WHITE';
-export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
-export type GameMode = 'TWO_PLAYER' | 'VS_AI';
-export type Difficulty = 'EASY' | 'MEDIUM';
+export type Player = "BLACK" | "WHITE";
+export type GameState = "MENU" | "PLAYING" | "RESULT";
+export type GameMode = "TWO_PLAYER" | "VS_AI";
+export type Difficulty = "EASY" | "MEDIUM";
 
 export interface Position {
-    row: number;
-    col: number;
+  row: number;
+  col: number;
 }
 
 export interface Move {
-    position: Position;
-    player: Player;
-    flipped: Position[];
+  position: Position;
+  player: Player;
+  flipped: Position[];
 }
 
 class OthelloGame {
-    private boardSize: number = 8;
-    private board: (Player | null)[][] = [];
-    private currentPlayer: Player = 'BLACK';
-    private gameState: GameState = 'MENU';
-    private gameMode: GameMode = 'TWO_PLAYER';
-    private difficulty: Difficulty = 'MEDIUM';
-    private moveHistory: Move[] = [];
-    private startTime: number = 0;
-    private elapsedTime: number = 0;
-    private timerInterval: number | null = null;
-    private winner: Player | null = null;
-    private ai: OthelloAI;
-    private aiSide: Player | null = null;
+  private boardSize: number = 8;
+  private board: (Player | null)[][] = [];
+  private currentPlayer: Player = "BLACK";
+  private gameState: GameState = "MENU";
+  private gameMode: GameMode = "TWO_PLAYER";
+  private difficulty: Difficulty = "MEDIUM";
+  private moveHistory: Move[] = [];
+  private startTime: number = 0;
+  private elapsedTime: number = 0;
+  private timerInterval: number | null = null;
+  private winner: Player | null = null;
+  private ai: OthelloAI;
+  private aiSide: Player | null = null;
 
-    private stateChangeListeners: ((state: GameState) => void)[] = [];
-    private moveListeners: ((move: Move) => void)[] = [];
-    private boardUpdateListeners: (() => void)[] = [];
-    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
+  private stateChangeListeners: ((state: GameState) => void)[] = [];
+  private moveListeners: ((move: Move) => void)[] = [];
+  private boardUpdateListeners: (() => void)[] = [];
+  private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
-    constructor() {
-        this.ai = new OthelloAI();
-        this.initializeBoard();
+  constructor() {
+    this.ai = new OthelloAI();
+    this.initializeBoard();
+  }
+
+  private initializeBoard() {
+    this.board = Array(this.boardSize)
+      .fill(null)
+      .map(() => Array(this.boardSize).fill(null));
+
+    // Set up initial 4 pieces in the center
+    const mid = this.boardSize / 2;
+    this.board[mid - 1][mid - 1] = "WHITE";
+    this.board[mid - 1][mid] = "BLACK";
+    this.board[mid][mid - 1] = "BLACK";
+    this.board[mid][mid] = "WHITE";
+  }
+
+  setGameMode(mode: GameMode) {
+    this.gameMode = mode;
+  }
+
+  setDifficulty(difficulty: Difficulty) {
+    this.difficulty = difficulty;
+    this.ai.setDifficulty(difficulty);
+  }
+
+  setAISide(side: Player | null) {
+    this.aiSide = side;
+  }
+
+  getAISide(): Player | null {
+    return this.aiSide;
+  }
+
+  getGameMode(): GameMode {
+    return this.gameMode;
+  }
+
+  getDifficulty(): Difficulty {
+    return this.difficulty;
+  }
+
+  start() {
+    this.initializeBoard();
+    this.currentPlayer = "BLACK";
+    this.moveHistory = [];
+    this.startTime = Date.now();
+    this.elapsedTime = 0;
+    this.winner = null;
+    this.gameState = "PLAYING";
+    this.notifyStateChange();
+    this.startTimer();
+    this.notifyBoardUpdate();
+
+    // If AI plays BLACK (first), trigger move
+    if (this.gameMode === "VS_AI" && this.aiSide === "BLACK") {
+      this.makeAIMove();
+    }
+  }
+
+  restart() {
+    this.stopTimer();
+    this.gameState = "MENU";
+    this.notifyStateChange();
+  }
+
+  private startTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    this.timerInterval = window.setInterval(() => {
+      this.elapsedTime = Date.now() - this.startTime;
+      this.notifyTimerUpdate();
+    }, 1000);
+  }
+
+  private stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  makeMove(row: number, col: number, isAI: boolean = false): boolean {
+    if (this.gameState !== "PLAYING") return false;
+
+    // Block player if it's AI turn (unless this IS the AI moving)
+    if (this.gameMode === "VS_AI" && this.currentPlayer === this.aiSide && !isAI) return false;
+
+    if (this.board[row][col] !== null) return false;
+
+    const flipped = this.getFlippedDiscs(row, col, this.currentPlayer);
+    if (flipped.length === 0) return false;
+
+    // Place disc
+    this.board[row][col] = this.currentPlayer;
+
+    // Flip discs
+    flipped.forEach((pos) => {
+      this.board[pos.row][pos.col] = this.currentPlayer;
+    });
+
+    const move: Move = {
+      position: { row, col },
+      player: this.currentPlayer,
+      flipped,
+    };
+    this.moveHistory.push(move);
+
+    // Switch player
+    this.switchPlayer();
+
+    // Check if next player has valid moves
+    if (!this.hasValidMoves(this.currentPlayer)) {
+      // Switch back
+      this.switchPlayer();
+
+      // Check if current player has valid moves
+      if (!this.hasValidMoves(this.currentPlayer)) {
+        // Game over
+        this.endGame();
+      }
     }
 
-    private initializeBoard() {
-        this.board = Array(this.boardSize).fill(null).map(() =>
-            Array(this.boardSize).fill(null)
-        );
+    this.notifyMove(move);
+    this.notifyBoardUpdate();
 
-        // Set up initial 4 pieces in the center
-        const mid = this.boardSize / 2;
-        this.board[mid - 1][mid - 1] = 'WHITE';
-        this.board[mid - 1][mid] = 'BLACK';
-        this.board[mid][mid - 1] = 'BLACK';
-        this.board[mid][mid] = 'WHITE';
+    // Trigger AI move if applicable
+    this.makeAIMove();
+
+    return true;
+  }
+
+  makeAIMove(): void {
+    if (this.gameState !== "PLAYING") return;
+    if (this.gameMode !== "VS_AI") return;
+    if (this.currentPlayer !== this.aiSide) return;
+
+    const aiMove = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
+
+    if (aiMove) {
+      // Add slight delay for better UX
+      setTimeout(() => {
+        this.makeMove(aiMove.row, aiMove.col, true);
+      }, 500);
     }
+  }
 
-    setGameMode(mode: GameMode) {
-        this.gameMode = mode;
-    }
+  private getFlippedDiscs(row: number, col: number, player: Player): Position[] {
+    const flipped: Position[] = [];
+    const directions = [
+      [-1, -1],
+      [-1, 0],
+      [-1, 1],
+      [0, -1],
+      [0, 1],
+      [1, -1],
+      [1, 0],
+      [1, 1],
+    ];
 
-    setDifficulty(difficulty: Difficulty) {
-        this.difficulty = difficulty;
-        this.ai.setDifficulty(difficulty);
-    }
+    const opponent = player === "BLACK" ? "WHITE" : "BLACK";
 
-    setAISide(side: Player | null) {
-        this.aiSide = side;
-    }
+    for (const [dr, dc] of directions) {
+      const tempFlipped: Position[] = [];
+      let r = row + dr;
+      let c = col + dc;
 
-    getAISide(): Player | null {
-        return this.aiSide;
-    }
-
-    getGameMode(): GameMode {
-        return this.gameMode;
-    }
-
-    getDifficulty(): Difficulty {
-        return this.difficulty;
-    }
-
-    start() {
-        this.initializeBoard();
-        this.currentPlayer = 'BLACK';
-        this.moveHistory = [];
-        this.startTime = Date.now();
-        this.elapsedTime = 0;
-        this.winner = null;
-        this.gameState = 'PLAYING';
-        this.notifyStateChange();
-        this.startTimer();
-        this.notifyBoardUpdate();
-
-        // If AI plays BLACK (first), trigger move
-        if (this.gameMode === 'VS_AI' && this.aiSide === 'BLACK') {
-            this.makeAIMove();
+      // Check if next cell is opponent's disc
+      while (r >= 0 && r < this.boardSize && c >= 0 && c < this.boardSize) {
+        if (this.board[r][c] === null) break;
+        if (this.board[r][c] === opponent) {
+          tempFlipped.push({ row: r, col: c });
+          r += dr;
+          c += dc;
+        } else if (this.board[r][c] === player) {
+          // Found our disc, add all flipped discs
+          flipped.push(...tempFlipped);
+          break;
+        } else {
+          break;
         }
+      }
     }
 
-    restart() {
-        this.stopTimer();
-        this.gameState = 'MENU';
-        this.notifyStateChange();
-    }
+    return flipped;
+  }
 
-    private startTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
+  getValidMoves(player: Player): Position[] {
+    const validMoves: Position[] = [];
+
+    for (let row = 0; row < this.boardSize; row++) {
+      for (let col = 0; col < this.boardSize; col++) {
+        if (this.board[row][col] === null) {
+          const flipped = this.getFlippedDiscs(row, col, player);
+          if (flipped.length > 0) {
+            validMoves.push({ row, col });
+          }
         }
-        this.timerInterval = window.setInterval(() => {
-            this.elapsedTime = Date.now() - this.startTime;
-            this.notifyTimerUpdate();
-        }, 1000);
+      }
     }
 
-    private stopTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
-        }
+    return validMoves;
+  }
+
+  private hasValidMoves(player: Player): boolean {
+    return this.getValidMoves(player).length > 0;
+  }
+
+  private switchPlayer() {
+    this.currentPlayer = this.currentPlayer === "BLACK" ? "WHITE" : "BLACK";
+  }
+
+  private endGame() {
+    this.stopTimer();
+
+    // Count discs
+    let blackCount = 0;
+    let whiteCount = 0;
+
+    for (let row = 0; row < this.boardSize; row++) {
+      for (let col = 0; col < this.boardSize; col++) {
+        if (this.board[row][col] === "BLACK") blackCount++;
+        else if (this.board[row][col] === "WHITE") whiteCount++;
+      }
     }
 
-    makeMove(row: number, col: number, isAI: boolean = false): boolean {
-        if (this.gameState !== 'PLAYING') return false;
-
-        // Block player if it's AI turn (unless this IS the AI moving)
-        if (this.gameMode === 'VS_AI' && this.currentPlayer === this.aiSide && !isAI) return false;
-
-        if (this.board[row][col] !== null) return false;
-
-        const flipped = this.getFlippedDiscs(row, col, this.currentPlayer);
-        if (flipped.length === 0) return false;
-
-        // Place disc
-        this.board[row][col] = this.currentPlayer;
-
-        // Flip discs
-        flipped.forEach(pos => {
-            this.board[pos.row][pos.col] = this.currentPlayer;
-        });
-
-        const move: Move = {
-            position: { row, col },
-            player: this.currentPlayer,
-            flipped
-        };
-        this.moveHistory.push(move);
-
-        // Switch player
-        this.switchPlayer();
-
-        // Check if next player has valid moves
-        if (!this.hasValidMoves(this.currentPlayer)) {
-            // Switch back
-            this.switchPlayer();
-
-            // Check if current player has valid moves
-            if (!this.hasValidMoves(this.currentPlayer)) {
-                // Game over
-                this.endGame();
-            }
-        }
-
-        this.notifyMove(move);
-        this.notifyBoardUpdate();
-
-        // Trigger AI move if applicable
-        this.makeAIMove();
-
-        return true;
+    if (blackCount > whiteCount) {
+      this.winner = "BLACK";
+    } else if (whiteCount > blackCount) {
+      this.winner = "WHITE";
     }
+    // If equal, winner remains null (draw)
 
-    makeAIMove(): void {
-        if (this.gameState !== 'PLAYING') return;
-        if (this.gameMode !== 'VS_AI') return;
-        if (this.currentPlayer !== this.aiSide) return;
+    this.gameState = "RESULT";
+    this.notifyStateChange();
+  }
 
-        const aiMove = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
-
-        if (aiMove) {
-            // Add slight delay for better UX
-            setTimeout(() => {
-                this.makeMove(aiMove.row, aiMove.col, true);
-            }, 500);
-        }
+  getDiscCount(player: Player): number {
+    let count = 0;
+    for (let row = 0; row < this.boardSize; row++) {
+      for (let col = 0; col < this.boardSize; col++) {
+        if (this.board[row][col] === player) count++;
+      }
     }
+    return count;
+  }
 
-    private getFlippedDiscs(row: number, col: number, player: Player): Position[] {
-        const flipped: Position[] = [];
-        const directions = [
-            [-1, -1], [-1, 0], [-1, 1],
-            [0, -1], [0, 1],
-            [1, -1], [1, 0], [1, 1]
-        ];
+  // Public getters
+  getBoard(): (Player | null)[][] {
+    return this.board;
+  }
 
-        const opponent = player === 'BLACK' ? 'WHITE' : 'BLACK';
+  getCurrentPlayer(): Player {
+    return this.currentPlayer;
+  }
 
-        for (const [dr, dc] of directions) {
-            const tempFlipped: Position[] = [];
-            let r = row + dr;
-            let c = col + dc;
+  getState(): GameState {
+    return this.gameState;
+  }
 
-            // Check if next cell is opponent's disc
-            while (r >= 0 && r < this.boardSize && c >= 0 && c < this.boardSize) {
-                if (this.board[r][c] === null) break;
-                if (this.board[r][c] === opponent) {
-                    tempFlipped.push({ row: r, col: c });
-                    r += dr;
-                    c += dc;
-                } else if (this.board[r][c] === player) {
-                    // Found our disc, add all flipped discs
-                    flipped.push(...tempFlipped);
-                    break;
-                } else {
-                    break;
-                }
-            }
-        }
+  getMoves(): Move[] {
+    return this.moveHistory;
+  }
 
-        return flipped;
-    }
+  getWinner(): Player | null {
+    return this.winner;
+  }
 
-    getValidMoves(player: Player): Position[] {
-        const validMoves: Position[] = [];
+  getElapsedTime(): number {
+    return this.elapsedTime;
+  }
 
-        for (let row = 0; row < this.boardSize; row++) {
-            for (let col = 0; col < this.boardSize; col++) {
-                if (this.board[row][col] === null) {
-                    const flipped = this.getFlippedDiscs(row, col, player);
-                    if (flipped.length > 0) {
-                        validMoves.push({ row, col });
-                    }
-                }
-            }
-        }
+  // Event listeners
+  onStateChange(listener: (state: GameState) => void) {
+    this.stateChangeListeners.push(listener);
+  }
 
-        return validMoves;
-    }
+  onMove(listener: (move: Move) => void) {
+    this.moveListeners.push(listener);
+  }
 
-    private hasValidMoves(player: Player): boolean {
-        return this.getValidMoves(player).length > 0;
-    }
+  onBoardUpdate(listener: () => void) {
+    this.boardUpdateListeners.push(listener);
+  }
 
-    private switchPlayer() {
-        this.currentPlayer = this.currentPlayer === 'BLACK' ? 'WHITE' : 'BLACK';
-    }
+  onTimerUpdate(listener: (elapsed: number) => void) {
+    this.timerUpdateListeners.push(listener);
+  }
 
-    private endGame() {
-        this.stopTimer();
+  private notifyStateChange() {
+    this.stateChangeListeners.forEach((listener) => listener(this.gameState));
+  }
 
-        // Count discs
-        let blackCount = 0;
-        let whiteCount = 0;
+  private notifyMove(move: Move) {
+    this.moveListeners.forEach((listener) => listener(move));
+  }
 
-        for (let row = 0; row < this.boardSize; row++) {
-            for (let col = 0; col < this.boardSize; col++) {
-                if (this.board[row][col] === 'BLACK') blackCount++;
-                else if (this.board[row][col] === 'WHITE') whiteCount++;
-            }
-        }
+  private notifyBoardUpdate() {
+    this.boardUpdateListeners.forEach((listener) => listener());
+  }
 
-        if (blackCount > whiteCount) {
-            this.winner = 'BLACK';
-        } else if (whiteCount > blackCount) {
-            this.winner = 'WHITE';
-        }
-        // If equal, winner remains null (draw)
-
-        this.gameState = 'RESULT';
-        this.notifyStateChange();
-    }
-
-    getDiscCount(player: Player): number {
-        let count = 0;
-        for (let row = 0; row < this.boardSize; row++) {
-            for (let col = 0; col < this.boardSize; col++) {
-                if (this.board[row][col] === player) count++;
-            }
-        }
-        return count;
-    }
-
-    // Public getters
-    getBoard(): (Player | null)[][] {
-        return this.board;
-    }
-
-    getCurrentPlayer(): Player {
-        return this.currentPlayer;
-    }
-
-    getState(): GameState {
-        return this.gameState;
-    }
-
-    getMoves(): Move[] {
-        return this.moveHistory;
-    }
-
-    getWinner(): Player | null {
-        return this.winner;
-    }
-
-    getElapsedTime(): number {
-        return this.elapsedTime;
-    }
-
-
-    // Event listeners
-    onStateChange(listener: (state: GameState) => void) {
-        this.stateChangeListeners.push(listener);
-    }
-
-    onMove(listener: (move: Move) => void) {
-        this.moveListeners.push(listener);
-    }
-
-    onBoardUpdate(listener: () => void) {
-        this.boardUpdateListeners.push(listener);
-    }
-
-    onTimerUpdate(listener: (elapsed: number) => void) {
-        this.timerUpdateListeners.push(listener);
-    }
-
-    private notifyStateChange() {
-        this.stateChangeListeners.forEach(listener => listener(this.gameState));
-    }
-
-    private notifyMove(move: Move) {
-        this.moveListeners.forEach(listener => listener(move));
-    }
-
-    private notifyBoardUpdate() {
-        this.boardUpdateListeners.forEach(listener => listener());
-    }
-
-    private notifyTimerUpdate() {
-        this.timerUpdateListeners.forEach(listener => listener(this.elapsedTime));
-    }
+  private notifyTimerUpdate() {
+    this.timerUpdateListeners.forEach((listener) => listener(this.elapsedTime));
+  }
 }
 
 export const game = new OthelloGame();

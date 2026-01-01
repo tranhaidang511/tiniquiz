@@ -1,21 +1,21 @@
-import './style.css';
-import { game } from './Game';
-import type { GameState, Difficulty } from './Game';
-import { Localization } from '../common/Localization';
-import type { Language } from '../common/Localization';
-import en from './i18n/en';
-import ja from './i18n/ja';
-import vi from './i18n/vi';
-import zh from './i18n/zh';
-import ar from './i18n/ar';
-import { Consent } from '../common/Consent';
-import { util } from '../common/util';
+import "./style.css";
+import { game } from "./Game";
+import type { GameState, Difficulty } from "./Game";
+import { Localization } from "../common/Localization";
+import type { Language } from "../common/Localization";
+import en from "./i18n/en";
+import ja from "./i18n/ja";
+import vi from "./i18n/vi";
+import zh from "./i18n/zh";
+import ar from "./i18n/ar";
+import { Consent } from "../common/Consent";
+import { util } from "../common/util";
 
 interface HighScore {
-    time: number;
-    date: number | string;
-    mistakes: number;
-    hintsUsed: number;
+  time: number;
+  date: number | string;
+  mistakes: number;
+  hintsUsed: number;
 }
 
 let lastScoreDate: number | null = null;
@@ -24,424 +24,425 @@ let lastScoreDate: number | null = null;
 new Consent();
 
 // Initialize Localization
-const savedLang = localStorage.getItem('language') as Language | null;
-const localization = new Localization({ en, ja, vi, zh, ar }, savedLang || 'en');
+const savedLang = localStorage.getItem("language") as Language | null;
+const localization = new Localization({ en, ja, vi, zh, ar }, savedLang || "en");
 
 // --- UI Templates ---
 
 const renderApp = () => {
-    setupEventListeners();
-    updateTexts();
+  setupEventListeners();
+  updateTexts();
 
-    // Set active language button
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
-    });
+  // Set active language button
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", (btn as HTMLElement).dataset.lang === localization.language);
+  });
 
-    // Load saved setup
-    loadSetup();
+  // Load saved setup
+  loadSetup();
 };
 
 // --- Setup Persistence ---
 
 const saveSetup = () => {
-    const activeDiffBtn = document.querySelector('.diff-btn.active') as HTMLElement;
-    if (activeDiffBtn) {
-        const difficulty = activeDiffBtn.dataset.diff as Difficulty;
-        localStorage.setItem('sudoku_setup', JSON.stringify({ difficulty }));
-    }
+  const activeDiffBtn = document.querySelector(".diff-btn.active") as HTMLElement;
+  if (activeDiffBtn) {
+    const difficulty = activeDiffBtn.dataset.diff as Difficulty;
+    localStorage.setItem("sudoku_setup", JSON.stringify({ difficulty }));
+  }
 };
 
 const loadSetup = () => {
-    try {
-        const saved = localStorage.getItem('sudoku_setup');
-        if (saved) {
-            const { difficulty } = JSON.parse(saved);
-            // Set active difficulty button
-            document.querySelectorAll('.diff-btn').forEach(btn => {
-                const btnDiff = (btn as HTMLElement).dataset.diff;
-                if (btnDiff === difficulty) {
-                    btn.classList.add('active');
-                    game.setDifficulty(difficulty);
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
+  try {
+    const saved = localStorage.getItem("sudoku_setup");
+    if (saved) {
+      const { difficulty } = JSON.parse(saved);
+      // Set active difficulty button
+      document.querySelectorAll(".diff-btn").forEach((btn) => {
+        const btnDiff = (btn as HTMLElement).dataset.diff;
+        if (btnDiff === difficulty) {
+          btn.classList.add("active");
+          game.setDifficulty(difficulty);
+        } else {
+          btn.classList.remove("active");
         }
-    } catch (e) {
-        console.error('Failed to load Sudoku setup:', e);
+      });
     }
+  } catch (e) {
+    console.error("Failed to load Sudoku setup:", e);
+  }
 };
 
 // --- Text Updates ---
 
 const updateTexts = () => {
-    document.getElementById('game-title')!.textContent = localization.getUIText('gameTitle');
-    document.getElementById('menu-title')!.textContent = localization.getUIText('gameSetup');
-    document.getElementById('label-difficulty')!.textContent = localization.getUIText('difficulty');
+  document.getElementById("game-title")!.textContent = localization.getUIText("gameTitle");
+  document.getElementById("menu-title")!.textContent = localization.getUIText("gameSetup");
+  document.getElementById("label-difficulty")!.textContent = localization.getUIText("difficulty");
 
-    const diffButtons = document.querySelectorAll('.diff-btn');
-    diffButtons.forEach((btn, i) => {
-        const difficulties = ['beginner', 'easy', 'medium', 'hard', 'expert'];
-        btn.textContent = localization.getUIText(difficulties[i]);
-    });
+  const diffButtons = document.querySelectorAll(".diff-btn");
+  diffButtons.forEach((btn, i) => {
+    const difficulties = ["beginner", "easy", "medium", "hard", "expert"];
+    btn.textContent = localization.getUIText(difficulties[i]);
+  });
 
-    document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
-    document.getElementById('label-time')!.textContent = localization.getUIText('time');
-    document.getElementById('label-mistakes')!.textContent = localization.getUIText('mistakes');
-    document.getElementById('label-hints')!.textContent = localization.getUIText('hints');
-    document.getElementById('erase-btn')!.textContent = localization.getUIText('erase');
-    document.getElementById('notes-btn')!.textContent = localization.getUIText('notes');
-    document.getElementById('hint-btn')!.textContent = localization.getUIText('hint');
-    document.getElementById('new-game-btn')!.textContent = localization.getUIText('newGame');
-    document.getElementById('label-total-time')!.textContent = localization.getUIText('totalTime');
-    document.getElementById('label-final-mistakes')!.textContent = localization.getUIText('mistakes');
-    document.getElementById('label-final-hints')!.textContent = localization.getUIText('hints');
-    document.getElementById('play-again-btn')!.textContent = localization.getUIText('playAgain');
+  document.getElementById("start-btn")!.textContent = localization.getUIText("startGame");
+  document.getElementById("label-time")!.textContent = localization.getUIText("time");
+  document.getElementById("label-mistakes")!.textContent = localization.getUIText("mistakes");
+  document.getElementById("label-hints")!.textContent = localization.getUIText("hints");
+  document.getElementById("erase-btn")!.textContent = localization.getUIText("erase");
+  document.getElementById("notes-btn")!.textContent = localization.getUIText("notes");
+  document.getElementById("hint-btn")!.textContent = localization.getUIText("hint");
+  document.getElementById("new-game-btn")!.textContent = localization.getUIText("newGame");
+  document.getElementById("label-total-time")!.textContent = localization.getUIText("totalTime");
+  document.getElementById("label-final-mistakes")!.textContent = localization.getUIText("mistakes");
+  document.getElementById("label-final-hints")!.textContent = localization.getUIText("hints");
+  document.getElementById("play-again-btn")!.textContent = localization.getUIText("playAgain");
 
-    // High Score Table Headers
-    document.getElementById('high-scores-title')!.textContent = localization.getUIText('highScores');
-    document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
-    document.getElementById('th-time')!.textContent = localization.getUIText('time');
-    document.getElementById('th-mistakes')!.textContent = localization.getUIText('mistakes');
-    document.getElementById('th-hints')!.textContent = localization.getUIText('hints');
-    document.getElementById('th-date')!.textContent = localization.getUIText('date');
+  // High Score Table Headers
+  document.getElementById("high-scores-title")!.textContent = localization.getUIText("highScores");
+  document.getElementById("th-rank")!.textContent = localization.getUIText("rank");
+  document.getElementById("th-time")!.textContent = localization.getUIText("time");
+  document.getElementById("th-mistakes")!.textContent = localization.getUIText("mistakes");
+  document.getElementById("th-hints")!.textContent = localization.getUIText("hints");
+  document.getElementById("th-date")!.textContent = localization.getUIText("date");
 };
 
 // --- Event Listeners ---
 
 const setupEventListeners = () => {
-    // Home button
-    document.getElementById('home-btn')?.addEventListener('click', () => {
-        window.location.href = '/';
+  // Home button
+  document.getElementById("home-btn")?.addEventListener("click", () => {
+    window.location.href = "/";
+  });
+
+  // Language switcher
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const lang = (e.target as HTMLElement).dataset.lang as Language;
+      localization.setLanguage(lang);
     });
+  });
 
-    // Language switcher
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const lang = (e.target as HTMLElement).dataset.lang as Language;
-            localization.setLanguage(lang);
-        });
+  // Difficulty selection
+  document.querySelectorAll(".diff-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const target = e.target as HTMLButtonElement;
+      const diff = target.dataset.diff as Difficulty;
+
+      document.querySelectorAll(".diff-btn").forEach((b) => b.classList.remove("active"));
+      target.classList.add("active");
+
+      game.setDifficulty(diff);
     });
+  });
 
-    // Difficulty selection
-    document.querySelectorAll('.diff-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const target = e.target as HTMLButtonElement;
-            const diff = target.dataset.diff as Difficulty;
+  // Start game
+  document.getElementById("start-btn")?.addEventListener("click", () => {
+    saveSetup();
+    lastScoreDate = null;
+    game.start();
+  });
 
-            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-            target.classList.add('active');
-
-            game.setDifficulty(diff);
-        });
+  // Number pad
+  document.querySelectorAll(".num-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const num = parseInt((e.target as HTMLElement).dataset.num || "0");
+      game.enterNumber(num);
     });
+  });
 
-    // Start game
-    document.getElementById('start-btn')?.addEventListener('click', () => {
-        saveSetup();
-        lastScoreDate = null;
-        game.start();
-    });
+  // Erase
+  document.getElementById("erase-btn")?.addEventListener("click", () => {
+    game.eraseCell();
+  });
 
-    // Number pad
-    document.querySelectorAll('.num-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const num = parseInt((e.target as HTMLElement).dataset.num || '0');
-            game.enterNumber(num);
-        });
-    });
+  // Notes mode
+  document.getElementById("notes-btn")?.addEventListener("click", () => {
+    game.toggleNotesMode();
+    const btn = document.getElementById("notes-btn");
+    if (btn) {
+      btn.classList.toggle("active", game.getNotesMode());
+    }
+  });
 
-    // Erase
-    document.getElementById('erase-btn')?.addEventListener('click', () => {
-        game.eraseCell();
-    });
+  // Hint
+  document.getElementById("hint-btn")?.addEventListener("click", () => {
+    game.getHint();
+  });
 
-    // Notes mode
-    document.getElementById('notes-btn')?.addEventListener('click', () => {
-        game.toggleNotesMode();
-        const btn = document.getElementById('notes-btn');
-        if (btn) {
-            btn.classList.toggle('active', game.getNotesMode());
-        }
-    });
+  // New game
+  document.getElementById("new-game-btn")?.addEventListener("click", () => {
+    game.restart();
+  });
 
-    // Hint
-    document.getElementById('hint-btn')?.addEventListener('click', () => {
-        game.getHint();
-    });
+  // Play again
+  document.getElementById("play-again-btn")?.addEventListener("click", () => {
+    game.restart();
+  });
 
-    // New game
-    document.getElementById('new-game-btn')?.addEventListener('click', () => {
-        game.restart();
-    });
+  // Keyboard support
+  document.addEventListener("keydown", (e) => {
+    if (game.getState() !== "PLAYING") return;
 
-    // Play again
-    document.getElementById('play-again-btn')?.addEventListener('click', () => {
-        game.restart();
-    });
-
-    // Keyboard support
-    document.addEventListener('keydown', (e) => {
-        if (game.getState() !== 'PLAYING') return;
-
-        if (e.key >= '1' && e.key <= '9') {
-            game.enterNumber(parseInt(e.key));
-        } else if (e.key === 'Backspace' || e.key === 'Delete') {
-            game.eraseCell();
-        }
-    });
+    if (e.key >= "1" && e.key <= "9") {
+      game.enterNumber(parseInt(e.key));
+    } else if (e.key === "Backspace" || e.key === "Delete") {
+      game.eraseCell();
+    }
+  });
 };
 
 // --- Board Rendering ---
 
 const renderGrid = () => {
-    const grid = document.getElementById('sudoku-grid');
-    if (!grid) return;
+  const grid = document.getElementById("sudoku-grid");
+  if (!grid) return;
 
-    grid.innerHTML = '';
+  grid.innerHTML = "";
 
-    for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-            const cellDiv = document.createElement('div');
-            cellDiv.className = 'sudoku-cell';
-            cellDiv.dataset.row = row.toString();
-            cellDiv.dataset.col = col.toString();
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const cellDiv = document.createElement("div");
+      cellDiv.className = "sudoku-cell";
+      cellDiv.dataset.row = row.toString();
+      cellDiv.dataset.col = col.toString();
 
-            cellDiv.addEventListener('click', () => {
-                game.selectCell(row, col);
-            });
+      cellDiv.addEventListener("click", () => {
+        game.selectCell(row, col);
+      });
 
-            grid.appendChild(cellDiv);
-        }
+      grid.appendChild(cellDiv);
     }
+  }
 };
 
 const updateGrid = () => {
-    const board = game.getBoard();
-    const selectedCell = game.getSelectedCell();
-    const selectedValue = selectedCell ? board[selectedCell.row][selectedCell.col].value : null;
+  const board = game.getBoard();
+  const selectedCell = game.getSelectedCell();
+  const selectedValue = selectedCell ? board[selectedCell.row][selectedCell.col].value : null;
 
-    for (let row = 0; row < 9; row++) {
-        for (let col = 0; col < 9; col++) {
-            const cellDiv = document.querySelector(`[data-row="${row}"][data-col="${col}"]`) as HTMLElement;
-            if (!cellDiv) continue;
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      const cellDiv = document.querySelector(
+        `[data-row="${row}"][data-col="${col}"]`
+      ) as HTMLElement;
+      if (!cellDiv) continue;
 
-            const cell = board[row][col];
+      const cell = board[row][col];
 
-            // Reset classes
-            cellDiv.className = 'sudoku-cell';
+      // Reset classes
+      cellDiv.className = "sudoku-cell";
 
-            // Add state classes
-            if (cell.isFixed) cellDiv.classList.add('fixed');
-            if (cell.isError) cellDiv.classList.add('error');
-            if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
-                cellDiv.classList.add('selected');
-            }
-            if (selectedValue && cell.value === selectedValue) {
-                cellDiv.classList.add('same-number');
-            }
+      // Add state classes
+      if (cell.isFixed) cellDiv.classList.add("fixed");
+      if (cell.isError) cellDiv.classList.add("error");
+      if (selectedCell && selectedCell.row === row && selectedCell.col === col) {
+        cellDiv.classList.add("selected");
+      }
+      if (selectedValue && cell.value === selectedValue) {
+        cellDiv.classList.add("same-number");
+      }
 
-            // Display value or notes
-            if (cell.value) {
-                cellDiv.textContent = cell.value.toString();
-            } else if (cell.notes.size > 0) {
-                cellDiv.innerHTML = '<div class="cell-notes"></div>';
-                const notesDiv = cellDiv.querySelector('.cell-notes');
-                if (notesDiv) {
-                    for (let n = 1; n <= 9; n++) {
-                        const noteSpan = document.createElement('span');
-                        noteSpan.textContent = cell.notes.has(n) ? n.toString() : '';
-                        notesDiv.appendChild(noteSpan);
-                    }
-                }
-            } else {
-                cellDiv.textContent = '';
-            }
+      // Display value or notes
+      if (cell.value) {
+        cellDiv.textContent = cell.value.toString();
+      } else if (cell.notes.size > 0) {
+        cellDiv.innerHTML = '<div class="cell-notes"></div>';
+        const notesDiv = cellDiv.querySelector(".cell-notes");
+        if (notesDiv) {
+          for (let n = 1; n <= 9; n++) {
+            const noteSpan = document.createElement("span");
+            noteSpan.textContent = cell.notes.has(n) ? n.toString() : "";
+            notesDiv.appendChild(noteSpan);
+          }
         }
+      } else {
+        cellDiv.textContent = "";
+      }
     }
+  }
 };
 
 const updateGameInfo = () => {
-    const time = game.getElapsedTime();
-    const minutes = Math.floor(time / 60000);
-    const seconds = Math.floor((time % 60000) / 1000);
-    const timeDisplay = document.getElementById('time-display');
-    if (timeDisplay) {
-        timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
+  const time = game.getElapsedTime();
+  const minutes = Math.floor(time / 60000);
+  const seconds = Math.floor((time % 60000) / 1000);
+  const timeDisplay = document.getElementById("time-display");
+  if (timeDisplay) {
+    timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  }
 
-    const mistakes = game.getMistakes();
-    const maxMistakes = game.getMaxMistakes();
-    const mistakesDisplay = document.getElementById('mistakes-display');
-    if (mistakesDisplay) {
-        mistakesDisplay.textContent = `${mistakes}/${maxMistakes}`;
-    }
+  const mistakes = game.getMistakes();
+  const maxMistakes = game.getMaxMistakes();
+  const mistakesDisplay = document.getElementById("mistakes-display");
+  if (mistakesDisplay) {
+    mistakesDisplay.textContent = `${mistakes}/${maxMistakes}`;
+  }
 
-    const hintsUsed = game.getHintsUsed();
-    const maxHints = game.getMaxHints();
-    const hintsDisplay = document.getElementById('hints-display');
-    if (hintsDisplay) {
-        hintsDisplay.textContent = `${hintsUsed}/${maxHints}`;
-    }
+  const hintsUsed = game.getHintsUsed();
+  const maxHints = game.getMaxHints();
+  const hintsDisplay = document.getElementById("hints-display");
+  if (hintsDisplay) {
+    hintsDisplay.textContent = `${hintsUsed}/${maxHints}`;
+  }
 
-    // Disable hint button if limit reached
-    const hintBtn = document.getElementById('hint-btn');
-    if (hintBtn) {
-        if (hintsUsed >= maxHints) {
-            hintBtn.classList.add('disabled');
-            hintBtn.setAttribute('disabled', 'true');
-        } else {
-            hintBtn.classList.remove('disabled');
-            hintBtn.removeAttribute('disabled');
-        }
+  // Disable hint button if limit reached
+  const hintBtn = document.getElementById("hint-btn");
+  if (hintBtn) {
+    if (hintsUsed >= maxHints) {
+      hintBtn.classList.add("disabled");
+      hintBtn.setAttribute("disabled", "true");
+    } else {
+      hintBtn.classList.remove("disabled");
+      hintBtn.removeAttribute("disabled");
     }
+  }
 };
 
 // --- View Management ---
 
 const showView = (viewId: string) => {
-    ['menu-view', 'game-view', 'result-view'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            if (id === viewId) el.classList.remove('hidden');
-            else el.classList.add('hidden');
-        }
-    });
+  ["menu-view", "game-view", "result-view"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      if (id === viewId) el.classList.remove("hidden");
+      else el.classList.add("hidden");
+    }
+  });
 };
 
 // --- Game Event Handlers ---
 
 game.onStateChange((state: GameState) => {
-    if (state === 'MENU') {
-        showView('menu-view');
-    }
-    if (state === 'PLAYING') {
-        showView('game-view');
-        renderGrid();
-        updateGrid();
-        updateGameInfo();
-    }
-    if (state === 'RESULT') {
-        showView('result-view');
-        saveHighScore();
-        displayResult();
-    }
+  if (state === "MENU") {
+    showView("menu-view");
+  }
+  if (state === "PLAYING") {
+    showView("game-view");
+    renderGrid();
+    updateGrid();
+    updateGameInfo();
+  }
+  if (state === "RESULT") {
+    showView("result-view");
+    saveHighScore();
+    displayResult();
+  }
 });
 
 game.onCellUpdate(() => {
-    updateGrid();
+  updateGrid();
 });
 
 game.onMistake(() => {
-    updateGameInfo();
+  updateGameInfo();
 });
 
 game.onTimeUpdate(() => {
-    updateGameInfo();
+  updateGameInfo();
 });
 
 const getHighScoreKey = () => {
-    const difficulty = game.getDifficulty();
-    return `sudoku_highscores_${difficulty}`;
+  const difficulty = game.getDifficulty();
+  return `sudoku_highscores_${difficulty}`;
 };
 
 const saveHighScore = () => {
-    // Only save if the player won
-    if (!game.isWin()) return;
+  // Only save if the player won
+  if (!game.isWin()) return;
 
-    const time = game.getElapsedTime();
-    const mistakes = game.getMistakes();
-    const hintsUsed = game.getHintsUsed();
-    const date = Date.now();
-    lastScoreDate = date;
+  const time = game.getElapsedTime();
+  const mistakes = game.getMistakes();
+  const hintsUsed = game.getHintsUsed();
+  const date = Date.now();
+  lastScoreDate = date;
 
-    const newScore: HighScore = { time, mistakes, hintsUsed, date };
-    const key = getHighScoreKey();
+  const newScore: HighScore = { time, mistakes, hintsUsed, date };
+  const key = getHighScoreKey();
 
-    util.saveHighScore(key, newScore, (a, b) => {
-        if (a.hintsUsed !== b.hintsUsed) return a.hintsUsed - b.hintsUsed;
-        if (a.time !== b.time) return a.time - b.time;
-        return a.mistakes - b.mistakes;
-    });
+  util.saveHighScore(key, newScore, (a, b) => {
+    if (a.hintsUsed !== b.hintsUsed) return a.hintsUsed - b.hintsUsed;
+    if (a.time !== b.time) return a.time - b.time;
+    return a.mistakes - b.mistakes;
+  });
 };
 
 const displayResult = () => {
-    const resultTitle = document.getElementById('result-title');
-    const resultMessage = document.getElementById('result-message');
-    const finalTime = document.getElementById('final-time');
-    const finalMistakes = document.getElementById('final-mistakes');
+  const resultTitle = document.getElementById("result-title");
+  const resultMessage = document.getElementById("result-message");
+  const finalTime = document.getElementById("final-time");
+  const finalMistakes = document.getElementById("final-mistakes");
 
-    const isWin = game.isWin();
+  const isWin = game.isWin();
 
-    if (resultTitle) {
-        resultTitle.textContent = isWin
-            ? localization.getUIText('youWin')
-            : localization.getUIText('gameOver');
-    }
+  if (resultTitle) {
+    resultTitle.textContent = isWin
+      ? localization.getUIText("youWin")
+      : localization.getUIText("gameOver");
+  }
 
-    if (resultMessage) {
-        resultMessage.textContent = isWin
-            ? localization.getUIText('puzzleCompleted')
-            : localization.getUIText('tooManyMistakes');
-    }
+  if (resultMessage) {
+    resultMessage.textContent = isWin
+      ? localization.getUIText("puzzleCompleted")
+      : localization.getUIText("tooManyMistakes");
+  }
 
-    if (finalTime) {
-        finalTime.textContent = util.formatTime(game.getElapsedTime());
-    }
+  if (finalTime) {
+    finalTime.textContent = util.formatTime(game.getElapsedTime());
+  }
 
-    if (finalMistakes) {
-        finalMistakes.textContent = game.getMistakes().toString();
-    }
+  if (finalMistakes) {
+    finalMistakes.textContent = game.getMistakes().toString();
+  }
 
-    const finalHints = document.getElementById('final-hints');
-    if (finalHints) {
-        finalHints.textContent = game.getHintsUsed().toString();
-    }
+  const finalHints = document.getElementById("final-hints");
+  if (finalHints) {
+    finalHints.textContent = game.getHintsUsed().toString();
+  }
 
-    renderHighScores();
+  renderHighScores();
 };
 
 const renderHighScores = () => {
-    const key = getHighScoreKey();
-    const scores = util.getHighScores<HighScore>(key);
-    const tbody = document.getElementById('high-scores-body');
+  const key = getHighScoreKey();
+  const scores = util.getHighScores<HighScore>(key);
+  const tbody = document.getElementById("high-scores-body");
 
-    if (tbody) {
-        tbody.innerHTML = '';
-        scores.forEach((s, index) => {
-            const tr = document.createElement('tr');
+  if (tbody) {
+    tbody.innerHTML = "";
+    scores.forEach((s, index) => {
+      const tr = document.createElement("tr");
 
-            // Highlight current run if it matches
-            if (s.date === lastScoreDate) {
-                tr.classList.add('current-run');
-            }
+      // Highlight current run if it matches
+      if (s.date === lastScoreDate) {
+        tr.classList.add("current-run");
+      }
 
+      const dateStr = util.formatDate(s.date, localization.language as any);
 
-            const dateStr = util.formatDate(s.date, localization.language as any);
-
-            tr.innerHTML = `
+      tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${s.hintsUsed}</td>
                 <td>${util.formatTime(s.time)}</td>
                 <td>${s.mistakes}</td>
                 <td>${dateStr}</td>
             `;
-            tbody.appendChild(tr);
-        });
-    }
+      tbody.appendChild(tr);
+    });
+  }
 };
 
 // Subscribe to language changes
 localization.subscribe((lang) => {
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === lang);
-    });
-    updateTexts();
-    if (game.getState() === 'RESULT') {
-        displayResult();
-    }
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", (btn as HTMLElement).dataset.lang === lang);
+  });
+  updateTexts();
+  if (game.getState() === "RESULT") {
+    displayResult();
+  }
 });
 
 // --- Initialize ---

@@ -1,371 +1,383 @@
-import { MancalaAI } from './AI';
+import { MancalaAI } from "./AI";
 
-export type Player = 'PLAYER1' | 'PLAYER2';
-export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
-export type GameMode = 'TWO_PLAYER' | 'VS_AI';
+export type Player = "PLAYER1" | "PLAYER2";
+export type GameState = "MENU" | "PLAYING" | "RESULT";
+export type GameMode = "TWO_PLAYER" | "VS_AI";
 export type PitCount = 4 | 5 | 6 | 7 | 8;
-export type Difficulty = 'EASY' | 'MEDIUM';
+export type Difficulty = "EASY" | "MEDIUM";
 
 export interface Move {
-    player: Player;
-    pitIndex: number;
-    capturedStones?: number;
-    extraTurn: boolean;
+  player: Player;
+  pitIndex: number;
+  capturedStones?: number;
+  extraTurn: boolean;
 }
 
 class MancalaGame {
-    private pitCount: PitCount = 6;
-    private initialStones: number = 4;
-    private gameMode: GameMode = 'TWO_PLAYER';
-    private difficulty: Difficulty = 'MEDIUM';
-    private gameState: GameState = 'MENU';
-    private currentPlayer: Player = 'PLAYER1';
-    private board: number[] = [];
-    private moveHistory: Move[] = [];
-    private winner: Player | null = null;
-    private startTime: number = 0;
-    private elapsedTime: number = 0;
-    private timerInterval: number | null = null;
-    private lastMovePit: number | null = null;
+  private pitCount: PitCount = 6;
+  private initialStones: number = 4;
+  private gameMode: GameMode = "TWO_PLAYER";
+  private difficulty: Difficulty = "MEDIUM";
+  private gameState: GameState = "MENU";
+  private currentPlayer: Player = "PLAYER1";
+  private board: number[] = [];
+  private moveHistory: Move[] = [];
+  private winner: Player | null = null;
+  private startTime: number = 0;
+  private elapsedTime: number = 0;
+  private timerInterval: number | null = null;
+  private lastMovePit: number | null = null;
 
-    private ai: MancalaAI;
-    private aiMoveListeners: (() => void)[] = [];
-    private stateChangeListeners: ((state: GameState) => void)[] = [];
-    private moveListeners: ((move: Move) => void)[] = [];
-    private boardUpdateListeners: (() => void)[] = [];
-    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
+  private ai: MancalaAI;
+  private aiMoveListeners: (() => void)[] = [];
+  private stateChangeListeners: ((state: GameState) => void)[] = [];
+  private moveListeners: ((move: Move) => void)[] = [];
+  private boardUpdateListeners: (() => void)[] = [];
+  private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
-    constructor() {
-        this.ai = new MancalaAI(this.difficulty);
-        this.initializeBoard();
+  constructor() {
+    this.ai = new MancalaAI(this.difficulty);
+    this.initializeBoard();
+  }
+
+  private initializeBoard() {
+    // Board layout: [P1 pits..., P1 store, P2 pits..., P2 store]
+    // For 6 pits: [0-5: P1 pits, 6: P1 store, 7-12: P2 pits, 13: P2 store]
+    const totalPits = this.pitCount * 2 + 2;
+    this.board = new Array(totalPits).fill(0);
+
+    // Initialize pits with stones
+    for (let i = 0; i < this.pitCount; i++) {
+      this.board[i] = this.initialStones; // Player 1 pits
+      this.board[i + this.pitCount + 1] = this.initialStones; // Player 2 pits
     }
 
-    private initializeBoard() {
-        // Board layout: [P1 pits..., P1 store, P2 pits..., P2 store]
-        // For 6 pits: [0-5: P1 pits, 6: P1 store, 7-12: P2 pits, 13: P2 store]
-        const totalPits = this.pitCount * 2 + 2;
-        this.board = new Array(totalPits).fill(0);
+    // Stores start at 0
+    this.board[this.pitCount] = 0; // Player 1 store
+    this.board[this.pitCount * 2 + 1] = 0; // Player 2 store
+  }
 
-        // Initialize pits with stones
-        for (let i = 0; i < this.pitCount; i++) {
-            this.board[i] = this.initialStones; // Player 1 pits
-            this.board[i + this.pitCount + 1] = this.initialStones; // Player 2 pits
+  setPitCount(count: PitCount) {
+    this.pitCount = count;
+  }
+
+  setInitialStones(count: number) {
+    this.initialStones = count;
+  }
+
+  getInitialStones(): number {
+    return this.initialStones;
+  }
+
+  setGameMode(mode: GameMode) {
+    this.gameMode = mode;
+  }
+
+  setDifficulty(difficulty: Difficulty) {
+    this.difficulty = difficulty;
+    this.ai.setDifficulty(difficulty);
+  }
+
+  getDifficulty(): Difficulty {
+    return this.difficulty;
+  }
+
+  getPitCount(): PitCount {
+    return this.pitCount;
+  }
+
+  getGameMode(): GameMode {
+    return this.gameMode;
+  }
+
+  getLastMovePit(): number | null {
+    return this.lastMovePit;
+  }
+
+  start() {
+    this.initializeBoard();
+    this.currentPlayer = "PLAYER1";
+    this.moveHistory = [];
+    this.winner = null;
+    this.startTime = Date.now();
+    this.elapsedTime = 0;
+    this.gameState = "PLAYING";
+    this.notifyStateChange();
+    this.startTimer();
+  }
+
+  restart() {
+    this.stopTimer();
+    this.gameState = "MENU";
+    this.notifyStateChange();
+  }
+
+  private startTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    this.timerInterval = window.setInterval(() => {
+      this.elapsedTime = Date.now() - this.startTime;
+      this.notifyTimerUpdate();
+    }, 1000);
+  }
+
+  private stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  isValidMove(pitIndex: number): boolean {
+    if (this.gameState !== "PLAYING") return false;
+
+    const player1Range = pitIndex >= 0 && pitIndex < this.pitCount;
+    const player2Range = pitIndex > this.pitCount && pitIndex < this.pitCount * 2 + 1;
+
+    if (this.currentPlayer === "PLAYER1") {
+      return player1Range && this.board[pitIndex] > 0;
+    } else {
+      return player2Range && this.board[pitIndex] > 0;
+    }
+  }
+
+  makeMove(pitIndex: number): boolean {
+    if (!this.isValidMove(pitIndex)) return false;
+
+    // Track the last move
+    this.lastMovePit = pitIndex;
+
+    const stones = this.board[pitIndex];
+    this.board[pitIndex] = 0;
+
+    let currentIndex = pitIndex;
+    let stonesLeft = stones;
+    let lastIndex = pitIndex;
+
+    const player1Store = this.pitCount;
+    const player2Store = this.pitCount * 2 + 1;
+    const opponentStore = this.currentPlayer === "PLAYER1" ? player2Store : player1Store;
+
+    // Sow stones
+    while (stonesLeft > 0) {
+      currentIndex = (currentIndex + 1) % this.board.length;
+
+      // Skip opponent's store
+      if (currentIndex === opponentStore) {
+        continue;
+      }
+
+      this.board[currentIndex]++;
+      stonesLeft--;
+      lastIndex = currentIndex;
+    }
+
+    let extraTurn = false;
+    let capturedStones = 0;
+
+    // Check if last stone landed in player's store
+    const myStore = this.currentPlayer === "PLAYER1" ? player1Store : player2Store;
+    if (lastIndex === myStore) {
+      extraTurn = true;
+    } else {
+      // Check for capture
+      const isOnMySide =
+        this.currentPlayer === "PLAYER1"
+          ? lastIndex < this.pitCount
+          : lastIndex > this.pitCount && lastIndex < this.pitCount * 2 + 1;
+
+      if (isOnMySide && this.board[lastIndex] === 1) {
+        // Last stone landed in empty pit on my side
+        const oppositeIndex = this.getOppositeIndex(lastIndex);
+        const oppositeStones = this.board[oppositeIndex];
+
+        if (oppositeStones > 0) {
+          // Capture
+          capturedStones = this.board[lastIndex] + oppositeStones;
+          this.board[myStore] += capturedStones;
+          this.board[lastIndex] = 0;
+          this.board[oppositeIndex] = 0;
         }
-
-        // Stores start at 0
-        this.board[this.pitCount] = 0; // Player 1 store
-        this.board[this.pitCount * 2 + 1] = 0; // Player 2 store
+      }
     }
 
-    setPitCount(count: PitCount) {
-        this.pitCount = count;
+    const move: Move = {
+      player: this.currentPlayer,
+      pitIndex,
+      capturedStones: capturedStones > 0 ? capturedStones : undefined,
+      extraTurn,
+    };
+
+    this.moveHistory.push(move);
+    this.notifyMove(move);
+
+    if (!extraTurn) {
+      this.switchPlayer();
     }
 
-    setInitialStones(count: number) {
-        this.initialStones = count;
+    this.checkWinCondition();
+    this.notifyBoardUpdate();
+
+    // Trigger AI move if in VS_AI mode and it's AI's turn
+    if (
+      this.gameMode === "VS_AI" &&
+      this.currentPlayer === "PLAYER2" &&
+      this.gameState === "PLAYING"
+    ) {
+      this.notifyAIMove();
     }
 
-    getInitialStones(): number {
-        return this.initialStones;
+    return true;
+  }
+
+  async makeAIMove(): Promise<void> {
+    if (
+      this.gameMode !== "VS_AI" ||
+      this.currentPlayer !== "PLAYER2" ||
+      this.gameState !== "PLAYING"
+    ) {
+      return;
     }
 
-    setGameMode(mode: GameMode) {
-        this.gameMode = mode;
+    // Add small delay to make AI moves feel more natural
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const bestMove = this.ai.getBestMove(this.getBoard(), this.pitCount, "PLAYER2");
+
+    if (bestMove !== -1) {
+      this.makeMove(bestMove);
     }
+  }
 
-    setDifficulty(difficulty: Difficulty) {
-        this.difficulty = difficulty;
-        this.ai.setDifficulty(difficulty);
+  private getOppositeIndex(index: number): number {
+    const player1Store = this.pitCount;
+    const player2Store = this.pitCount * 2 + 1;
+
+    if (index < this.pitCount) {
+      // Player 1 pit -> opposite Player 2 pit
+      return player2Store - 1 - index;
+    } else {
+      // Player 2 pit -> opposite Player 1 pit
+      return player1Store - 1 - (index - this.pitCount - 1);
     }
+  }
 
-    getDifficulty(): Difficulty {
-        return this.difficulty;
+  private switchPlayer() {
+    this.currentPlayer = this.currentPlayer === "PLAYER1" ? "PLAYER2" : "PLAYER1";
+  }
+
+  private checkWinCondition() {
+    const player1Stones = this.board
+      .slice(0, this.pitCount)
+      .reduce((sum, stones) => sum + stones, 0);
+    const player2Stones = this.board
+      .slice(this.pitCount + 1, this.pitCount * 2 + 1)
+      .reduce((sum, stones) => sum + stones, 0);
+
+    if (player1Stones === 0 || player2Stones === 0) {
+      // Game over - collect remaining stones
+      const player1Store = this.pitCount;
+      const player2Store = this.pitCount * 2 + 1;
+
+      this.board[player1Store] += player1Stones;
+      this.board[player2Store] += player2Stones;
+
+      // Clear all pits
+      for (let i = 0; i < this.pitCount; i++) {
+        this.board[i] = 0;
+        this.board[i + this.pitCount + 1] = 0;
+      }
+
+      // Determine winner
+      if (this.board[player1Store] > this.board[player2Store]) {
+        this.winner = "PLAYER1";
+      } else if (this.board[player2Store] > this.board[player1Store]) {
+        this.winner = "PLAYER2";
+      } else {
+        this.winner = null; // Draw
+      }
+
+      this.endGame();
     }
+  }
 
-    getPitCount(): PitCount {
-        return this.pitCount;
-    }
+  private endGame() {
+    this.stopTimer();
+    this.gameState = "RESULT";
+    this.notifyStateChange();
+  }
 
-    getGameMode(): GameMode {
-        return this.gameMode;
-    }
+  // Getters
+  getBoard(): number[] {
+    return [...this.board];
+  }
 
-    getLastMovePit(): number | null {
-        return this.lastMovePit;
-    }
+  getCurrentPlayer(): Player {
+    return this.currentPlayer;
+  }
 
-    start() {
-        this.initializeBoard();
-        this.currentPlayer = 'PLAYER1';
-        this.moveHistory = [];
-        this.winner = null;
-        this.startTime = Date.now();
-        this.elapsedTime = 0;
-        this.gameState = 'PLAYING';
-        this.notifyStateChange();
-        this.startTimer();
-    }
+  getState(): GameState {
+    return this.gameState;
+  }
 
-    restart() {
-        this.stopTimer();
-        this.gameState = 'MENU';
-        this.notifyStateChange();
-    }
+  getWinner(): Player | null {
+    return this.winner;
+  }
 
-    private startTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-        }
-        this.timerInterval = window.setInterval(() => {
-            this.elapsedTime = Date.now() - this.startTime;
-            this.notifyTimerUpdate();
-        }, 1000);
-    }
+  getMoves(): Move[] {
+    return [...this.moveHistory];
+  }
 
-    private stopTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
-        }
-    }
+  getElapsedTime(): number {
+    return this.elapsedTime;
+  }
 
-    isValidMove(pitIndex: number): boolean {
-        if (this.gameState !== 'PLAYING') return false;
+  getPlayerScore(player: Player): number {
+    const storeIndex = player === "PLAYER1" ? this.pitCount : this.pitCount * 2 + 1;
+    return this.board[storeIndex];
+  }
 
-        const player1Range = pitIndex >= 0 && pitIndex < this.pitCount;
-        const player2Range = pitIndex > this.pitCount && pitIndex < this.pitCount * 2 + 1;
+  // Event listeners
+  onStateChange(listener: (state: GameState) => void) {
+    this.stateChangeListeners.push(listener);
+  }
 
-        if (this.currentPlayer === 'PLAYER1') {
-            return player1Range && this.board[pitIndex] > 0;
-        } else {
-            return player2Range && this.board[pitIndex] > 0;
-        }
-    }
+  onMove(listener: (move: Move) => void) {
+    this.moveListeners.push(listener);
+  }
 
-    makeMove(pitIndex: number): boolean {
-        if (!this.isValidMove(pitIndex)) return false;
+  onBoardUpdate(listener: () => void) {
+    this.boardUpdateListeners.push(listener);
+  }
 
-        // Track the last move
-        this.lastMovePit = pitIndex;
+  onAIMove(listener: () => void) {
+    this.aiMoveListeners.push(listener);
+  }
 
-        const stones = this.board[pitIndex];
-        this.board[pitIndex] = 0;
+  onTimerUpdate(listener: (elapsed: number) => void) {
+    this.timerUpdateListeners.push(listener);
+  }
 
-        let currentIndex = pitIndex;
-        let stonesLeft = stones;
-        let lastIndex = pitIndex;
+  private notifyStateChange() {
+    this.stateChangeListeners.forEach((listener) => listener(this.gameState));
+  }
 
-        const player1Store = this.pitCount;
-        const player2Store = this.pitCount * 2 + 1;
-        const opponentStore = this.currentPlayer === 'PLAYER1' ? player2Store : player1Store;
+  private notifyMove(move: Move) {
+    this.moveListeners.forEach((listener) => listener(move));
+  }
 
-        // Sow stones
-        while (stonesLeft > 0) {
-            currentIndex = (currentIndex + 1) % this.board.length;
+  private notifyBoardUpdate() {
+    this.boardUpdateListeners.forEach((listener) => listener());
+  }
 
-            // Skip opponent's store
-            if (currentIndex === opponentStore) {
-                continue;
-            }
+  private notifyAIMove() {
+    this.aiMoveListeners.forEach((listener) => listener());
+  }
 
-            this.board[currentIndex]++;
-            stonesLeft--;
-            lastIndex = currentIndex;
-        }
-
-        let extraTurn = false;
-        let capturedStones = 0;
-
-        // Check if last stone landed in player's store
-        const myStore = this.currentPlayer === 'PLAYER1' ? player1Store : player2Store;
-        if (lastIndex === myStore) {
-            extraTurn = true;
-        } else {
-            // Check for capture
-            const isOnMySide = this.currentPlayer === 'PLAYER1'
-                ? lastIndex < this.pitCount
-                : lastIndex > this.pitCount && lastIndex < this.pitCount * 2 + 1;
-
-            if (isOnMySide && this.board[lastIndex] === 1) {
-                // Last stone landed in empty pit on my side
-                const oppositeIndex = this.getOppositeIndex(lastIndex);
-                const oppositeStones = this.board[oppositeIndex];
-
-                if (oppositeStones > 0) {
-                    // Capture
-                    capturedStones = this.board[lastIndex] + oppositeStones;
-                    this.board[myStore] += capturedStones;
-                    this.board[lastIndex] = 0;
-                    this.board[oppositeIndex] = 0;
-                }
-            }
-        }
-
-        const move: Move = {
-            player: this.currentPlayer,
-            pitIndex,
-            capturedStones: capturedStones > 0 ? capturedStones : undefined,
-            extraTurn
-        };
-
-        this.moveHistory.push(move);
-        this.notifyMove(move);
-
-        if (!extraTurn) {
-            this.switchPlayer();
-        }
-
-        this.checkWinCondition();
-        this.notifyBoardUpdate();
-
-        // Trigger AI move if in VS_AI mode and it's AI's turn
-        if (this.gameMode === 'VS_AI' && this.currentPlayer === 'PLAYER2' && this.gameState === 'PLAYING') {
-            this.notifyAIMove();
-        }
-
-        return true;
-    }
-
-    async makeAIMove(): Promise<void> {
-        if (this.gameMode !== 'VS_AI' || this.currentPlayer !== 'PLAYER2' || this.gameState !== 'PLAYING') {
-            return;
-        }
-
-        // Add small delay to make AI moves feel more natural
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const bestMove = this.ai.getBestMove(this.getBoard(), this.pitCount, 'PLAYER2');
-
-        if (bestMove !== -1) {
-            this.makeMove(bestMove);
-        }
-    }
-
-    private getOppositeIndex(index: number): number {
-        const player1Store = this.pitCount;
-        const player2Store = this.pitCount * 2 + 1;
-
-        if (index < this.pitCount) {
-            // Player 1 pit -> opposite Player 2 pit
-            return player2Store - 1 - index;
-        } else {
-            // Player 2 pit -> opposite Player 1 pit
-            return player1Store - 1 - (index - this.pitCount - 1);
-        }
-    }
-
-    private switchPlayer() {
-        this.currentPlayer = this.currentPlayer === 'PLAYER1' ? 'PLAYER2' : 'PLAYER1';
-    }
-
-    private checkWinCondition() {
-        const player1Stones = this.board.slice(0, this.pitCount).reduce((sum, stones) => sum + stones, 0);
-        const player2Stones = this.board.slice(this.pitCount + 1, this.pitCount * 2 + 1).reduce((sum, stones) => sum + stones, 0);
-
-        if (player1Stones === 0 || player2Stones === 0) {
-            // Game over - collect remaining stones
-            const player1Store = this.pitCount;
-            const player2Store = this.pitCount * 2 + 1;
-
-            this.board[player1Store] += player1Stones;
-            this.board[player2Store] += player2Stones;
-
-            // Clear all pits
-            for (let i = 0; i < this.pitCount; i++) {
-                this.board[i] = 0;
-                this.board[i + this.pitCount + 1] = 0;
-            }
-
-            // Determine winner
-            if (this.board[player1Store] > this.board[player2Store]) {
-                this.winner = 'PLAYER1';
-            } else if (this.board[player2Store] > this.board[player1Store]) {
-                this.winner = 'PLAYER2';
-            } else {
-                this.winner = null; // Draw
-            }
-
-            this.endGame();
-        }
-    }
-
-    private endGame() {
-        this.stopTimer();
-        this.gameState = 'RESULT';
-        this.notifyStateChange();
-    }
-
-    // Getters
-    getBoard(): number[] {
-        return [...this.board];
-    }
-
-    getCurrentPlayer(): Player {
-        return this.currentPlayer;
-    }
-
-    getState(): GameState {
-        return this.gameState;
-    }
-
-    getWinner(): Player | null {
-        return this.winner;
-    }
-
-    getMoves(): Move[] {
-        return [...this.moveHistory];
-    }
-
-    getElapsedTime(): number {
-        return this.elapsedTime;
-    }
-
-    getPlayerScore(player: Player): number {
-        const storeIndex = player === 'PLAYER1' ? this.pitCount : this.pitCount * 2 + 1;
-        return this.board[storeIndex];
-    }
-
-
-    // Event listeners
-    onStateChange(listener: (state: GameState) => void) {
-        this.stateChangeListeners.push(listener);
-    }
-
-    onMove(listener: (move: Move) => void) {
-        this.moveListeners.push(listener);
-    }
-
-    onBoardUpdate(listener: () => void) {
-        this.boardUpdateListeners.push(listener);
-    }
-
-    onAIMove(listener: () => void) {
-        this.aiMoveListeners.push(listener);
-    }
-
-    onTimerUpdate(listener: (elapsed: number) => void) {
-        this.timerUpdateListeners.push(listener);
-    }
-
-    private notifyStateChange() {
-        this.stateChangeListeners.forEach(listener => listener(this.gameState));
-    }
-
-    private notifyMove(move: Move) {
-        this.moveListeners.forEach(listener => listener(move));
-    }
-
-    private notifyBoardUpdate() {
-        this.boardUpdateListeners.forEach(listener => listener());
-    }
-
-    private notifyAIMove() {
-        this.aiMoveListeners.forEach(listener => listener());
-    }
-
-    private notifyTimerUpdate() {
-        this.timerUpdateListeners.forEach(listener => listener(this.elapsedTime));
-    }
+  private notifyTimerUpdate() {
+    this.timerUpdateListeners.forEach((listener) => listener(this.elapsedTime));
+  }
 }
 
 export const game = new MancalaGame();

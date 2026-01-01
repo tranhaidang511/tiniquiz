@@ -1,57 +1,57 @@
 export const en = {
-    ui: {
-        // Title
-        gameTitle: 'Chess',
+  ui: {
+    // Title
+    gameTitle: "Chess",
 
-        // Menu
-        menuTitle: 'Game Setup',
-        startGame: 'Start Game',
+    // Menu
+    menuTitle: "Game Setup",
+    startGame: "Start Game",
 
-        // Game
-        newGame: 'New Game',
-        whiteTurn: "White's Turn",
-        blackTurn: "Black's Turn",
+    // Game
+    newGame: "New Game",
+    whiteTurn: "White's Turn",
+    blackTurn: "Black's Turn",
 
-        // Stats
-        time: 'Time',
-        moves: 'Moves',
-        totalTime: 'Time',
-        totalMoves: 'Total Moves',
+    // Stats
+    time: "Time",
+    moves: "Moves",
+    totalTime: "Time",
+    totalMoves: "Total Moves",
 
-        // Game States
-        check: 'Check!',
-        checkmate: 'Checkmate!',
-        stalemate: 'Stalemate!',
+    // Game States
+    check: "Check!",
+    checkmate: "Checkmate!",
+    stalemate: "Stalemate!",
 
-        // Result
-        gameOver: 'Game Over',
-        whiteWins: 'White Wins!',
-        blackWins: 'Black Wins!',
-        draw: 'Draw!',
-        playAgain: 'Play Again',
+    // Result
+    gameOver: "Game Over",
+    whiteWins: "White Wins!",
+    blackWins: "Black Wins!",
+    draw: "Draw!",
+    playAgain: "Play Again",
 
-        // Promotion
-        promotion: 'Promotion',
-        queen: 'Queen',
-        rook: 'Rook',
-        bishop: 'Bishop',
-        knight: 'Knight',
+    // Promotion
+    promotion: "Promotion",
+    queen: "Queen",
+    rook: "Rook",
+    bishop: "Bishop",
+    knight: "Knight",
 
-        // Game Mode
-        labelMode: 'Game Mode',
-        twoPlayers: '2 Players',
-        vsAI: 'vs AI',
-        labelDifficulty: 'Difficulty',
-        difficultyEasy: 'Easy',
-        difficultyMedium: 'Medium',
-        difficultyHard: 'Hard',
-        labelSide: 'Play As',
-        sideWhite: 'White',
-        sideBlack: 'Black',
-        aiThinking: 'AI is thinking...',
+    // Game Mode
+    labelMode: "Game Mode",
+    twoPlayers: "2 Players",
+    vsAI: "vs AI",
+    labelDifficulty: "Difficulty",
+    difficultyEasy: "Easy",
+    difficultyMedium: "Medium",
+    difficultyHard: "Hard",
+    labelSide: "Play As",
+    sideWhite: "White",
+    sideBlack: "Black",
+    aiThinking: "AI is thinking...",
 
-        highScores: 'High Scores',
-        rank: 'Rank',
-        date: 'Date',
-    }
+    highScores: "High Scores",
+    rank: "Rank",
+    date: "Date",
+  },
 };

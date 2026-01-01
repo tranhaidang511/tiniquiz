@@ -1,274 +1,273 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 /* Import common styles */
-@import url('../common/style.css');
+@import url("../common/style.css");
 
 :root {
-    /* Go board colors */
-    --board-color: #deb887;
-    --board-line: #3d2b1f;
-    --stone-black: #1a1a1a;
-    --stone-white: #f0f0f0;
+  /* Go board colors */
+  --board-color: #deb887;
+  --board-line: #3d2b1f;
+  --stone-black: #1a1a1a;
+  --stone-white: #f0f0f0;
 }
 
 #app {
-    max-width: 900px;
+  max-width: 900px;
 }
 
 /* --- Game View --- */
 .game-info {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .current-turn {
-    font-size: 1.2rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .turn-indicator {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--board-line);
-    box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
-    animation: pulse 2s ease-in-out infinite;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--board-line);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .turn-indicator.black {
-    background: var(--stone-black);
+  background: var(--stone-black);
 }
 
 .turn-indicator.white {
-    background: var(--stone-white);
+  background: var(--stone-white);
 }
 
 .move-count {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
 #board-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    aspect-ratio: 1;
-    background-color: var(--board-color);
-    box-shadow: var(--shadow);
-    border-radius: 4px;
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1;
+  background-color: var(--board-color);
+  box-shadow: var(--shadow);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 #board {
-    width: 100%;
-    height: 100%;
-    display: block;
-    cursor: crosshair;
-    filter: drop-shadow(var(--shadow-md));
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+  filter: drop-shadow(var(--shadow-md));
 }
 
 /* --- Result View --- */
 .winner-display {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-    font-size: 1.5rem;
-    font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .winner-stone {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    box-shadow: var(--shadow-md);
-    border: 3px solid var(--board-line);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-md);
+  border: 3px solid var(--board-line);
 }
 
 .winner-stone.black {
-    background: radial-gradient(circle at 30% 30%, #4a5568, var(--stone-black));
+  background: radial-gradient(circle at 30% 30%, #4a5568, var(--stone-black));
 }
 
 .winner-stone.white {
-    background: radial-gradient(circle at 30% 30%, white, var(--stone-white));
+  background: radial-gradient(circle at 30% 30%, white, var(--stone-white));
 }
 
 .game-stats {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
 }
 
 .stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .stat-label {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-primary);
 }
 
 /* --- Animations --- */
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes stonePlaced {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
 
-    50% {
-        transform: scale(1.2);
-    }
+  50% {
+    transform: scale(1.2);
+  }
 
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
 
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.05);
-    }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 .stone-animate {
-    animation: stonePlaced 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: stonePlaced 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* --- Responsive --- */
 
 @media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
+  h1 {
+    font-size: 2rem;
+  }
 
-    .card {
-        padding: 1.5rem;
-    }
+  .card {
+    padding: 1.5rem;
+  }
 
-    #board-container {
-        max-width: 400px;
-    }
+  #board-container {
+    max-width: 400px;
+  }
 
-    .game-info {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
+  .game-info {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 
-    .lang-switcher {
-        flex-direction: column;
-    }
+  .lang-switcher {
+    flex-direction: column;
+  }
 }
 
 .game-info {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .current-turn {
-    font-size: 1.2rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .turn-indicator {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid var(--board-line);
-    box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
-    animation: pulse 2s ease-in-out infinite;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--board-line);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .turn-indicator.black {
-    background: var(--stone-black);
+  background: var(--stone-black);
 }
 
 .turn-indicator.white {
-    background: var(--stone-white);
+  background: var(--stone-white);
 }
 
 .move-count {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
 #board-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    aspect-ratio: 1;
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  aspect-ratio: 1;
 }
 
 #board {
-    width: 100%;
-    height: 100%;
-    display: block;
-    cursor: crosshair;
-    filter: drop-shadow(var(--shadow-md));
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+  filter: drop-shadow(var(--shadow-md));
 }
 
 .last-move {
-    stroke: #ef4444 !important;
-    /* Red border */
-    stroke-width: 3px !important;
-    filter: drop-shadow(0 0 4px #ef4444);
+  stroke: #ef4444 !important;
+  /* Red border */
+  stroke-width: 3px !important;
+  filter: drop-shadow(0 0 4px #ef4444);
 }

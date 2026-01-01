@@ -1,274 +1,274 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 /* Import common styles */
-@import url('../common/style.css');
+@import url("../common/style.css");
 
 :root {
-    --grid-line: #4a5568;
-    --cell-bg: #2d3748;
-    --cell-revealed: #1e2633;
-    --cell-hover: rgba(138, 180, 248, 0.1);
+  --grid-line: #4a5568;
+  --cell-bg: #2d3748;
+  --cell-revealed: #1e2633;
+  --cell-hover: rgba(138, 180, 248, 0.1);
 }
 
 /* --- Game View --- */
 .game-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
 }
 
 .stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .stat-label {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .stat-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--accent-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-primary);
 }
 
 /* --- Minesweeper Board --- */
 
 #board-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    overflow-x: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
 }
 
 .minesweeper-board {
-    display: grid;
-    gap: 1px;
-    background: var(--grid-line);
-    padding: 2px;
-    border-radius: 0.5rem;
-    box-shadow: var(--shadow-lg);
-    margin: 0 auto;
+  display: grid;
+  gap: 1px;
+  background: var(--grid-line);
+  padding: 2px;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-lg);
+  margin: 0 auto;
 }
 
 .cell {
-    width: var(--cell-size, 40px);
-    height: var(--cell-size, 40px);
-    background: var(--cell-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(var(--cell-size, 40px) * 0.5);
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    user-select: none;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+  width: var(--cell-size, 40px);
+  height: var(--cell-size, 40px);
+  background: var(--cell-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--cell-size, 40px) * 0.5);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .cell:hover {
-    background: var(--cell-hover);
-    transform: scale(1.05);
+  background: var(--cell-hover);
+  transform: scale(1.05);
 }
 
 .cell.revealed {
-    background: var(--cell-revealed);
-    cursor: default;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+  background: var(--cell-revealed);
+  cursor: default;
+  border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .cell.revealed:hover {
-    transform: none;
+  transform: none;
 }
 
 .cell.flagged {
-    background: var(--cell-bg);
+  background: var(--cell-bg);
 }
 
 .cell.mine {
-    background: var(--accent-secondary);
+  background: var(--accent-secondary);
 }
 
 /* Number colors */
 .cell[data-num="1"] {
-    color: #8ab4f8;
+  color: #8ab4f8;
 }
 
 .cell[data-num="2"] {
-    color: #81c995;
+  color: #81c995;
 }
 
 .cell[data-num="3"] {
-    color: #f28b82;
+  color: #f28b82;
 }
 
 .cell[data-num="4"] {
-    color: #ce93d8;
+  color: #ce93d8;
 }
 
 .cell[data-num="5"] {
-    color: #ff8a65;
+  color: #ff8a65;
 }
 
 .cell[data-num="6"] {
-    color: #4dd0e1;
+  color: #4dd0e1;
 }
 
 .cell[data-num="7"] {
-    color: #aed581;
+  color: #aed581;
 }
 
 .cell[data-num="8"] {
-    color: #ffb74d;
+  color: #ffb74d;
 }
 
 /* --- Result View --- */
 .result-message {
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-    color: var(--text-secondary);
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: var(--text-secondary);
 }
 
 .result-stats {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
 }
 
 /* --- Animations --- */
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 /* --- Responsive --- */
 
 @media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
+  h1 {
+    font-size: 2rem;
+  }
 
-    .card {
-        padding: 1.5rem;
-    }
+  .card {
+    padding: 1.5rem;
+  }
 
-    .game-header {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
+  .game-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 
-    .result-stats {
-        flex-direction: column;
-        gap: 1rem;
-    }
+  .result-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-    .difficulty-selector {
-        gap: 0.5rem;
-    }
+  .difficulty-selector {
+    gap: 0.5rem;
+  }
 
-    .diff-btn {
-        font-size: 0.9rem;
-        padding: 0.875rem 0.5rem;
-    }
+  .diff-btn {
+    font-size: 0.9rem;
+    padding: 0.875rem 0.5rem;
+  }
 
-    .cell {
-        width: 30px;
-        height: 30px;
-        font-size: 0.8rem;
-    }
+  .cell {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .cell {
-        width: 20px;
-        height: 20px;
-        font-size: 0.7rem;
-    }
+  .cell {
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+  }
 
-    .minesweeper-board[style*="grid-template-columns: repeat(10"] .cell {
-        width: 25px;
-        height: 25px;
-    }
+  .minesweeper-board[style*="grid-template-columns: repeat(10"] .cell {
+    width: 25px;
+    height: 25px;
+  }
 
-    .minesweeper-board[style*="grid-template-columns: repeat(15"] .cell {
-        width: 15px;
-        height: 15px;
-    }
+  .minesweeper-board[style*="grid-template-columns: repeat(15"] .cell {
+    width: 15px;
+    height: 15px;
+  }
 
-    .minesweeper-board[style*="grid-template-columns: repeat(20"] .cell {
-        width: 12px;
-        height: 12px;
-    }
+  .minesweeper-board[style*="grid-template-columns: repeat(20"] .cell {
+    width: 12px;
+    height: 12px;
+  }
 
-    .minesweeper-board[style*="grid-template-columns: repeat(25"] .cell {
-        width: 10px;
-        height: 10px;
-    }
+  .minesweeper-board[style*="grid-template-columns: repeat(25"] .cell {
+    width: 10px;
+    height: 10px;
+  }
 }
 
 /* Custom Setup */
 .custom-setup {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
-    animation: fadeIn 0.3s ease;
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  animation: fadeIn 0.3s ease;
 }
 
 .setup-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
 }
 
 .setup-field label {
-    font-size: 0.8rem;
-    color: var(--text-secondary);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
 }
 
 .setup-field input {
-    background: var(--bg-primary);
-    border: 1px solid var(--grid-line);
-    color: var(--text-primary);
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--grid-line);
+  color: var(--text-primary);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  width: 100%;
 }
 
 .setup-field input:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    background: var(--bg-secondary);
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: var(--bg-secondary);
 }
 
 @media (min-width: 1200px) {
-    /* Large screen adjustments if needed */
+  /* Large screen adjustments if needed */
 }

@@ -1,12 +1,12 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 import { viteSingleFile } from "vite-plugin-singlefile";
 
 export default defineConfig({
-    root: 'xiangqi',
-    base: '/xiangqi/',
-    plugins: [viteSingleFile()],
-    build: {
-        outDir: '../dist/xiangqi',
-        emptyOutDir: true
-    }
+  root: "xiangqi",
+  base: "/xiangqi/",
+  plugins: [viteSingleFile()],
+  build: {
+    outDir: "../dist/xiangqi",
+    emptyOutDir: true,
+  },
 });

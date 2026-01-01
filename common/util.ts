@@ -1,77 +1,77 @@
 class Util {
-    formatTime(milliseconds: number): string {
-        const totalSeconds = Math.floor(milliseconds / 1000);
-        const seconds = totalSeconds % 60;
-        var minutes = Math.floor(totalSeconds / 60);
-        if (minutes < 60) {
-            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        }
-        const hours = Math.floor(minutes / 60);
-        minutes = minutes % 60;
-        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  formatTime(milliseconds: number): string {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const seconds = totalSeconds % 60;
+    let minutes = Math.floor(totalSeconds / 60);
+    if (minutes < 60) {
+      return `${minutes}:${seconds.toString().padStart(2, "0")}`;
     }
+    const hours = Math.floor(minutes / 60);
+    minutes = minutes % 60;
+    return `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  }
 
-    formatDate(date: number | string, language: 'en' | 'ja' | 'vi' | 'zh'): string {
-        if (typeof date === 'number') {
-            const localeMap: Record<string, string> = {
-                'vi': 'vi-VN',
-                'ja': 'ja-JP',
-                'zh': 'zh-CN',
-                'ar': 'ar-SA',
-                'en': 'en-US'
-            };
-            const locale = localeMap[language] || 'en-US';
-            return new Date(date).toLocaleDateString(locale);
-        }
-        return date as string;
+  formatDate(date: number | string, language: "en" | "ja" | "vi" | "zh"): string {
+    if (typeof date === "number") {
+      const localeMap: Record<string, string> = {
+        vi: "vi-VN",
+        ja: "ja-JP",
+        zh: "zh-CN",
+        ar: "ar-SA",
+        en: "en-US",
+      };
+      const locale = localeMap[language] || "en-US";
+      return new Date(date).toLocaleDateString(locale);
     }
+    return date;
+  }
 
-    /**
-     * Generic high score manager
-     * Saves a high score entry with automatic sorting and trimming
-     * @param key The localStorage key for this high score list
-     * @param newScore The new score entry to add
-     * @param sortFn Custom sort function (lower return value = better score)
-     * @param maxScores Maximum number of scores to keep (default: 5)
-     */
-    saveHighScore<T extends { date: number | string }>(
-        key: string,
-        newScore: T,
-        sortFn: (a: T, b: T) => number,
-        maxScores: number = 5
-    ): void {
-        try {
-            const existing = localStorage.getItem(key);
-            let scores: T[] = existing ? JSON.parse(existing) : [];
+  /**
+   * Generic high score manager
+   * Saves a high score entry with automatic sorting and trimming
+   * @param key The localStorage key for this high score list
+   * @param newScore The new score entry to add
+   * @param sortFn Custom sort function (lower return value = better score)
+   * @param maxScores Maximum number of scores to keep (default: 5)
+   */
+  saveHighScore<T extends { date: number | string }>(
+    key: string,
+    newScore: T,
+    sortFn: (a: T, b: T) => number,
+    maxScores: number = 5
+  ): void {
+    try {
+      const existing = localStorage.getItem(key);
+      let scores: T[] = existing ? JSON.parse(existing) : [];
 
-            scores.push(newScore);
+      scores.push(newScore);
 
-            // Sort using custom function
-            scores.sort(sortFn);
+      // Sort using custom function
+      scores.sort(sortFn);
 
-            // Keep only top scores
-            scores = scores.slice(0, maxScores);
+      // Keep only top scores
+      scores = scores.slice(0, maxScores);
 
-            localStorage.setItem(key, JSON.stringify(scores));
-        } catch (e) {
-            console.error(`Failed to save high score (key: ${key}):`, e);
-        }
+      localStorage.setItem(key, JSON.stringify(scores));
+    } catch (e) {
+      console.error(`Failed to save high score (key: ${key}):`, e);
     }
+  }
 
-    /**
-     * Load high scores from localStorage
-     * @param key The localStorage key for this high score list
-     * @returns Array of high scores, or empty array if none found
-     */
-    getHighScores<T>(key: string): T[] {
-        try {
-            const existing = localStorage.getItem(key);
-            return existing ? JSON.parse(existing) : [];
-        } catch (e) {
-            console.error(`Failed to load high scores (key: ${key}):`, e);
-            return [];
-        }
+  /**
+   * Load high scores from localStorage
+   * @param key The localStorage key for this high score list
+   * @returns Array of high scores, or empty array if none found
+   */
+  getHighScores<T>(key: string): T[] {
+    try {
+      const existing = localStorage.getItem(key);
+      return existing ? JSON.parse(existing) : [];
+    } catch (e) {
+      console.error(`Failed to load high scores (key: ${key}):`, e);
+      return [];
     }
+  }
 }
 
 export const util = new Util();

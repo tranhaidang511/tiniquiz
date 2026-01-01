@@ -1,21 +1,21 @@
-import './style.css';
-import { game } from './Game';
-import type { GameState, Piece, GameMode, Player } from './Game';
-import { Localization } from '../common/Localization';
-import type { Language } from '../common/Localization';
-import { Consent } from '../common/Consent';
-import { util } from '../common/util';
+import "./style.css";
+import { game } from "./Game";
+import type { GameState, Piece, GameMode, Player } from "./Game";
+import { Localization } from "../common/Localization";
+import type { Language } from "../common/Localization";
+import { Consent } from "../common/Consent";
+import { util } from "../common/util";
 
-import { en } from './i18n/en';
-import { ja } from './i18n/ja';
-import { vi } from './i18n/vi';
-import { zh } from './i18n/zh';
-import { ar } from './i18n/ar';
+import { en } from "./i18n/en";
+import { ja } from "./i18n/ja";
+import { vi } from "./i18n/vi";
+import { zh } from "./i18n/zh";
+import { ar } from "./i18n/ar";
 
 interface HighScore {
-    moves: number;
-    time: number;
-    date: number | string;
+  moves: number;
+  time: number;
+  date: number | string;
 }
 
 let lastScoreDate: number | null = null;
@@ -24,371 +24,375 @@ let lastScoreDate: number | null = null;
 new Consent();
 
 // Initialize Localization
-const savedLang = localStorage.getItem('language') as Language | null;
-const localization = new Localization({ en, ja, vi, zh, ar }, savedLang || 'en');
+const savedLang = localStorage.getItem("language") as Language | null;
+const localization = new Localization({ en, ja, vi, zh, ar }, savedLang || "en");
 
 // --- UI Rendering ---
 
 function renderApp() {
-    setupEventListeners();
-    updateTexts();
+  setupEventListeners();
+  updateTexts();
 
-    // Set active language button
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
-    });
+  // Set active language button
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", (btn as HTMLElement).dataset.lang === localization.language);
+  });
 
-    loadSetup();
+  loadSetup();
 }
 
 // --- Setup Persistence ---
 
 const saveSetup = () => {
-    const modeBtn = document.querySelector('.mode-btn.active') as HTMLElement;
+  const modeBtn = document.querySelector(".mode-btn.active") as HTMLElement;
 
-    const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
+  const sideBtn = document.querySelector(".side-btn.active") as HTMLElement;
 
-    if (modeBtn && sideBtn) {
-        const setup = {
-            mode: modeBtn.dataset.mode,
-            side: sideBtn.dataset.side
-        };
-        localStorage.setItem('chess_setup', JSON.stringify(setup));
-    }
+  if (modeBtn && sideBtn) {
+    const setup = {
+      mode: modeBtn.dataset.mode,
+      side: sideBtn.dataset.side,
+    };
+    localStorage.setItem("chess_setup", JSON.stringify(setup));
+  }
 };
 
 const loadSetup = () => {
-    try {
-        const saved = localStorage.getItem('chess_setup');
-        if (saved) {
-            const { mode, side } = JSON.parse(saved);
+  try {
+    const saved = localStorage.getItem("chess_setup");
+    if (saved) {
+      const { mode, side } = JSON.parse(saved);
 
-            // Restore Mode
-            if (mode) {
-                document.querySelectorAll('.mode-btn').forEach(btn => {
-                    const btnMode = (btn as HTMLElement).dataset.mode;
-                    if (btnMode === mode) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
+      // Restore Mode
+      if (mode) {
+        document.querySelectorAll(".mode-btn").forEach((btn) => {
+          const btnMode = (btn as HTMLElement).dataset.mode;
+          if (btnMode === mode) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
 
-                // Show/hide difficulty and side sections based on mode
+        // Show/hide difficulty and side sections based on mode
 
-                const sideSection = document.getElementById('side-section');
-                if (mode === 'VS_AI') {
-                    // diffSection?.classList.remove('hidden'); // Removed difficulty
-                    sideSection?.classList.remove('hidden');
-                } else {
-                    // diffSection?.classList.add('hidden'); // Removed difficulty
-                    sideSection?.classList.add('hidden');
-                }
-            }
-
-
-
-            // Restore Side
-            if (side) {
-                document.querySelectorAll('.side-btn').forEach(btn => {
-                    const btnSide = (btn as HTMLElement).dataset.side;
-                    if (btnSide === side) {
-                        btn.classList.add('active');
-                    } else {
-                        btn.classList.remove('active');
-                    }
-                });
-            }
+        const sideSection = document.getElementById("side-section");
+        if (mode === "VS_AI") {
+          // diffSection?.classList.remove('hidden'); // Removed difficulty
+          sideSection?.classList.remove("hidden");
+        } else {
+          // diffSection?.classList.add('hidden'); // Removed difficulty
+          sideSection?.classList.add("hidden");
         }
-    } catch (e) {
-        console.error('Failed to load chess setup:', e);
+      }
+
+      // Restore Side
+      if (side) {
+        document.querySelectorAll(".side-btn").forEach((btn) => {
+          const btnSide = (btn as HTMLElement).dataset.side;
+          if (btnSide === side) {
+            btn.classList.add("active");
+          } else {
+            btn.classList.remove("active");
+          }
+        });
+      }
     }
+  } catch (e) {
+    console.error("Failed to load chess setup:", e);
+  }
 };
 
 // --- Event Listeners ---
 
 function setupEventListeners() {
-    // Home button
-    const homeBtn = document.getElementById('home-btn');
-    homeBtn?.addEventListener('click', () => {
-        window.location.href = '/';
+  // Home button
+  const homeBtn = document.getElementById("home-btn");
+  homeBtn?.addEventListener("click", () => {
+    window.location.href = "/";
+  });
+
+  // Language switcher
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const lang = (e.target as HTMLElement).dataset.lang as Language;
+      localization.setLanguage(lang);
     });
+  });
 
-    // Language switcher
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const lang = (e.target as HTMLElement).dataset.lang as Language;
-            localization.setLanguage(lang);
-        });
+  // New game
+  const newGameBtn = document.getElementById("new-game-btn");
+  newGameBtn?.addEventListener("click", () => {
+    game.restart();
+  });
+
+  // Restart
+  const restartBtn = document.getElementById("restart-btn");
+  restartBtn?.addEventListener("click", () => {
+    game.restart();
+  });
+
+  // Board click
+  const board = document.getElementById("board");
+  board?.addEventListener("click", handleBoardClick);
+
+  // Game mode selection
+  const twoPlayersBtn = document.getElementById("mode-two-player");
+  const vsAiBtn = document.getElementById("mode-vs-ai");
+
+  const sideSection = document.getElementById("side-section");
+  twoPlayersBtn?.addEventListener("click", () => {
+    twoPlayersBtn.classList.add("active");
+    vsAiBtn?.classList.remove("active");
+    // difficultySection?.classList.add('hidden');
+    sideSection?.classList.add("hidden");
+  });
+  vsAiBtn?.addEventListener("click", () => {
+    vsAiBtn.classList.add("active");
+    twoPlayersBtn?.classList.remove("active");
+    // difficultySection?.classList.remove('hidden');
+    sideSection?.classList.remove("hidden");
+  });
+
+  // Side selection
+  const sideBtns = document.querySelectorAll(".side-btn");
+  sideBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      sideBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
     });
+  });
+  // Start game
+  const startBtn = document.getElementById("start-btn");
+  startBtn?.addEventListener("click", () => {
+    saveSetup();
+    const modeBtn = document.querySelector(".mode-btn.active");
+    const mode = (modeBtn?.getAttribute("data-mode") as GameMode) || "TWO_PLAYER";
 
-    // New game
-    const newGameBtn = document.getElementById('new-game-btn');
-    newGameBtn?.addEventListener('click', () => {
-        game.restart();
-    });
+    let aiSide: Player | null = null;
+    // let difficulty: Difficulty = 'MEDIUM'; // Removed
 
-    // Restart
-    const restartBtn = document.getElementById('restart-btn');
-    restartBtn?.addEventListener('click', () => {
-        game.restart();
-    });
+    if (mode === "VS_AI") {
+      const sideBtn = document.querySelector(".side-btn.active") as HTMLElement;
+      const selectedSide = sideBtn?.dataset.side;
+      aiSide = selectedSide === "white" ? "BLACK" : "WHITE"; // AI plays opposite
 
-    // Board click
-    const board = document.getElementById('board');
-    board?.addEventListener('click', handleBoardClick);
+      // const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
+      // difficulty = (diffBtn?.dataset.difficulty || 'MEDIUM') as Difficulty;
+    }
 
-    // Game mode selection
-    const twoPlayersBtn = document.getElementById('mode-two-player');
-    const vsAiBtn = document.getElementById('mode-vs-ai');
-
-    const sideSection = document.getElementById('side-section');
-    twoPlayersBtn?.addEventListener('click', () => {
-        twoPlayersBtn.classList.add('active');
-        vsAiBtn?.classList.remove('active');
-        // difficultySection?.classList.add('hidden');
-        sideSection?.classList.add('hidden');
-    });
-    vsAiBtn?.addEventListener('click', () => {
-        vsAiBtn.classList.add('active');
-        twoPlayersBtn?.classList.remove('active');
-        // difficultySection?.classList.remove('hidden');
-        sideSection?.classList.remove('hidden');
-    });
-
-    // Side selection
-    const sideBtns = document.querySelectorAll('.side-btn');
-    sideBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            sideBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        });
-    });
-    // Start game
-    const startBtn = document.getElementById('start-btn');
-    startBtn?.addEventListener('click', () => {
-        saveSetup();
-        const modeBtn = document.querySelector('.mode-btn.active');
-        const mode = (modeBtn?.getAttribute('data-mode') as GameMode) || 'TWO_PLAYER';
-
-        let aiSide: Player | null = null;
-        // let difficulty: Difficulty = 'MEDIUM'; // Removed
-
-        if (mode === 'VS_AI') {
-            const sideBtn = document.querySelector('.side-btn.active') as HTMLElement;
-            const selectedSide = sideBtn?.dataset.side;
-            aiSide = selectedSide === 'white' ? 'BLACK' : 'WHITE'; // AI plays opposite
-
-            // const diffBtn = document.querySelector('.difficulty-btn.active') as HTMLElement;
-            // difficulty = (diffBtn?.dataset.difficulty || 'MEDIUM') as Difficulty;
-        }
-
-        game.setGameMode(mode);
-        game.setAISide(aiSide);
-        // game.setDifficulty(difficulty); // Removed
-        lastScoreDate = null;
-        game.start();
-    });
+    game.setGameMode(mode);
+    game.setAISide(aiSide);
+    // game.setDifficulty(difficulty); // Removed
+    lastScoreDate = null;
+    game.start();
+  });
 }
 
 // --- Board Rendering ---
 
 function renderBoard() {
-    const svg = document.getElementById('board') as unknown as SVGSVGElement;
-    if (!svg) return;
+  const svg = document.getElementById("board") as unknown as SVGSVGElement;
+  if (!svg) return;
 
-    svg.innerHTML = '';
-    const squareSize = 100;
-    const padding = 40; // Padding for coordinates
+  svg.innerHTML = "";
+  const squareSize = 100;
+  const padding = 40; // Padding for coordinates
 
-    // Check if we need to flip the board (User is BLACK)
-    // In VS_AI, if AI is WHITE (first), then User is BLACK (second).
-    const isFlipped = game.getGameMode() === 'VS_AI' && game.getAIPlayer() === 'WHITE';
+  // Check if we need to flip the board (User is BLACK)
+  // In VS_AI, if AI is WHITE (first), then User is BLACK (second).
+  const isFlipped = game.getGameMode() === "VS_AI" && game.getAIPlayer() === "WHITE";
 
-    // Set viewBox to include padding
-    // Board is 800x800, plus 40px padding on all sides = 880x880
-    svg.setAttribute('viewBox', '0 0 880 880');
+  // Set viewBox to include padding
+  // Board is 800x800, plus 40px padding on all sides = 880x880
+  svg.setAttribute("viewBox", "0 0 880 880");
 
-    const getVisualPos = (row: number, col: number) => {
-        if (isFlipped) {
-            return {
-                row: 7 - row,
-                col: 7 - col
-            };
-        }
-        return { row, col };
-    };
-
-    // Draw squares
-    for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-            const visual = getVisualPos(row, col);
-            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', (visual.col * squareSize + padding).toString());
-            rect.setAttribute('y', (visual.row * squareSize + padding).toString());
-            rect.setAttribute('width', squareSize.toString());
-            rect.setAttribute('height', squareSize.toString());
-
-            const isDark = (row + col) % 2 === 1;
-            rect.setAttribute('class', isDark ? 'square dark' : 'square light');
-
-            // Add data attributes for click handling
-            rect.dataset.row = row.toString();
-            rect.dataset.col = col.toString();
-
-            svg.appendChild(rect);
-        }
+  const getVisualPos = (row: number, col: number) => {
+    if (isFlipped) {
+      return {
+        row: 7 - row,
+        col: 7 - col,
+      };
     }
+    return { row, col };
+  };
 
-    // Draw coordinates
-    // Column labels (a-h)
-    for (let i = 0; i < 8; i++) {
-        // If flipped, labels are h-a (7-0). i goes 0-7.
-        // Standard: i=0 -> 'a'. Flipped: i=0 -> 'h' (which is charCode 104) -> wait.
-        // The visual column 'i' should display the correct file char.
-        // Visual column 0 (leftmost) corresponds to:
-        // Normal: File 'a' (col 0).
-        // Flipped: File 'h' (col 7).
+  // Draw squares
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const visual = getVisualPos(row, col);
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", (visual.col * squareSize + padding).toString());
+      rect.setAttribute("y", (visual.row * squareSize + padding).toString());
+      rect.setAttribute("width", squareSize.toString());
+      rect.setAttribute("height", squareSize.toString());
 
-        const displayChar = isFlipped ? String.fromCharCode(104 - i) : String.fromCharCode(97 + i);
+      const isDark = (row + col) % 2 === 1;
+      rect.setAttribute("class", isDark ? "square dark" : "square light");
 
-        const colLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        // Center in the square column, in the top margin
-        colLabel.setAttribute('x', (i * squareSize + squareSize / 2 + padding).toString());
-        colLabel.setAttribute('y', (padding - 10).toString()); // 10px above board
-        colLabel.classList.add('coord-label');
-        colLabel.setAttribute('text-anchor', 'middle');
-        colLabel.textContent = displayChar;
-        svg.appendChild(colLabel);
+      // Add data attributes for click handling
+      rect.dataset.row = row.toString();
+      rect.dataset.col = col.toString();
 
-        // Bottom labels
-        const colLabelBottom = colLabel.cloneNode(true) as SVGTextElement;
-        colLabelBottom.setAttribute('y', (8 * squareSize + padding + 25).toString()); // 25px below board
-        svg.appendChild(colLabelBottom);
+      svg.appendChild(rect);
     }
+  }
 
-    // Row labels (1-8)
-    for (let i = 0; i < 8; i++) {
-        // Visual row 'i' (0 is top).
-        // Standard: Row 0 is Rank 8. So '8 - i'.
-        // Flipped: Row 0 is Rank 1. So '1 + i'.
-        const displayNum = isFlipped ? (1 + i).toString() : (8 - i).toString();
+  // Draw coordinates
+  // Column labels (a-h)
+  for (let i = 0; i < 8; i++) {
+    // If flipped, labels are h-a (7-0). i goes 0-7.
+    // Standard: i=0 -> 'a'. Flipped: i=0 -> 'h' (which is charCode 104) -> wait.
+    // The visual column 'i' should display the correct file char.
+    // Visual column 0 (leftmost) corresponds to:
+    // Normal: File 'a' (col 0).
+    // Flipped: File 'h' (col 7).
 
-        const rowLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        // Center in the square row, in the left margin
-        rowLabel.setAttribute('x', (padding - 10).toString()); // 10px left of board
-        rowLabel.setAttribute('y', (i * squareSize + squareSize / 2 + padding + 5).toString()); // +5 for vertical centering
-        rowLabel.classList.add('coord-label');
-        rowLabel.setAttribute('text-anchor', 'end');
-        rowLabel.textContent = displayNum;
-        svg.appendChild(rowLabel);
+    const displayChar = isFlipped ? String.fromCharCode(104 - i) : String.fromCharCode(97 + i);
 
-        // Right labels
-        const rowLabelRight = rowLabel.cloneNode(true) as SVGTextElement;
-        rowLabelRight.setAttribute('x', (8 * squareSize + padding + 10).toString()); // 10px right of board
-        rowLabelRight.setAttribute('text-anchor', 'start');
-        svg.appendChild(rowLabelRight);
-    }
+    const colLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    // Center in the square column, in the top margin
+    colLabel.setAttribute("x", (i * squareSize + squareSize / 2 + padding).toString());
+    colLabel.setAttribute("y", (padding - 10).toString()); // 10px above board
+    colLabel.classList.add("coord-label");
+    colLabel.setAttribute("text-anchor", "middle");
+    colLabel.textContent = displayChar;
+    svg.appendChild(colLabel);
 
-    // Highlight selected piece
-    const selectedPiece = game.getSelectedPiece();
-    if (selectedPiece) {
-        const visual = getVisualPos(selectedPiece.row, selectedPiece.col);
-        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-        rect.setAttribute('x', (visual.col * squareSize + padding).toString());
-        rect.setAttribute('y', (visual.row * squareSize + padding).toString());
-        rect.setAttribute('width', squareSize.toString());
-        rect.setAttribute('height', squareSize.toString());
-        rect.setAttribute('class', 'square selected');
-        svg.appendChild(rect);
-    }
+    // Bottom labels
+    const colLabelBottom = colLabel.cloneNode(true) as SVGTextElement;
+    colLabelBottom.setAttribute("y", (8 * squareSize + padding + 25).toString()); // 25px below board
+    svg.appendChild(colLabelBottom);
+  }
 
-    // Highlight last move
-    const lastMove = game.getLastMove();
-    if (lastMove) {
-        [lastMove.from, lastMove.to].forEach(pos => {
-            const visual = getVisualPos(pos.row, pos.col);
-            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            rect.setAttribute('x', (visual.col * squareSize + padding).toString());
-            rect.setAttribute('y', (visual.row * squareSize + padding).toString());
-            rect.setAttribute('width', squareSize.toString());
-            rect.setAttribute('height', squareSize.toString());
-            rect.setAttribute('class', 'square last-move');
-            svg.appendChild(rect);
-        });
-    }
+  // Row labels (1-8)
+  for (let i = 0; i < 8; i++) {
+    // Visual row 'i' (0 is top).
+    // Standard: Row 0 is Rank 8. So '8 - i'.
+    // Flipped: Row 0 is Rank 1. So '1 + i'.
+    const displayNum = isFlipped ? (1 + i).toString() : (8 - i).toString();
 
-    // Draw pieces
-    const board = game.getBoard();
-    board.forEach(row => {
-        row.forEach(piece => {
-            if (piece) {
-                drawPiece(svg, piece, squareSize, padding, isFlipped);
-            }
-        });
+    const rowLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    // Center in the square row, in the left margin
+    rowLabel.setAttribute("x", (padding - 10).toString()); // 10px left of board
+    rowLabel.setAttribute("y", (i * squareSize + squareSize / 2 + padding + 5).toString()); // +5 for vertical centering
+    rowLabel.classList.add("coord-label");
+    rowLabel.setAttribute("text-anchor", "end");
+    rowLabel.textContent = displayNum;
+    svg.appendChild(rowLabel);
+
+    // Right labels
+    const rowLabelRight = rowLabel.cloneNode(true) as SVGTextElement;
+    rowLabelRight.setAttribute("x", (8 * squareSize + padding + 10).toString()); // 10px right of board
+    rowLabelRight.setAttribute("text-anchor", "start");
+    svg.appendChild(rowLabelRight);
+  }
+
+  // Highlight selected piece
+  const selectedPiece = game.getSelectedPiece();
+  if (selectedPiece) {
+    const visual = getVisualPos(selectedPiece.row, selectedPiece.col);
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", (visual.col * squareSize + padding).toString());
+    rect.setAttribute("y", (visual.row * squareSize + padding).toString());
+    rect.setAttribute("width", squareSize.toString());
+    rect.setAttribute("height", squareSize.toString());
+    rect.setAttribute("class", "square selected");
+    svg.appendChild(rect);
+  }
+
+  // Highlight last move
+  const lastMove = game.getLastMove();
+  if (lastMove) {
+    [lastMove.from, lastMove.to].forEach((pos) => {
+      const visual = getVisualPos(pos.row, pos.col);
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", (visual.col * squareSize + padding).toString());
+      rect.setAttribute("y", (visual.row * squareSize + padding).toString());
+      rect.setAttribute("width", squareSize.toString());
+      rect.setAttribute("height", squareSize.toString());
+      rect.setAttribute("class", "square last-move");
+      svg.appendChild(rect);
     });
+  }
 
-    // Draw valid moves
-    const validMoves = game.getValidMovesForSelected();
-    validMoves.forEach(move => {
-        const hasTarget = board[move.row][move.col] !== null;
-        const visual = getVisualPos(move.row, move.col);
-        const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        indicator.setAttribute('cx', (visual.col * squareSize + squareSize / 2 + padding).toString());
-        indicator.setAttribute('cy', (visual.row * squareSize + squareSize / 2 + padding).toString());
-        indicator.setAttribute('r', hasTarget ? '40' : '15');
-        indicator.classList.add('move-indicator');
-        if (hasTarget) {
-            indicator.setAttribute('fill', 'none');
-            indicator.setAttribute('stroke', 'rgba(127, 166, 80, 0.8)');
-            indicator.setAttribute('stroke-width', '8');
-        }
-        svg.appendChild(indicator);
+  // Draw pieces
+  const board = game.getBoard();
+  board.forEach((row) => {
+    row.forEach((piece) => {
+      if (piece) {
+        drawPiece(svg, piece, squareSize, padding, isFlipped);
+      }
     });
+  });
+
+  // Draw valid moves
+  const validMoves = game.getValidMovesForSelected();
+  validMoves.forEach((move) => {
+    const hasTarget = board[move.row][move.col] !== null;
+    const visual = getVisualPos(move.row, move.col);
+    const indicator = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    indicator.setAttribute("cx", (visual.col * squareSize + squareSize / 2 + padding).toString());
+    indicator.setAttribute("cy", (visual.row * squareSize + squareSize / 2 + padding).toString());
+    indicator.setAttribute("r", hasTarget ? "40" : "15");
+    indicator.classList.add("move-indicator");
+    if (hasTarget) {
+      indicator.setAttribute("fill", "none");
+      indicator.setAttribute("stroke", "rgba(127, 166, 80, 0.8)");
+      indicator.setAttribute("stroke-width", "8");
+    }
+    svg.appendChild(indicator);
+  });
 }
 
-function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding: number, isFlipped: boolean) {
-    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+function drawPiece(
+  svg: SVGSVGElement,
+  piece: Piece,
+  squareSize: number,
+  padding: number,
+  isFlipped: boolean
+) {
+  const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
 
-    let visualRow = piece.row;
-    let visualCol = piece.col;
-    if (isFlipped) {
-        visualRow = 7 - piece.row;
-        visualCol = 7 - piece.col;
-    }
+  let visualRow = piece.row;
+  let visualCol = piece.col;
+  if (isFlipped) {
+    visualRow = 7 - piece.row;
+    visualCol = 7 - piece.col;
+  }
 
-    const x = visualCol * squareSize + squareSize / 2 + padding;
-    const y = visualRow * squareSize + squareSize / 2 + padding;
-    const scale = 1; // Can adjust if needed
+  const x = visualCol * squareSize + squareSize / 2 + padding;
+  const y = visualRow * squareSize + squareSize / 2 + padding;
+  const scale = 1; // Can adjust if needed
 
-    group.setAttribute('class', `piece ${piece.player.toLowerCase()}`);
-    group.dataset.row = piece.row.toString();
-    group.dataset.col = piece.col.toString();
-    group.dataset.player = piece.player;
+  group.setAttribute("class", `piece ${piece.player.toLowerCase()}`);
+  group.dataset.row = piece.row.toString();
+  group.dataset.col = piece.col.toString();
+  group.dataset.player = piece.player;
 
-    let path = '';
+  let path = "";
 
-    switch (piece.type) {
-        case 'PAWN':
-            path = `M ${x} ${y - 20 * scale}
+  switch (piece.type) {
+    case "PAWN":
+      path = `M ${x} ${y - 20 * scale}
                     a ${12 * scale} ${12 * scale} 0 1 1 0 ${24 * scale}
                     a ${12 * scale} ${12 * scale} 0 1 1 0 -${24 * scale}
                     M ${x - 15 * scale} ${y + 15 * scale}
                     h ${30 * scale}
                     l -${5 * scale} ${10 * scale}
                     h -${20 * scale} z`;
-            break;
+      break;
 
-        case 'ROOK':
-            path = `M ${x - 20 * scale} ${y - 25 * scale}
+    case "ROOK":
+      path = `M ${x - 20 * scale} ${y - 25 * scale}
                     h ${8 * scale} v ${8 * scale} h ${8 * scale} v -${8 * scale} h ${8 * scale}
                     v ${8 * scale} h ${8 * scale} v -${8 * scale} h ${8 * scale}
                     v ${30 * scale} h ${10 * scale} v ${12 * scale} h -${60 * scale}
                     v -${12 * scale} h ${10 * scale} z`;
-            break;
+      break;
 
-        case 'KNIGHT':
-            path = `M ${x - 20 * scale} ${y + 30 * scale}
+    case "KNIGHT":
+      path = `M ${x - 20 * scale} ${y + 30 * scale}
                     h ${40 * scale}
                     l -${7 * scale} -${10 * scale}
                     q ${5 * scale} -${15 * scale} ${7 * scale} -${25 * scale}
@@ -402,10 +406,10 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding
                     L ${x - 13 * scale} ${y + 20 * scale}
                     l -${7 * scale} ${10 * scale}
                     z`;
-            break;
+      break;
 
-        case 'BISHOP':
-            path = `M ${x} ${y - 30 * scale}
+    case "BISHOP":
+      path = `M ${x} ${y - 30 * scale}
                     a ${8 * scale} ${8 * scale} 0 1 1 0 ${16 * scale}
                     a ${8 * scale} ${8 * scale} 0 1 1 0 -${16 * scale}
                     M ${x - 5 * scale} ${y - 15 * scale}
@@ -416,10 +420,10 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding
                     h ${40 * scale}
                     l -${5 * scale} ${10 * scale}
                     h -${30 * scale} z`;
-            break;
+      break;
 
-        case 'QUEEN':
-            path = `M ${x} ${y - 30 * scale}
+    case "QUEEN":
+      path = `M ${x} ${y - 30 * scale}
                     l -${5 * scale} ${10 * scale}
                     l -${10 * scale} -${5 * scale}
                     l -${5 * scale} ${10 * scale}
@@ -437,10 +441,10 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding
                     h ${50 * scale}
                     l -${5 * scale} ${8 * scale}
                     h -${40 * scale} z`;
-            break;
+      break;
 
-        case 'KING':
-            path = `M ${x} ${y - 35 * scale}
+    case "KING":
+      path = `M ${x} ${y - 35 * scale}
                     v ${10 * scale}
                     h -${5 * scale}
                     v ${5 * scale}
@@ -460,308 +464,317 @@ function drawPiece(svg: SVGSVGElement, piece: Piece, squareSize: number, padding
                     h ${40 * scale}
                     l -${5 * scale} ${8 * scale}
                     h -${30 * scale} z`;
-            break;
-    }
+      break;
+  }
 
-    const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    pathElement.setAttribute('d', path);
-    group.appendChild(pathElement);
-    svg.appendChild(group);
+  const pathElement = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  pathElement.setAttribute("d", path);
+  group.appendChild(pathElement);
+  svg.appendChild(group);
 }
 
 function handleBoardClick(e: MouseEvent) {
-    // Don't allow interaction during AI's turn
-    if (game.getGameMode() === 'VS_AI' && game.getAIPlayer() === game.getCurrentPlayer()) {
-        return;
-    }
+  // Don't allow interaction during AI's turn
+  if (game.getGameMode() === "VS_AI" && game.getAIPlayer() === game.getCurrentPlayer()) {
+    return;
+  }
 
-    const svg = document.getElementById('board') as unknown as SVGSVGElement;
-    if (!svg) return;
+  const svg = document.getElementById("board") as unknown as SVGSVGElement;
+  if (!svg) return;
 
-    const rect = svg.getBoundingClientRect();
-    const padding = 40; // Must match renderBoard padding
-    // Calculate click position relative to the board area (excluding padding)
-    // The SVG is scaled by CSS, so we need to map client coordinates to SVG coordinates
-    // However, since we use viewBox, the internal units are 880x880.
-    // We need to determine the scale factor between screen pixels and SVG units.
+  const rect = svg.getBoundingClientRect();
+  const padding = 40; // Must match renderBoard padding
+  // Calculate click position relative to the board area (excluding padding)
+  // The SVG is scaled by CSS, so we need to map client coordinates to SVG coordinates
+  // However, since we use viewBox, the internal units are 880x880.
+  // We need to determine the scale factor between screen pixels and SVG units.
 
-    const scaleX = 880 / rect.width;
-    const scaleY = 880 / rect.height;
+  const scaleX = 880 / rect.width;
+  const scaleY = 880 / rect.height;
 
-    const clickX = (e.clientX - rect.left) * scaleX;
-    const clickY = (e.clientY - rect.top) * scaleY;
+  const clickX = (e.clientX - rect.left) * scaleX;
+  const clickY = (e.clientY - rect.top) * scaleY;
 
-    // Adjust for padding
-    const boardX = clickX - padding;
-    const boardY = clickY - padding;
+  // Adjust for padding
+  const boardX = clickX - padding;
+  const boardY = clickY - padding;
 
-    const squareSize = 100;
+  const squareSize = 100;
 
-    // Check if we need to flip the board (User is BLACK)
-    const isFlipped = game.getGameMode() === 'VS_AI' && game.getAIPlayer() === 'WHITE';
+  // Check if we need to flip the board (User is BLACK)
+  const isFlipped = game.getGameMode() === "VS_AI" && game.getAIPlayer() === "WHITE";
 
-    let col = Math.floor(boardX / squareSize);
-    let row = Math.floor(boardY / squareSize);
+  let col = Math.floor(boardX / squareSize);
+  let row = Math.floor(boardY / squareSize);
 
-    if (isFlipped) {
-        col = 7 - col;
-        row = 7 - row;
-    }
+  if (isFlipped) {
+    col = 7 - col;
+    row = 7 - row;
+  }
 
-    // Check if click is within the board grid
-    if (row >= 0 && row < 8 && col >= 0 && col < 8) {
-        game.selectPiece(row, col);
-    }
+  // Check if click is within the board grid
+  if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+    game.selectPiece(row, col);
+  }
 }
 
 function updateGameInfo() {
-    const currentPlayer = game.getCurrentPlayer();
-    const turnIndicator = document.querySelector('.turn-indicator');
-    const turnText = document.getElementById('turn-text');
-    const gameState = game.getState();
+  const currentPlayer = game.getCurrentPlayer();
+  const turnIndicator = document.querySelector(".turn-indicator");
+  const turnText = document.getElementById("turn-text");
+  const gameState = game.getState();
 
-    if (turnIndicator && turnText) {
-        turnIndicator.className = `turn-indicator ${currentPlayer.toLowerCase()}`;
+  if (turnIndicator && turnText) {
+    turnIndicator.className = `turn-indicator ${currentPlayer.toLowerCase()}`;
 
-        if (gameState === 'CHECK') {
-            turnText.textContent = `${localization.getUIText(currentPlayer === 'WHITE' ? 'whiteTurn' : 'blackTurn')} - ${localization.getUIText('check')}`;
-        } else {
-            turnText.textContent = localization.getUIText(currentPlayer === 'WHITE' ? 'whiteTurn' : 'blackTurn');
-        }
+    if (gameState === "CHECK") {
+      turnText.textContent = `${localization.getUIText(currentPlayer === "WHITE" ? "whiteTurn" : "blackTurn")} - ${localization.getUIText("check")}`;
+    } else {
+      turnText.textContent = localization.getUIText(
+        currentPlayer === "WHITE" ? "whiteTurn" : "blackTurn"
+      );
     }
+  }
 
-    // Update timer
-    const timer = document.getElementById('game-timer');
-    if (timer) {
-        timer.textContent = util.formatTime(game.getElapsedTime());
-    }
+  // Update timer
+  const timer = document.getElementById("game-timer");
+  if (timer) {
+    timer.textContent = util.formatTime(game.getElapsedTime());
+  }
 
-    // Update move count
-    const moveNumber = document.getElementById('move-number');
-    if (moveNumber) {
-        moveNumber.textContent = game.getMoveCount().toString();
-    }
+  // Update move count
+  const moveNumber = document.getElementById("move-number");
+  if (moveNumber) {
+    moveNumber.textContent = game.getMoveCount().toString();
+  }
 }
 
 // --- View Management ---
 
 function showView(viewId: string) {
-    const views = ['menu-view', 'game-view', 'result-view'];
-    views.forEach(id => {
-        const view = document.getElementById(id);
-        if (view) {
-            view.classList.toggle('hidden', id !== viewId);
-        }
-    });
+  const views = ["menu-view", "game-view", "result-view"];
+  views.forEach((id) => {
+    const view = document.getElementById(id);
+    if (view) {
+      view.classList.toggle("hidden", id !== viewId);
+    }
+  });
 }
 
 // --- Text Updates ---
 
 function updateTexts() {
-    document.getElementById('game-title')!.textContent = localization.getUIText('gameTitle');
-    document.getElementById('menu-title')!.textContent = localization.getUIText('menuTitle');
-    document.getElementById('start-btn')!.textContent = localization.getUIText('startGame');
-    document.getElementById('new-game-btn')!.textContent = localization.getUIText('newGame');
-    document.getElementById('label-time')!.textContent = localization.getUIText('time');
-    document.getElementById('label-moves')!.textContent = localization.getUIText('moves');
-    document.getElementById('result-title')!.textContent = localization.getUIText('gameOver');
-    document.getElementById('label-total-time')!.textContent = localization.getUIText('totalTime');
-    document.getElementById('label-total-moves')!.textContent = localization.getUIText('totalMoves');
-    document.getElementById('restart-btn')!.textContent = localization.getUIText('playAgain');
-    document.getElementById('promotion-title')!.textContent = localization.getUIText('promotion');
-    document.getElementById('promotion-queen')!.textContent = localization.getUIText('queen');
-    document.getElementById('promotion-rook')!.textContent = localization.getUIText('rook');
-    document.getElementById('promotion-bishop')!.textContent = localization.getUIText('bishop');
-    document.getElementById('promotion-knight')!.textContent = localization.getUIText('knight');
-    // Update game mode labels
-    document.getElementById('label-mode')!.textContent = localization.getUIText('labelMode');
-    document.getElementById('mode-two-player')!.textContent = localization.getUIText('twoPlayers');
-    document.getElementById('mode-vs-ai')!.textContent = localization.getUIText('vsAI');
+  document.getElementById("game-title")!.textContent = localization.getUIText("gameTitle");
+  document.getElementById("menu-title")!.textContent = localization.getUIText("menuTitle");
+  document.getElementById("start-btn")!.textContent = localization.getUIText("startGame");
+  document.getElementById("new-game-btn")!.textContent = localization.getUIText("newGame");
+  document.getElementById("label-time")!.textContent = localization.getUIText("time");
+  document.getElementById("label-moves")!.textContent = localization.getUIText("moves");
+  document.getElementById("result-title")!.textContent = localization.getUIText("gameOver");
+  document.getElementById("label-total-time")!.textContent = localization.getUIText("totalTime");
+  document.getElementById("label-total-moves")!.textContent = localization.getUIText("totalMoves");
+  document.getElementById("restart-btn")!.textContent = localization.getUIText("playAgain");
+  document.getElementById("promotion-title")!.textContent = localization.getUIText("promotion");
+  document.getElementById("promotion-queen")!.textContent = localization.getUIText("queen");
+  document.getElementById("promotion-rook")!.textContent = localization.getUIText("rook");
+  document.getElementById("promotion-bishop")!.textContent = localization.getUIText("bishop");
+  document.getElementById("promotion-knight")!.textContent = localization.getUIText("knight");
+  // Update game mode labels
+  document.getElementById("label-mode")!.textContent = localization.getUIText("labelMode");
+  document.getElementById("mode-two-player")!.textContent = localization.getUIText("twoPlayers");
+  document.getElementById("mode-vs-ai")!.textContent = localization.getUIText("vsAI");
 
-    document.getElementById('label-side')!.textContent = localization.getUIText('labelSide');
-    document.getElementById('side-white')!.textContent = localization.getUIText('sideWhite');
-    document.getElementById('side-black')!.textContent = localization.getUIText('sideBlack');
-    // High Score Table Headers
-    document.getElementById('high-scores-title')!.textContent = localization.getUIText('highScores');
-    document.getElementById('th-rank')!.textContent = localization.getUIText('rank');
-    document.getElementById('th-moves')!.textContent = localization.getUIText('moves');
-    document.getElementById('th-time')!.textContent = localization.getUIText('time');
-    document.getElementById('th-date')!.textContent = localization.getUIText('date');
-    updateGameInfo();
+  document.getElementById("label-side")!.textContent = localization.getUIText("labelSide");
+  document.getElementById("side-white")!.textContent = localization.getUIText("sideWhite");
+  document.getElementById("side-black")!.textContent = localization.getUIText("sideBlack");
+  // High Score Table Headers
+  document.getElementById("high-scores-title")!.textContent = localization.getUIText("highScores");
+  document.getElementById("th-rank")!.textContent = localization.getUIText("rank");
+  document.getElementById("th-moves")!.textContent = localization.getUIText("moves");
+  document.getElementById("th-time")!.textContent = localization.getUIText("time");
+  document.getElementById("th-date")!.textContent = localization.getUIText("date");
+  updateGameInfo();
 }
 
 // --- Game Event Handlers ---
 
 game.onStateChange((state: GameState) => {
-
-    if (state === 'MENU') {
-        showView('menu-view');
-    } else if (state === 'PLAYING' || state === 'CHECK') {
-        showView('game-view');
-        renderBoard();
-        updateGameInfo();
-    } else if (state === 'RESULT') {
-        showView('result-view');
-        saveHighScore();
-        displayResult();
-    }
+  if (state === "MENU") {
+    showView("menu-view");
+  } else if (state === "PLAYING" || state === "CHECK") {
+    showView("game-view");
+    renderBoard();
+    updateGameInfo();
+  } else if (state === "RESULT") {
+    showView("result-view");
+    saveHighScore();
+    displayResult();
+  }
 });
 
 game.onMove(() => {
-    renderBoard();
-    updateGameInfo();
+  renderBoard();
+  updateGameInfo();
 });
 
 game.onBoardUpdate(() => {
-    renderBoard();
+  renderBoard();
 });
 
 game.onTimerUpdate(() => {
-    updateGameInfo();
+  updateGameInfo();
 });
 
 game.onPromotion(() => {
-    showPromotionModal();
+  showPromotionModal();
 });
 
 function showPromotionModal() {
-    const modal = document.getElementById('promotion-modal');
-    if (!modal) return;
+  const modal = document.getElementById("promotion-modal");
+  if (!modal) return;
 
-    modal.classList.remove('hidden');
+  modal.classList.remove("hidden");
 
-    // Setup piece selection
-    const pieces = modal.querySelectorAll('.promotion-piece');
-    pieces.forEach(piece => {
-        // Clone to remove old listeners
-        const newPiece = piece.cloneNode(true);
-        piece.parentNode?.replaceChild(newPiece, piece);
+  // Setup piece selection
+  const pieces = modal.querySelectorAll(".promotion-piece");
+  pieces.forEach((piece) => {
+    // Clone to remove old listeners
+    const newPiece = piece.cloneNode(true);
+    piece.parentNode?.replaceChild(newPiece, piece);
 
-        newPiece.addEventListener('click', () => {
-            const pieceType = (newPiece as HTMLElement).dataset.piece as 'ROOK' | 'KNIGHT' | 'BISHOP' | 'QUEEN';
-            game.promotePawn(pieceType);
-            modal.classList.add('hidden');
-        }, { once: true });
-    });
+    newPiece.addEventListener(
+      "click",
+      () => {
+        const pieceType = (newPiece as HTMLElement).dataset.piece as
+          | "ROOK"
+          | "KNIGHT"
+          | "BISHOP"
+          | "QUEEN";
+        game.promotePawn(pieceType);
+        modal.classList.add("hidden");
+      },
+      { once: true }
+    );
+  });
 }
 
 // --- High Score Logic ---
 
 const getHighScoreKey = () => {
-    const userSide = game.getAIPlayer() === 'WHITE' ? 'BLACK' : 'WHITE';
-    return `chess_highscores_${userSide}`;
+  const userSide = game.getAIPlayer() === "WHITE" ? "BLACK" : "WHITE";
+  return `chess_highscores_${userSide}`;
 };
 
 const saveHighScore = () => {
-    const finalState = game.getFinalGameState();
-    if (finalState !== 'CHECKMATE') return;
+  const finalState = game.getFinalGameState();
+  if (finalState !== "CHECKMATE") return;
 
-    const winner = game.getWinner();
-    if (!winner) return;
+  const winner = game.getWinner();
+  if (!winner) return;
 
-    // Only save for VS_AI mode when human wins
-    if (game.getGameMode() !== 'VS_AI') return;
+  // Only save for VS_AI mode when human wins
+  if (game.getGameMode() !== "VS_AI") return;
 
-    const userSide = game.getAIPlayer() === 'WHITE' ? 'BLACK' : 'WHITE';
-    if (winner !== userSide) return;
+  const userSide = game.getAIPlayer() === "WHITE" ? "BLACK" : "WHITE";
+  if (winner !== userSide) return;
 
-    const moves = game.getMoveCount();
-    const time = game.getElapsedTime();
-    const date = Date.now();
-    lastScoreDate = date;
+  const moves = game.getMoveCount();
+  const time = game.getElapsedTime();
+  const date = Date.now();
+  lastScoreDate = date;
 
-    const newScore: HighScore = { moves, time, date };
-    const key = getHighScoreKey();
+  const newScore: HighScore = { moves, time, date };
+  const key = getHighScoreKey();
 
-    util.saveHighScore(key, newScore, (a, b) => {
-        if (a.moves !== b.moves) return a.moves - b.moves;
-        return a.time - b.time;
-    });
+  util.saveHighScore(key, newScore, (a, b) => {
+    if (a.moves !== b.moves) return a.moves - b.moves;
+    return a.time - b.time;
+  });
 };
 
 function displayResult() {
-    showView('result-view');
+  showView("result-view");
 
-    const winnerDisplay = document.getElementById('winner-display');
-    const totalTime = document.getElementById('total-time');
-    const totalMoves = document.getElementById('total-moves');
+  const winnerDisplay = document.getElementById("winner-display");
+  const totalTime = document.getElementById("total-time");
+  const totalMoves = document.getElementById("total-moves");
 
-    if (winnerDisplay && totalTime && totalMoves) {
-        const winner = game.getWinner();
-        const finalState = game.getFinalGameState();
+  if (winnerDisplay && totalTime && totalMoves) {
+    const winner = game.getWinner();
+    const finalState = game.getFinalGameState();
 
-        let resultHTML = '';
-        if (finalState === 'STALEMATE') {
-            resultHTML = `
-                <h3>${localization.getUIText('stalemate')}</h3>
-                <p>${localization.getUIText('draw')}</p>
+    let resultHTML = "";
+    if (finalState === "STALEMATE") {
+      resultHTML = `
+                <h3>${localization.getUIText("stalemate")}</h3>
+                <p>${localization.getUIText("draw")}</p>
             `;
-        } else if (finalState === 'CHECKMATE' && winner) {
-            const winnerText = winner === 'WHITE' ?
-                localization.getUIText('whiteWins') :
-                localization.getUIText('blackWins');
-            resultHTML = `
-                <h3>${localization.getUIText('checkmate')}</h3>
+    } else if (finalState === "CHECKMATE" && winner) {
+      const winnerText =
+        winner === "WHITE"
+          ? localization.getUIText("whiteWins")
+          : localization.getUIText("blackWins");
+      resultHTML = `
+                <h3>${localization.getUIText("checkmate")}</h3>
                 <p>${winnerText}</p>
             `;
-        }
-
-        winnerDisplay.innerHTML = resultHTML;
-
-        // Update stats
-        totalTime.textContent = util.formatTime(game.getElapsedTime());
-        totalMoves.textContent = game.getMoveCount().toString();
     }
 
-    renderHighScores();
+    winnerDisplay.innerHTML = resultHTML;
+
+    // Update stats
+    totalTime.textContent = util.formatTime(game.getElapsedTime());
+    totalMoves.textContent = game.getMoveCount().toString();
+  }
+
+  renderHighScores();
 }
 
 function renderHighScores() {
-    const container = document.querySelector('.high-scores-container');
-    if (game.getGameMode() !== 'VS_AI') {
-        if (container) container.classList.add('hidden');
-        return;
-    }
-    if (container) container.classList.remove('hidden');
+  const container = document.querySelector(".high-scores-container");
+  if (game.getGameMode() !== "VS_AI") {
+    if (container) container.classList.add("hidden");
+    return;
+  }
+  if (container) container.classList.remove("hidden");
 
-    const key = getHighScoreKey();
-    const scores = util.getHighScores<HighScore>(key);
-    const tbody = document.getElementById('high-scores-body');
+  const key = getHighScoreKey();
+  const scores = util.getHighScores<HighScore>(key);
+  const tbody = document.getElementById("high-scores-body");
 
-    if (tbody) {
-        tbody.innerHTML = '';
-        scores.forEach((s, index) => {
-            const tr = document.createElement('tr');
+  if (tbody) {
+    tbody.innerHTML = "";
+    scores.forEach((s, index) => {
+      const tr = document.createElement("tr");
 
-            // Highlight current run if it matches
-            if (s.date === lastScoreDate) {
-                tr.classList.add('current-run');
-            }
+      // Highlight current run if it matches
+      if (s.date === lastScoreDate) {
+        tr.classList.add("current-run");
+      }
 
+      const dateStr = util.formatDate(s.date, localization.language as any);
 
-            const dateStr = util.formatDate(s.date, localization.language as any);
-
-            tr.innerHTML = `
+      tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${s.moves}</td>
                 <td>${util.formatTime(s.time)}</td>
                 <td>${dateStr}</td>
             `;
-            tbody.appendChild(tr);
-        });
-    }
+      tbody.appendChild(tr);
+    });
+  }
 }
 
 // Subscribe to language changes
 localization.subscribe((lang) => {
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === lang);
-    });
-    updateTexts();
-    if (game.getState() === 'RESULT') {
-        displayResult();
-    }
+  document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", (btn as HTMLElement).dataset.lang === lang);
+  });
+  updateTexts();
+  if (game.getState() === "RESULT") {
+    displayResult();
+  }
 });
 
 // --- Initialize ---

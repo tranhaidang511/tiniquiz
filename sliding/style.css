@@ -1,443 +1,444 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 /* Import common styles */
-@import url('../common/style.css');
+@import url("../common/style.css");
 
 :root {
-    --accent-tertiary: #10b981;
+  --accent-tertiary: #10b981;
 }
 
 /* Game View */
 .game-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
 }
 
 .stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .stat-label {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .stat-value {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--accent-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-primary);
 }
 
 /* Reference Board */
 .reference-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
 }
 
 .reference-label {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 600;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
 .reference-board {
-    display: grid;
-    gap: 2px;
-    background: var(--bg-primary);
-    padding: 2px;
-    border-radius: 0;
-    box-shadow: var(--shadow-md);
+  display: grid;
+  gap: 2px;
+  background: var(--bg-primary);
+  padding: 2px;
+  border-radius: 0;
+  box-shadow: var(--shadow-md);
 }
 
 /* Reference board sizing based on board size */
 .reference-board[data-size="2"] {
-    width: 80px;
-    height: 80px;
+  width: 80px;
+  height: 80px;
 }
 
 .reference-board[data-size="3"] {
-    width: 90px;
-    height: 90px;
+  width: 90px;
+  height: 90px;
 }
 
 .reference-board[data-size="4"] {
-    width: 100px;
-    height: 100px;
+  width: 100px;
+  height: 100px;
 }
 
 .reference-board[data-size="5"] {
-    width: 110px;
-    height: 110px;
+  width: 110px;
+  height: 110px;
 }
 
 .reference-board[data-size="6"] {
-    width: 120px;
-    height: 120px;
+  width: 120px;
+  height: 120px;
 }
 
 .reference-board[data-size="7"] {
-    width: 130px;
-    height: 130px;
+  width: 130px;
+  height: 130px;
 }
 
 .reference-board .tile {
-    font-size: 0.65rem;
-    cursor: default;
-    box-shadow: var(--shadow-sm);
+  font-size: 0.65rem;
+  cursor: default;
+  box-shadow: var(--shadow-sm);
 }
 
 .reference-board .tile:hover {
-    transform: none;
-    box-shadow: var(--shadow-sm);
+  transform: none;
+  box-shadow: var(--shadow-sm);
 }
 
 /* Puzzle Board */
 #board-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .puzzle-board {
-    display: grid;
-    gap: 4px;
-    background: var(--bg-primary);
-    padding: 4px;
-    border-radius: 0;
-    box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 4px;
+  background: var(--bg-primary);
+  padding: 4px;
+  border-radius: 0;
+  box-shadow: var(--shadow-lg);
 }
 
 /* Tile sizing based on board size */
 .puzzle-board[data-size="2"] {
-    --board-size-px: 300px;
-    width: var(--board-size-px);
-    height: var(--board-size-px);
+  --board-size-px: 300px;
+  width: var(--board-size-px);
+  height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="3"] {
-    --board-size-px: 360px;
-    width: var(--board-size-px);
-    height: var(--board-size-px);
+  --board-size-px: 360px;
+  width: var(--board-size-px);
+  height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="4"] {
-    --board-size-px: 400px;
-    width: var(--board-size-px);
-    height: var(--board-size-px);
+  --board-size-px: 400px;
+  width: var(--board-size-px);
+  height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="5"] {
-    --board-size-px: 450px;
-    width: var(--board-size-px);
-    height: var(--board-size-px);
+  --board-size-px: 450px;
+  width: var(--board-size-px);
+  height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="6"] {
-    --board-size-px: 480px;
-    width: var(--board-size-px);
-    height: var(--board-size-px);
+  --board-size-px: 480px;
+  width: var(--board-size-px);
+  height: var(--board-size-px);
 }
 
 .puzzle-board[data-size="7"] {
-    --board-size-px: 500px;
-    width: var(--board-size-px);
-    height: var(--board-size-px);
+  --board-size-px: 500px;
+  width: var(--board-size-px);
+  height: var(--board-size-px);
 }
 
 /* Reference board sizing vars */
 .reference-board[data-size="2"] {
-    --ref-size-px: 80px;
-    width: var(--ref-size-px);
-    height: var(--ref-size-px);
+  --ref-size-px: 80px;
+  width: var(--ref-size-px);
+  height: var(--ref-size-px);
 }
 
 .reference-board[data-size="3"] {
-    --ref-size-px: 90px;
-    width: var(--ref-size-px);
-    height: var(--ref-size-px);
+  --ref-size-px: 90px;
+  width: var(--ref-size-px);
+  height: var(--ref-size-px);
 }
 
 .reference-board[data-size="4"] {
-    --ref-size-px: 100px;
-    width: var(--ref-size-px);
-    height: var(--ref-size-px);
+  --ref-size-px: 100px;
+  width: var(--ref-size-px);
+  height: var(--ref-size-px);
 }
 
 .reference-board[data-size="5"] {
-    --ref-size-px: 110px;
-    width: var(--ref-size-px);
-    height: var(--ref-size-px);
+  --ref-size-px: 110px;
+  width: var(--ref-size-px);
+  height: var(--ref-size-px);
 }
 
 .reference-board[data-size="6"] {
-    --ref-size-px: 120px;
-    width: var(--ref-size-px);
-    height: var(--ref-size-px);
+  --ref-size-px: 120px;
+  width: var(--ref-size-px);
+  height: var(--ref-size-px);
 }
 
 .reference-board[data-size="7"] {
-    --ref-size-px: 130px;
-    width: var(--ref-size-px);
-    height: var(--ref-size-px);
+  --ref-size-px: 130px;
+  width: var(--ref-size-px);
+  height: var(--ref-size-px);
 }
 
 /* Controls */
 #image-controls {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: center;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
 }
 
 .toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .toggle-container input {
-    width: 1.25rem;
-    height: 1.25rem;
-    cursor: pointer;
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
 }
 
 .tile {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    font-weight: 700;
-    color: white;
-    cursor: pointer;
-    border-radius: 0;
-    transition: all 0.2s ease;
-    user-select: none;
-    box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  border-radius: 0;
+  transition: all 0.2s ease;
+  user-select: none;
+  box-shadow: var(--shadow-md);
 }
 
 .tile:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-glow);
+  transform: scale(1.05);
+  box-shadow: var(--shadow-glow);
 }
 
 .tile.empty {
-    background: transparent !important;
-    cursor: default;
-    box-shadow: none;
+  background: transparent !important;
+  cursor: default;
+  box-shadow: none;
 }
 
 .tile.image-mode {
-    background-size: var(--board-size-px, 360px) var(--board-size-px, 360px);
-    background-repeat: no-repeat;
-    color: transparent;
-    text-shadow: none;
+  background-size: var(--board-size-px, 360px) var(--board-size-px, 360px);
+  background-repeat: no-repeat;
+  color: transparent;
+  text-shadow: none;
 }
 
 .tile.image-mode.show-numbers {
-    color: white;
-    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.8);
+  color: white;
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.8),
+    0 0 8px rgba(0, 0, 0, 0.8);
 }
 
 .reference-board .tile.image-mode {
-    background-size: var(--ref-size-px, 90px) var(--ref-size-px, 90px);
+  background-size: var(--ref-size-px, 90px) var(--ref-size-px, 90px);
 }
 
 .tile.empty:hover {
-    transform: none;
+  transform: none;
 }
 
 .tile.moving {
-    animation: tileSlide 0.2s ease;
+  animation: tileSlide 0.2s ease;
 }
 
 @keyframes tileSlide {
+  0%,
+  100% {
+    transform: scale(1);
+  }
 
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.1);
-    }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 /* Responsive tile font sizes */
 .puzzle-board[data-size="2"] .tile {
-    font-size: 3rem;
+  font-size: 3rem;
 }
 
 .puzzle-board[data-size="3"] .tile {
-    font-size: 2.5rem;
+  font-size: 2.5rem;
 }
 
 .puzzle-board[data-size="4"] .tile {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .puzzle-board[data-size="5"] .tile {
-    font-size: 1.75rem;
+  font-size: 1.75rem;
 }
 
 .puzzle-board[data-size="6"] .tile {
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 }
 
 .puzzle-board[data-size="7"] .tile {
-    font-size: 1.25rem;
+  font-size: 1.25rem;
 }
 
 /* Result View */
 .result-message {
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-    color: var(--text-secondary);
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: var(--text-secondary);
 }
 
 .result-stats {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
 }
 
 /* Animations */
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
+  h1 {
+    font-size: 2rem;
+  }
 
-    .card {
-        padding: 1.5rem;
-    }
+  .card {
+    padding: 1.5rem;
+  }
 
-    .game-header {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
+  .game-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 
-    .result-stats {
-        flex-direction: column;
-        gap: 1rem;
-    }
+  .result-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
 
-    .size-selector {
-        gap: 0.5rem;
-    }
+  .size-selector {
+    gap: 0.5rem;
+  }
 
-    .size-btn {
-        font-size: 0.9rem;
-        padding: 0.875rem 0.5rem;
-        min-width: 60px;
-    }
+  .size-btn {
+    font-size: 0.9rem;
+    padding: 0.875rem 0.5rem;
+    min-width: 60px;
+  }
 
-    .puzzle-board[data-size="2"] {
-        width: 250px;
-        height: 250px;
-    }
+  .puzzle-board[data-size="2"] {
+    width: 250px;
+    height: 250px;
+  }
 
-    .puzzle-board[data-size="3"] {
-        width: 300px;
-        height: 300px;
-    }
+  .puzzle-board[data-size="3"] {
+    width: 300px;
+    height: 300px;
+  }
 
-    .puzzle-board[data-size="4"] {
-        width: 320px;
-        height: 320px;
-    }
+  .puzzle-board[data-size="4"] {
+    width: 320px;
+    height: 320px;
+  }
 
-    .puzzle-board[data-size="5"] {
-        width: 350px;
-        height: 350px;
-    }
+  .puzzle-board[data-size="5"] {
+    width: 350px;
+    height: 350px;
+  }
 
-    .puzzle-board[data-size="6"] {
-        width: 360px;
-        height: 360px;
-    }
+  .puzzle-board[data-size="6"] {
+    width: 360px;
+    height: 360px;
+  }
 
-    .puzzle-board[data-size="7"] {
-        width: 360px;
-        height: 360px;
-    }
+  .puzzle-board[data-size="7"] {
+    width: 360px;
+    height: 360px;
+  }
 
-    .puzzle-board[data-size="5"] .tile,
-    .puzzle-board[data-size="6"] .tile,
-    .puzzle-board[data-size="7"] .tile {
-        font-size: 1.25rem;
-    }
+  .puzzle-board[data-size="5"] .tile,
+  .puzzle-board[data-size="6"] .tile,
+  .puzzle-board[data-size="7"] .tile {
+    font-size: 1.25rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .puzzle-board[data-size="4"] {
-        width: 280px;
-        height: 280px;
-    }
+  .puzzle-board[data-size="4"] {
+    width: 280px;
+    height: 280px;
+  }
 
-    .puzzle-board[data-size="5"] {
-        width: 300px;
-        height: 300px;
-    }
+  .puzzle-board[data-size="5"] {
+    width: 300px;
+    height: 300px;
+  }
 
-    .puzzle-board[data-size="6"] {
-        width: 300px;
-        height: 300px;
-    }
+  .puzzle-board[data-size="6"] {
+    width: 300px;
+    height: 300px;
+  }
 
-    .puzzle-board[data-size="7"] {
-        width: 300px;
-        height: 300px;
-    }
+  .puzzle-board[data-size="7"] {
+    width: 300px;
+    height: 300px;
+  }
 
-    .puzzle-board[data-size="4"] .tile {
-        font-size: 1.5rem;
-    }
+  .puzzle-board[data-size="4"] .tile {
+    font-size: 1.5rem;
+  }
 
-    .puzzle-board[data-size="5"] .tile,
-    .puzzle-board[data-size="6"] .tile,
-    .puzzle-board[data-size="7"] .tile {
-        font-size: 1rem;
-    }
+  .puzzle-board[data-size="5"] .tile,
+  .puzzle-board[data-size="6"] .tile,
+  .puzzle-board[data-size="7"] .tile {
+    font-size: 1rem;
+  }
 }

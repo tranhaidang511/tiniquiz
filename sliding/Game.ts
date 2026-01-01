@@ -1,235 +1,234 @@
-export type GameState = 'MENU' | 'PLAYING' | 'WON';
+export type GameState = "MENU" | "PLAYING" | "WON";
 export type BoardSize = 3 | 4 | 5 | 6 | 7;
-export type PuzzleType = 'NUMBERS' | 'IMAGE';
+export type PuzzleType = "NUMBERS" | "IMAGE";
 
 export class Game {
-    private state: GameState = 'MENU';
-    private boardSize: BoardSize = 3;
-    private board: (number | null)[] = [];
-    private emptyIndex: number = 0;
-    private moves: number = 0;
-    private puzzleType: PuzzleType = 'NUMBERS';
-    private startTime: number = 0;
-    private elapsedTime: number = 0;
+  private state: GameState = "MENU";
+  private boardSize: BoardSize = 3;
+  private board: (number | null)[] = [];
+  private emptyIndex: number = 0;
+  private moves: number = 0;
+  private puzzleType: PuzzleType = "NUMBERS";
+  private startTime: number = 0;
+  private elapsedTime: number = 0;
 
-    // Event listeners
-    private stateListeners: ((state: GameState) => void)[] = [];
-    private boardListeners: (() => void)[] = [];
-    private movesListeners: ((moves: number) => void)[] = [];
-    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
+  // Event listeners
+  private stateListeners: ((state: GameState) => void)[] = [];
+  private boardListeners: (() => void)[] = [];
+  private movesListeners: ((moves: number) => void)[] = [];
+  private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
-    constructor() { }
+  constructor() {}
 
-    // --- Setup ---
+  // --- Setup ---
 
-    setBoardSize(size: BoardSize) {
-        this.boardSize = size;
+  setBoardSize(size: BoardSize) {
+    this.boardSize = size;
+  }
+
+  setPuzzleType(type: PuzzleType) {
+    this.puzzleType = type;
+  }
+
+  getBoardSize(): BoardSize {
+    return this.boardSize;
+  }
+
+  // --- Game Flow ---
+
+  start() {
+    const totalTiles = this.boardSize * this.boardSize;
+    this.board = [];
+
+    // Create solved board: [1, 2, 3, ..., size*size-1, null]
+    for (let i = 1; i < totalTiles; i++) {
+      this.board.push(i);
+    }
+    this.board.push(null);
+    this.emptyIndex = totalTiles - 1;
+
+    // Shuffle the board
+    this.shuffle();
+
+    this.startTime = Date.now();
+    this.elapsedTime = 0;
+    this.setState("PLAYING");
+    this.emitBoardUpdate();
+    this.emitMovesUpdate();
+    this.startTimer();
+  }
+
+  private shuffle() {
+    // Perform random valid moves to ensure solvability
+    const shuffleMoves = this.boardSize * this.boardSize * 50;
+
+    for (let i = 0; i < shuffleMoves; i++) {
+      const validMoves = this.getValidMoves();
+      if (validMoves.length > 0) {
+        const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+        this.swap(randomMove, this.emptyIndex);
+      }
+    }
+  }
+
+  private getValidMoves(): number[] {
+    const validMoves: number[] = [];
+    const row = Math.floor(this.emptyIndex / this.boardSize);
+    const col = this.emptyIndex % this.boardSize;
+
+    // Check all four directions
+    const directions = [
+      { dr: -1, dc: 0 }, // up
+      { dr: 1, dc: 0 }, // down
+      { dr: 0, dc: -1 }, // left
+      { dr: 0, dc: 1 }, // right
+    ];
+
+    for (const { dr, dc } of directions) {
+      const newRow = row + dr;
+      const newCol = col + dc;
+
+      if (newRow >= 0 && newRow < this.boardSize && newCol >= 0 && newCol < this.boardSize) {
+        validMoves.push(newRow * this.boardSize + newCol);
+      }
     }
 
-    setPuzzleType(type: PuzzleType) {
-        this.puzzleType = type;
+    return validMoves;
+  }
+
+  private swap(index1: number, index2: number) {
+    [this.board[index1], this.board[index2]] = [this.board[index2], this.board[index1]];
+
+    if (this.board[index1] === null) {
+      this.emptyIndex = index1;
+    } else if (this.board[index2] === null) {
+      this.emptyIndex = index2;
+    }
+  }
+
+  // --- Player Actions ---
+
+  makeMove(index: number) {
+    if (this.state !== "PLAYING") return false;
+
+    const validMoves = this.getValidMoves();
+    if (!validMoves.includes(index)) return false;
+
+    this.swap(index, this.emptyIndex);
+    this.moves++;
+    this.emitBoardUpdate();
+    this.emitMovesUpdate();
+
+    if (this.checkWin()) {
+      this.elapsedTime = Date.now() - this.startTime;
+      this.stopTimer();
+      this.setState("WON");
     }
 
-    getBoardSize(): BoardSize {
-        return this.boardSize;
+    return true;
+  }
+
+  private checkWin(): boolean {
+    const totalTiles = this.boardSize * this.boardSize;
+
+    // Check if all tiles are in order: [1, 2, 3, ..., size*size-1, null]
+    for (let i = 0; i < totalTiles - 1; i++) {
+      if (this.board[i] !== i + 1) return false;
     }
 
-    // --- Game Flow ---
+    return this.board[totalTiles - 1] === null;
+  }
 
-    start() {
-        const totalTiles = this.boardSize * this.boardSize;
-        this.board = [];
+  restart() {
+    this.stopTimer();
+    this.setState("MENU");
+  }
 
-        // Create solved board: [1, 2, 3, ..., size*size-1, null]
-        for (let i = 1; i < totalTiles; i++) {
-            this.board.push(i);
-        }
-        this.board.push(null);
-        this.emptyIndex = totalTiles - 1;
+  private startTimer() {
+    this.stopTimer();
+    this.timerInterval = window.setInterval(() => {
+      this.elapsedTime = Date.now() - this.startTime;
+      this.notifyTimerUpdate();
+    }, 1000);
+  }
 
-        // Shuffle the board
-        this.shuffle();
-
-        this.startTime = Date.now();
-        this.elapsedTime = 0;
-        this.setState('PLAYING');
-        this.emitBoardUpdate();
-        this.emitMovesUpdate();
-        this.startTimer();
+  private stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
     }
+  }
 
-    private shuffle() {
-        // Perform random valid moves to ensure solvability
-        const shuffleMoves = this.boardSize * this.boardSize * 50;
+  private timerInterval: number | null = null;
 
-        for (let i = 0; i < shuffleMoves; i++) {
-            const validMoves = this.getValidMoves();
-            if (validMoves.length > 0) {
-                const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
-                this.swap(randomMove, this.emptyIndex);
-            }
-        }
+  // --- Getters ---
+
+  getState(): GameState {
+    return this.state;
+  }
+
+  getPuzzleType(): PuzzleType {
+    return this.puzzleType;
+  }
+
+  getBoard(): (number | null)[] {
+    return [...this.board];
+  }
+
+  getMoves(): number {
+    return this.moves;
+  }
+
+  getElapsedTime(): number {
+    if (this.state === "PLAYING") {
+      return Date.now() - this.startTime;
     }
+    return this.elapsedTime;
+  }
 
-    private getValidMoves(): number[] {
-        const validMoves: number[] = [];
-        const row = Math.floor(this.emptyIndex / this.boardSize);
-        const col = this.emptyIndex % this.boardSize;
+  getEmptyIndex(): number {
+    return this.emptyIndex;
+  }
 
-        // Check all four directions
-        const directions = [
-            { dr: -1, dc: 0 }, // up
-            { dr: 1, dc: 0 },  // down
-            { dr: 0, dc: -1 }, // left
-            { dr: 0, dc: 1 }   // right
-        ];
+  // --- State Management ---
 
-        for (const { dr, dc } of directions) {
-            const newRow = row + dr;
-            const newCol = col + dc;
-
-            if (newRow >= 0 && newRow < this.boardSize && newCol >= 0 && newCol < this.boardSize) {
-                validMoves.push(newRow * this.boardSize + newCol);
-            }
-        }
-
-        return validMoves;
+  private setState(newState: GameState) {
+    this.state = newState;
+    if (newState !== "PLAYING") {
+      this.stopTimer();
     }
+    this.stateListeners.forEach((l) => l(this.state));
+  }
 
-    private swap(index1: number, index2: number) {
-        [this.board[index1], this.board[index2]] = [this.board[index2], this.board[index1]];
+  // --- Event Management ---
 
-        if (this.board[index1] === null) {
-            this.emptyIndex = index1;
-        } else if (this.board[index2] === null) {
-            this.emptyIndex = index2;
-        }
-    }
+  onStateChange(listener: (state: GameState) => void) {
+    this.stateListeners.push(listener);
+  }
 
-    // --- Player Actions ---
+  onBoardUpdate(listener: () => void) {
+    this.boardListeners.push(listener);
+  }
 
-    makeMove(index: number) {
-        if (this.state !== 'PLAYING') return false;
+  onMovesUpdate(listener: (moves: number) => void) {
+    this.movesListeners.push(listener);
+  }
 
-        const validMoves = this.getValidMoves();
-        if (!validMoves.includes(index)) return false;
+  onTimerUpdate(listener: (elapsed: number) => void) {
+    this.timerUpdateListeners.push(listener);
+  }
 
-        this.swap(index, this.emptyIndex);
-        this.moves++;
-        this.emitBoardUpdate();
-        this.emitMovesUpdate();
+  private emitBoardUpdate() {
+    this.boardListeners.forEach((l) => l());
+  }
 
-        if (this.checkWin()) {
-            this.elapsedTime = Date.now() - this.startTime;
-            this.stopTimer();
-            this.setState('WON');
-        }
+  private emitMovesUpdate() {
+    this.movesListeners.forEach((l) => l(this.moves));
+  }
 
-        return true;
-    }
-
-    private checkWin(): boolean {
-        const totalTiles = this.boardSize * this.boardSize;
-
-        // Check if all tiles are in order: [1, 2, 3, ..., size*size-1, null]
-        for (let i = 0; i < totalTiles - 1; i++) {
-            if (this.board[i] !== i + 1) return false;
-        }
-
-        return this.board[totalTiles - 1] === null;
-    }
-
-    restart() {
-        this.stopTimer();
-        this.setState('MENU');
-    }
-
-    private startTimer() {
-        this.stopTimer();
-        this.timerInterval = window.setInterval(() => {
-            this.elapsedTime = Date.now() - this.startTime;
-            this.notifyTimerUpdate();
-        }, 1000);
-    }
-
-    private stopTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
-        }
-    }
-
-    private timerInterval: number | null = null;
-
-    // --- Getters ---
-
-    getState(): GameState {
-        return this.state;
-    }
-
-    getPuzzleType(): PuzzleType {
-        return this.puzzleType;
-    }
-
-    getBoard(): (number | null)[] {
-        return [...this.board];
-    }
-
-    getMoves(): number {
-        return this.moves;
-    }
-
-    getElapsedTime(): number {
-        if (this.state === 'PLAYING') {
-            return Date.now() - this.startTime;
-        }
-        return this.elapsedTime;
-    }
-
-    getEmptyIndex(): number {
-        return this.emptyIndex;
-    }
-
-    // --- State Management ---
-
-    private setState(newState: GameState) {
-        this.state = newState;
-        if (newState !== 'PLAYING') {
-            this.stopTimer();
-        }
-        this.stateListeners.forEach(l => l(this.state));
-    }
-
-    // --- Event Management ---
-
-    onStateChange(listener: (state: GameState) => void) {
-        this.stateListeners.push(listener);
-    }
-
-    onBoardUpdate(listener: () => void) {
-        this.boardListeners.push(listener);
-    }
-
-    onMovesUpdate(listener: (moves: number) => void) {
-        this.movesListeners.push(listener);
-    }
-
-    onTimerUpdate(listener: (elapsed: number) => void) {
-        this.timerUpdateListeners.push(listener);
-    }
-
-    private emitBoardUpdate() {
-        this.boardListeners.forEach(l => l());
-    }
-
-    private emitMovesUpdate() {
-        this.movesListeners.forEach(l => l(this.moves));
-    }
-
-    private notifyTimerUpdate() {
-        this.timerUpdateListeners.forEach(l => l(this.elapsedTime));
-    }
-
+  private notifyTimerUpdate() {
+    this.timerUpdateListeners.forEach((l) => l(this.elapsedTime));
+  }
 }
 
 export const game = new Game();

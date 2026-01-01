@@ -1,12 +1,12 @@
-import { defineConfig } from 'vite';
-import { viteSingleFile } from 'vite-plugin-singlefile';
+import { defineConfig } from "vite";
+import { viteSingleFile } from "vite-plugin-singlefile";
 
 export default defineConfig({
-    root: 'othello',
-    base: '/othello/',
-    plugins: [viteSingleFile()],
-    build: {
-        outDir: '../dist/othello',
-        emptyOutDir: true,
-    }
+  root: "othello",
+  base: "/othello/",
+  plugins: [viteSingleFile()],
+  build: {
+    outDir: "../dist/othello",
+    emptyOutDir: true,
+  },
 });

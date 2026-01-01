@@ -1,431 +1,442 @@
-export type GameState = 'MENU' | 'PLAYING' | 'PAUSED' | 'RESULT';
-export type Difficulty = 'BEGINNER' | 'EASY' | 'MEDIUM' | 'HARD' | 'EXPERT';
+export type GameState = "MENU" | "PLAYING" | "PAUSED" | "RESULT";
+export type Difficulty = "BEGINNER" | "EASY" | "MEDIUM" | "HARD" | "EXPERT";
 
 export interface Cell {
-    value: number | null;
-    isFixed: boolean;
-    notes: Set<number>;
-    isError: boolean;
+  value: number | null;
+  isFixed: boolean;
+  notes: Set<number>;
+  isError: boolean;
 }
 
 export class Game {
-    private state: GameState = 'MENU';
-    private difficulty: Difficulty = 'BEGINNER';
-    private board: Cell[][] = [];
-    private solution: number[][] = [];
-    private mistakes: number = 0;
-    private maxMistakes: number = 3;
-    private hintsUsed: number = 0;
-    private maxHints: number = 10;
-    private startTime: number = 0;
-    private elapsedTime: number = 0;
-    private selectedCell: { row: number; col: number } | null = null;
-    private notesMode: boolean = false;
+  private state: GameState = "MENU";
+  private difficulty: Difficulty = "BEGINNER";
+  private board: Cell[][] = [];
+  private solution: number[][] = [];
+  private mistakes: number = 0;
+  private maxMistakes: number = 3;
+  private hintsUsed: number = 0;
+  private maxHints: number = 10;
+  private startTime: number = 0;
+  private elapsedTime: number = 0;
+  private selectedCell: { row: number; col: number } | null = null;
+  private notesMode: boolean = false;
 
-    // Event listeners
-    private stateListeners: ((state: GameState) => void)[] = [];
-    private cellUpdateListeners: (() => void)[] = [];
-    private mistakeListeners: ((mistakes: number) => void)[] = [];
-    private timeListeners: ((time: number) => void)[] = [];
+  // Event listeners
+  private stateListeners: ((state: GameState) => void)[] = [];
+  private cellUpdateListeners: (() => void)[] = [];
+  private mistakeListeners: ((mistakes: number) => void)[] = [];
+  private timeListeners: ((time: number) => void)[] = [];
 
-    constructor() {
-        this.initializeEmptyBoard();
+  constructor() {
+    this.initializeEmptyBoard();
+  }
+
+  // --- Setup ---
+
+  private initializeEmptyBoard() {
+    this.board = Array(9)
+      .fill(null)
+      .map(() =>
+        Array(9)
+          .fill(null)
+          .map(() => ({
+            value: null,
+            isFixed: false,
+            notes: new Set<number>(),
+            isError: false,
+          }))
+      );
+    this.solution = Array(9)
+      .fill(null)
+      .map(() => Array(9).fill(0));
+  }
+
+  setDifficulty(diff: Difficulty) {
+    this.difficulty = diff;
+  }
+
+  getDifficulty(): Difficulty {
+    return this.difficulty;
+  }
+
+  // --- Game Flow ---
+
+  start() {
+    this.initializeEmptyBoard();
+    this.generatePuzzle();
+    this.mistakes = 0;
+    this.hintsUsed = 0;
+    this.startTime = Date.now();
+    this.elapsedTime = 0;
+    this.selectedCell = null;
+    this.notesMode = false;
+    this.setState("PLAYING");
+    this.startTimer();
+  }
+
+  private generatePuzzle() {
+    // Generate a complete solved Sudoku board
+    this.generateSolvedBoard();
+
+    // Copy solution
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        this.solution[i][j] = this.board[i][j].value!;
+      }
     }
 
-    // --- Setup ---
+    // Remove cells based on difficulty
+    const cellsToRemove = this.getCellsToRemove();
+    this.removeRandomCells(cellsToRemove);
+  }
 
-    private initializeEmptyBoard() {
-        this.board = Array(9).fill(null).map(() =>
-            Array(9).fill(null).map(() => ({
-                value: null,
-                isFixed: false,
-                notes: new Set<number>(),
-                isError: false
-            }))
-        );
-        this.solution = Array(9).fill(null).map(() => Array(9).fill(0));
+  private getCellsToRemove(): number {
+    switch (this.difficulty) {
+      case "BEGINNER":
+        return 20;
+      case "EASY":
+        return 30;
+      case "MEDIUM":
+        return 40;
+      case "HARD":
+        return 50;
+      case "EXPERT":
+        return 60;
+      default:
+        return 40;
+    }
+  }
+
+  private generateSolvedBoard() {
+    this.fillDiagonalBoxes();
+    this.solveSudoku(0, 0);
+  }
+
+  private fillDiagonalBoxes() {
+    for (let box = 0; box < 3; box++) {
+      this.fillBox(box * 3, box * 3);
+    }
+  }
+
+  private fillBox(row: number, col: number) {
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    this.shuffleArray(numbers);
+
+    let idx = 0;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        this.board[row + i][col + j].value = numbers[idx++];
+      }
+    }
+  }
+
+  private shuffleArray(array: number[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  private solveSudoku(row: number, col: number): boolean {
+    if (row === 9) return true;
+
+    const nextRow = col === 8 ? row + 1 : row;
+    const nextCol = col === 8 ? 0 : col + 1;
+
+    if (this.board[row][col].value !== null) {
+      return this.solveSudoku(nextRow, nextCol);
     }
 
-    setDifficulty(diff: Difficulty) {
-        this.difficulty = diff;
-    }
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    this.shuffleArray(numbers);
 
-    getDifficulty(): Difficulty {
-        return this.difficulty;
-    }
+    for (const num of numbers) {
+      if (this.isValidPlacement(row, col, num)) {
+        this.board[row][col].value = num;
 
-    // --- Game Flow ---
-
-    start() {
-        this.initializeEmptyBoard();
-        this.generatePuzzle();
-        this.mistakes = 0;
-        this.hintsUsed = 0;
-        this.startTime = Date.now();
-        this.elapsedTime = 0;
-        this.selectedCell = null;
-        this.notesMode = false;
-        this.setState('PLAYING');
-        this.startTimer();
-    }
-
-    private generatePuzzle() {
-        // Generate a complete solved Sudoku board
-        this.generateSolvedBoard();
-
-        // Copy solution
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 9; j++) {
-                this.solution[i][j] = this.board[i][j].value!;
-            }
+        if (this.solveSudoku(nextRow, nextCol)) {
+          return true;
         }
 
-        // Remove cells based on difficulty
-        const cellsToRemove = this.getCellsToRemove();
-        this.removeRandomCells(cellsToRemove);
+        this.board[row][col].value = null;
+      }
     }
 
-    private getCellsToRemove(): number {
-        switch (this.difficulty) {
-            case 'BEGINNER': return 20;
-            case 'EASY': return 30;
-            case 'MEDIUM': return 40;
-            case 'HARD': return 50;
-            case 'EXPERT': return 60;
-            default: return 40;
-        }
-    }
+    return false;
+  }
 
-    private generateSolvedBoard() {
-        this.fillDiagonalBoxes();
-        this.solveSudoku(0, 0);
-    }
-
-    private fillDiagonalBoxes() {
-        for (let box = 0; box < 3; box++) {
-            this.fillBox(box * 3, box * 3);
-        }
-    }
-
-    private fillBox(row: number, col: number) {
-        const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        this.shuffleArray(numbers);
-
-        let idx = 0;
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                this.board[row + i][col + j].value = numbers[idx++];
-            }
-        }
-    }
-
-    private shuffleArray(array: number[]) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
-
-    private solveSudoku(row: number, col: number): boolean {
-        if (row === 9) return true;
-
-        const nextRow = col === 8 ? row + 1 : row;
-        const nextCol = col === 8 ? 0 : col + 1;
-
-        if (this.board[row][col].value !== null) {
-            return this.solveSudoku(nextRow, nextCol);
-        }
-
-        const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        this.shuffleArray(numbers);
-
-        for (const num of numbers) {
-            if (this.isValidPlacement(row, col, num)) {
-                this.board[row][col].value = num;
-
-                if (this.solveSudoku(nextRow, nextCol)) {
-                    return true;
-                }
-
-                this.board[row][col].value = null;
-            }
-        }
-
+  private isValidPlacement(row: number, col: number, num: number): boolean {
+    for (let j = 0; j < 9; j++) {
+      if (j !== col && this.board[row][j].value === num) {
         return false;
+      }
     }
 
-    private isValidPlacement(row: number, col: number, num: number): boolean {
-        for (let j = 0; j < 9; j++) {
-            if (j !== col && this.board[row][j].value === num) {
-                return false;
-            }
-        }
-
-        for (let i = 0; i < 9; i++) {
-            if (i !== row && this.board[i][col].value === num) {
-                return false;
-            }
-        }
-
-        const boxRow = Math.floor(row / 3) * 3;
-        const boxCol = Math.floor(col / 3) * 3;
-
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                const r = boxRow + i;
-                const c = boxCol + j;
-                if ((r !== row || c !== col) && this.board[r][c].value === num) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+    for (let i = 0; i < 9; i++) {
+      if (i !== row && this.board[i][col].value === num) {
+        return false;
+      }
     }
 
-    private removeRandomCells(count: number) {
-        const positions: { row: number; col: number }[] = [];
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 9; j++) {
-                positions.push({ row: i, col: j });
-            }
-        }
+    const boxRow = Math.floor(row / 3) * 3;
+    const boxCol = Math.floor(col / 3) * 3;
 
-        this.shuffleArray(positions as any);
-
-        for (let i = 0; i < count && i < positions.length; i++) {
-            const { row, col } = positions[i];
-            this.board[row][col].value = null;
-            this.board[row][col].isFixed = false;
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        const r = boxRow + i;
+        const c = boxCol + j;
+        if ((r !== row || c !== col) && this.board[r][c].value === num) {
+          return false;
         }
-
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 9; j++) {
-                if (this.board[i][j].value !== null) {
-                    this.board[i][j].isFixed = true;
-                }
-            }
-        }
+      }
     }
 
-    // --- Player Actions ---
+    return true;
+  }
 
-    selectCell(row: number, col: number) {
-        if (this.state !== 'PLAYING') return;
-        this.selectedCell = { row, col };
-        this.emitCellUpdate();
+  private removeRandomCells(count: number) {
+    const positions: { row: number; col: number }[] = [];
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        positions.push({ row: i, col: j });
+      }
     }
 
-    enterNumber(num: number) {
-        if (this.state !== 'PLAYING' || !this.selectedCell) return;
+    this.shuffleArray(positions as any);
 
-        const { row, col } = this.selectedCell;
-        const cell = this.board[row][col];
+    for (let i = 0; i < count && i < positions.length; i++) {
+      const { row, col } = positions[i];
+      this.board[row][col].value = null;
+      this.board[row][col].isFixed = false;
+    }
 
-        if (cell.isFixed) return;
-
-        if (this.notesMode) {
-            if (cell.notes.has(num)) {
-                cell.notes.delete(num);
-            } else {
-                cell.notes.add(num);
-            }
-        } else {
-            cell.notes.clear();
-            cell.value = num;
-
-            if (num !== this.solution[row][col]) {
-                cell.isError = true;
-                this.mistakes++;
-                this.emitMistake();
-
-                if (this.mistakes >= this.maxMistakes) {
-                    this.setState('RESULT');
-                    return;
-                }
-            } else {
-                cell.isError = false;
-            }
-
-            if (this.isPuzzleComplete()) {
-                this.stopTimer();
-                this.setState('RESULT');
-            }
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (this.board[i][j].value !== null) {
+          this.board[i][j].isFixed = true;
         }
-
-        this.emitCellUpdate();
+      }
     }
+  }
 
-    eraseCell() {
-        if (this.state !== 'PLAYING' || !this.selectedCell) return;
+  // --- Player Actions ---
 
-        const { row, col } = this.selectedCell;
-        const cell = this.board[row][col];
+  selectCell(row: number, col: number) {
+    if (this.state !== "PLAYING") return;
+    this.selectedCell = { row, col };
+    this.emitCellUpdate();
+  }
 
-        if (cell.isFixed) return;
+  enterNumber(num: number) {
+    if (this.state !== "PLAYING" || !this.selectedCell) return;
 
-        cell.value = null;
-        cell.notes.clear();
+    const { row, col } = this.selectedCell;
+    const cell = this.board[row][col];
+
+    if (cell.isFixed) return;
+
+    if (this.notesMode) {
+      if (cell.notes.has(num)) {
+        cell.notes.delete(num);
+      } else {
+        cell.notes.add(num);
+      }
+    } else {
+      cell.notes.clear();
+      cell.value = num;
+
+      if (num !== this.solution[row][col]) {
+        cell.isError = true;
+        this.mistakes++;
+        this.emitMistake();
+
+        if (this.mistakes >= this.maxMistakes) {
+          this.setState("RESULT");
+          return;
+        }
+      } else {
         cell.isError = false;
-        this.emitCellUpdate();
-    }
+      }
 
-    toggleNotesMode() {
-        this.notesMode = !this.notesMode;
-    }
-
-    getNotesMode(): boolean {
-        return this.notesMode;
-    }
-
-    getHint() {
-        if (this.state !== 'PLAYING' || !this.selectedCell) return;
-        if (this.hintsUsed >= this.maxHints) return; // Check hint limit
-
-        const { row, col } = this.selectedCell;
-        const cell = this.board[row][col];
-
-        if (cell.isFixed) return;
-
-        this.hintsUsed++;
-        cell.value = this.solution[row][col];
-        cell.isFixed = true;
-        cell.notes.clear();
-        cell.isError = false;
-
-        if (this.isPuzzleComplete()) {
-            this.stopTimer();
-            this.setState('RESULT');
-        }
-
-        this.emitCellUpdate();
-    }
-
-    private isPuzzleComplete(): boolean {
-        for (let i = 0; i < 9; i++) {
-            for (let j = 0; j < 9; j++) {
-                if (this.board[i][j].value === null || this.board[i][j].isError) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    pause() {
-        if (this.state === 'PLAYING') {
-            this.setState('PAUSED');
-            this.stopTimer();
-        }
-    }
-
-    resume() {
-        if (this.state === 'PAUSED') {
-            this.setState('PLAYING');
-            this.startTime = Date.now() - this.elapsedTime;
-            this.startTimer();
-        }
-    }
-
-    restart() {
-        this.setState('MENU');
+      if (this.isPuzzleComplete()) {
         this.stopTimer();
+        this.setState("RESULT");
+      }
     }
 
-    // --- Timer ---
+    this.emitCellUpdate();
+  }
 
-    private timerInterval: number | null = null;
+  eraseCell() {
+    if (this.state !== "PLAYING" || !this.selectedCell) return;
 
-    private startTimer() {
-        this.stopTimer();
-        this.timerInterval = window.setInterval(() => {
-            if (this.state === 'PLAYING') {
-                this.elapsedTime = Date.now() - this.startTime;
-                this.emitTime();
-            }
-        }, 1000);
+    const { row, col } = this.selectedCell;
+    const cell = this.board[row][col];
+
+    if (cell.isFixed) return;
+
+    cell.value = null;
+    cell.notes.clear();
+    cell.isError = false;
+    this.emitCellUpdate();
+  }
+
+  toggleNotesMode() {
+    this.notesMode = !this.notesMode;
+  }
+
+  getNotesMode(): boolean {
+    return this.notesMode;
+  }
+
+  getHint() {
+    if (this.state !== "PLAYING" || !this.selectedCell) return;
+    if (this.hintsUsed >= this.maxHints) return; // Check hint limit
+
+    const { row, col } = this.selectedCell;
+    const cell = this.board[row][col];
+
+    if (cell.isFixed) return;
+
+    this.hintsUsed++;
+    cell.value = this.solution[row][col];
+    cell.isFixed = true;
+    cell.notes.clear();
+    cell.isError = false;
+
+    if (this.isPuzzleComplete()) {
+      this.stopTimer();
+      this.setState("RESULT");
     }
 
-    private stopTimer() {
-        if (this.timerInterval !== null) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
+    this.emitCellUpdate();
+  }
+
+  private isPuzzleComplete(): boolean {
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if (this.board[i][j].value === null || this.board[i][j].isError) {
+          return false;
         }
+      }
     }
+    return true;
+  }
 
-    // --- State Management ---
-
-    private setState(newState: GameState) {
-        this.state = newState;
-        this.stateListeners.forEach(l => l(this.state));
+  pause() {
+    if (this.state === "PLAYING") {
+      this.setState("PAUSED");
+      this.stopTimer();
     }
+  }
 
-    getState(): GameState {
-        return this.state;
+  resume() {
+    if (this.state === "PAUSED") {
+      this.setState("PLAYING");
+      this.startTime = Date.now() - this.elapsedTime;
+      this.startTimer();
     }
+  }
 
-    getBoard(): Cell[][] {
-        return this.board;
+  restart() {
+    this.setState("MENU");
+    this.stopTimer();
+  }
+
+  // --- Timer ---
+
+  private timerInterval: number | null = null;
+
+  private startTimer() {
+    this.stopTimer();
+    this.timerInterval = window.setInterval(() => {
+      if (this.state === "PLAYING") {
+        this.elapsedTime = Date.now() - this.startTime;
+        this.emitTime();
+      }
+    }, 1000);
+  }
+
+  private stopTimer() {
+    if (this.timerInterval !== null) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
     }
+  }
 
-    getSelectedCell(): { row: number; col: number } | null {
-        return this.selectedCell;
-    }
+  // --- State Management ---
 
-    getMistakes(): number {
-        return this.mistakes;
-    }
+  private setState(newState: GameState) {
+    this.state = newState;
+    this.stateListeners.forEach((l) => l(this.state));
+  }
 
-    getMaxMistakes(): number {
-        return this.maxMistakes;
-    }
+  getState(): GameState {
+    return this.state;
+  }
 
-    getHintsUsed(): number {
-        return this.hintsUsed;
-    }
+  getBoard(): Cell[][] {
+    return this.board;
+  }
 
-    getMaxHints(): number {
-        return this.maxHints;
-    }
+  getSelectedCell(): { row: number; col: number } | null {
+    return this.selectedCell;
+  }
 
-    getElapsedTime(): number {
-        return this.elapsedTime;
-    }
+  getMistakes(): number {
+    return this.mistakes;
+  }
 
-    isWin(): boolean {
-        return this.state === 'RESULT' && this.mistakes < this.maxMistakes;
-    }
+  getMaxMistakes(): number {
+    return this.maxMistakes;
+  }
 
-    // --- Event Management ---
+  getHintsUsed(): number {
+    return this.hintsUsed;
+  }
 
-    onStateChange(listener: (state: GameState) => void) {
-        this.stateListeners.push(listener);
-    }
+  getMaxHints(): number {
+    return this.maxHints;
+  }
 
-    onCellUpdate(listener: () => void) {
-        this.cellUpdateListeners.push(listener);
-    }
+  getElapsedTime(): number {
+    return this.elapsedTime;
+  }
 
-    onMistake(listener: (mistakes: number) => void) {
-        this.mistakeListeners.push(listener);
-    }
+  isWin(): boolean {
+    return this.state === "RESULT" && this.mistakes < this.maxMistakes;
+  }
 
-    onTimeUpdate(listener: (time: number) => void) {
-        this.timeListeners.push(listener);
-    }
+  // --- Event Management ---
 
-    private emitCellUpdate() {
-        this.cellUpdateListeners.forEach(l => l());
-    }
+  onStateChange(listener: (state: GameState) => void) {
+    this.stateListeners.push(listener);
+  }
 
-    private emitMistake() {
-        this.mistakeListeners.forEach(l => l(this.mistakes));
-    }
+  onCellUpdate(listener: () => void) {
+    this.cellUpdateListeners.push(listener);
+  }
 
-    private emitTime() {
-        this.timeListeners.forEach(l => l(this.elapsedTime));
-    }
+  onMistake(listener: (mistakes: number) => void) {
+    this.mistakeListeners.push(listener);
+  }
 
+  onTimeUpdate(listener: (time: number) => void) {
+    this.timeListeners.push(listener);
+  }
+
+  private emitCellUpdate() {
+    this.cellUpdateListeners.forEach((l) => l());
+  }
+
+  private emitMistake() {
+    this.mistakeListeners.forEach((l) => l(this.mistakes));
+  }
+
+  private emitTime() {
+    this.timeListeners.forEach((l) => l(this.elapsedTime));
+  }
 }
 
 export const game = new Game();

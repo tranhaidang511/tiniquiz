@@ -1,693 +1,754 @@
-import { CheckersAI } from './AI.ts';
+import { CheckersAI } from "./AI.ts";
 
-export type Player = 'RED' | 'BLACK';
-export type PieceType = 'REGULAR' | 'KING';
-export type GameState = 'MENU' | 'PLAYING' | 'RESULT';
+export type Player = "RED" | "BLACK";
+export type PieceType = "REGULAR" | "KING";
+export type GameState = "MENU" | "PLAYING" | "RESULT";
 export type BoardSize = 8 | 10 | 12;
-export type GameMode = 'TWO_PLAYER' | 'VS_AI';
-export type Difficulty = 'EASY' | 'MEDIUM';
+export type GameMode = "TWO_PLAYER" | "VS_AI";
+export type Difficulty = "EASY" | "MEDIUM";
 
 export interface Piece {
-    player: Player;
-    type: PieceType;
-    row: number;
-    col: number;
+  player: Player;
+  type: PieceType;
+  row: number;
+  col: number;
 }
 
 export interface Move {
-    from: { row: number; col: number };
-    to: { row: number; col: number };
-    captures?: { row: number; col: number }[];
+  from: { row: number; col: number };
+  to: { row: number; col: number };
+  captures?: { row: number; col: number }[];
 }
 
 export interface Position {
-    row: number;
-    col: number;
+  row: number;
+  col: number;
 }
 
 class CheckersGame {
-    private boardSize: BoardSize = 8;
-    private forceJump: boolean = true;
-    private difficulty: Difficulty = 'MEDIUM';
-    private board: (Piece | null)[][] = [];
-    private currentPlayer: Player = 'RED';
-    private gameState: GameState = 'MENU';
-    private gameMode: GameMode = 'TWO_PLAYER';
-    private selectedPiece: Piece | null = null;
-    private validMoves: Move[] = [];
-    private moveHistory: Move[] = [];
-    private captureInProgress: boolean = false;
-    private startTime: number = 0;
-    private elapsedTime: number = 0;
-    private timerInterval: number | null = null;
-    private winner: Player | null = null;
-    private ai: CheckersAI;
-    private aiSide: Player | null = null;
-    private isAIThinking: boolean = false;
+  private boardSize: BoardSize = 8;
+  private forceJump: boolean = true;
+  private difficulty: Difficulty = "MEDIUM";
+  private board: (Piece | null)[][] = [];
+  private currentPlayer: Player = "RED";
+  private gameState: GameState = "MENU";
+  private gameMode: GameMode = "TWO_PLAYER";
+  private selectedPiece: Piece | null = null;
+  private validMoves: Move[] = [];
+  private moveHistory: Move[] = [];
+  private captureInProgress: boolean = false;
+  private startTime: number = 0;
+  private elapsedTime: number = 0;
+  private timerInterval: number | null = null;
+  private winner: Player | null = null;
+  private ai: CheckersAI;
+  private aiSide: Player | null = null;
+  private isAIThinking: boolean = false;
 
-    private stateChangeListeners: ((state: GameState) => void)[] = [];
-    private moveListeners: ((move: Move) => void)[] = [];
-    private boardUpdateListeners: (() => void)[] = [];
-    private aiThinkingListeners: ((thinking: boolean) => void)[] = [];
-    private timerUpdateListeners: ((elapsed: number) => void)[] = [];
+  private stateChangeListeners: ((state: GameState) => void)[] = [];
+  private moveListeners: ((move: Move) => void)[] = [];
+  private boardUpdateListeners: (() => void)[] = [];
+  private aiThinkingListeners: ((thinking: boolean) => void)[] = [];
+  private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
-    constructor() {
-        this.ai = new CheckersAI(this);
-        this.initializeBoard();
-    }
+  constructor() {
+    this.ai = new CheckersAI(this);
+    this.initializeBoard();
+  }
 
-    private initializeBoard() {
-        this.board = Array(this.boardSize).fill(null).map(() => Array(this.boardSize).fill(null));
+  private initializeBoard() {
+    this.board = Array(this.boardSize)
+      .fill(null)
+      .map(() => Array(this.boardSize).fill(null));
 
-        // Determine number of rows based on board size
-        // 8x8: 3 rows, 10x10: 4 rows, 12x12: 5 rows
-        const pieceRows = this.boardSize === 8 ? 3 : this.boardSize === 10 ? 4 : 5;
+    // Determine number of rows based on board size
+    // 8x8: 3 rows, 10x10: 4 rows, 12x12: 5 rows
+    const pieceRows = this.boardSize === 8 ? 3 : this.boardSize === 10 ? 4 : 5;
 
-        // Place black pieces (top rows)
-        for (let row = 0; row < pieceRows; row++) {
-            for (let col = 0; col < this.boardSize; col++) {
-                if ((row + col) % 2 === 1) {
-                    this.board[row][col] = {
-                        player: 'BLACK',
-                        type: 'REGULAR',
-                        row,
-                        col
-                    };
-                }
-            }
+    // Place black pieces (top rows)
+    for (let row = 0; row < pieceRows; row++) {
+      for (let col = 0; col < this.boardSize; col++) {
+        if ((row + col) % 2 === 1) {
+          this.board[row][col] = {
+            player: "BLACK",
+            type: "REGULAR",
+            row,
+            col,
+          };
         }
+      }
+    }
 
-        // Place red pieces (bottom rows)
-        for (let row = this.boardSize - pieceRows; row < this.boardSize; row++) {
-            for (let col = 0; col < this.boardSize; col++) {
-                if ((row + col) % 2 === 1) {
-                    this.board[row][col] = {
-                        player: 'RED',
-                        type: 'REGULAR',
-                        row,
-                        col
-                    };
-                }
-            }
+    // Place red pieces (bottom rows)
+    for (let row = this.boardSize - pieceRows; row < this.boardSize; row++) {
+      for (let col = 0; col < this.boardSize; col++) {
+        if ((row + col) % 2 === 1) {
+          this.board[row][col] = {
+            player: "RED",
+            type: "REGULAR",
+            row,
+            col,
+          };
         }
+      }
+    }
+  }
+
+  setBoardSize(size: BoardSize) {
+    this.boardSize = size;
+  }
+
+  setForceJump(enabled: boolean) {
+    this.forceJump = enabled;
+  }
+
+  setGameMode(mode: GameMode) {
+    this.gameMode = mode;
+  }
+
+  setDifficulty(difficulty: Difficulty) {
+    this.difficulty = difficulty;
+    this.ai.setDifficulty(difficulty);
+  }
+
+  setAISide(side: Player | null) {
+    this.aiSide = side;
+  }
+
+  getAISide(): Player | null {
+    return this.aiSide;
+  }
+
+  getForceJump(): boolean {
+    return this.forceJump;
+  }
+
+  getBoardSize(): BoardSize {
+    return this.boardSize;
+  }
+
+  getGameMode(): GameMode {
+    return this.gameMode;
+  }
+
+  getDifficulty(): Difficulty {
+    return this.difficulty;
+  }
+
+  start() {
+    this.initializeBoard();
+    this.currentPlayer = "RED";
+    this.selectedPiece = null;
+    this.validMoves = [];
+    this.moveHistory = [];
+    this.captureInProgress = false;
+    this.startTime = Date.now();
+    this.elapsedTime = 0;
+    this.winner = null;
+    this.isAIThinking = false;
+
+    this.gameState = "PLAYING";
+    this.notifyStateChange();
+    this.startTimer();
+
+    // If AI plays RED (first), trigger move
+    if (this.gameMode === "VS_AI" && this.aiSide === "RED") {
+      this.makeAIMove();
+    }
+  }
+
+  restart() {
+    this.stopTimer();
+    this.gameState = "MENU";
+    this.notifyStateChange();
+  }
+
+  private startTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+    }
+    this.timerInterval = window.setInterval(() => {
+      this.elapsedTime = Date.now() - this.startTime;
+      this.notifyTimerUpdate();
+    }, 1000);
+  }
+
+  private stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  selectPiece(row: number, col: number): boolean {
+    if (this.gameState !== "PLAYING") return false;
+    if (this.isAIThinking) return false;
+
+    // In VS_AI mode, only allow player to select pieces
+    if (this.gameMode === "VS_AI" && this.currentPlayer === this.aiSide) return false;
+
+    const piece = this.board[row][col];
+
+    if (!piece || piece.player !== this.currentPlayer) {
+      return false;
     }
 
-    setBoardSize(size: BoardSize) {
-        this.boardSize = size;
+    if (this.captureInProgress && this.selectedPiece) {
+      if (this.selectedPiece.row !== row || this.selectedPiece.col !== col) {
+        return false;
+      }
     }
 
-    setForceJump(enabled: boolean) {
-        this.forceJump = enabled;
+    this.selectedPiece = piece;
+    this.validMoves = this.calculateValidMoves(piece);
+    this.notifyBoardUpdate();
+    return true;
+  }
+
+  makeMove(toRow: number, toCol: number): boolean {
+    if (!this.selectedPiece || this.gameState !== "PLAYING") {
+      return false;
+    }
+    if (this.isAIThinking) return false;
+
+    const move = this.validMoves.find((m) => m.to.row === toRow && m.to.col === toCol);
+
+    if (!move) {
+      return false;
     }
 
-    setGameMode(mode: GameMode) {
-        this.gameMode = mode;
-    }
+    this.executeMove(move);
+    this.checkKingPromotion(toRow, toCol);
 
-    setDifficulty(difficulty: Difficulty) {
-        this.difficulty = difficulty;
-        this.ai.setDifficulty(difficulty);
-    }
-
-    setAISide(side: Player | null) {
-        this.aiSide = side;
-    }
-
-    getAISide(): Player | null {
-        return this.aiSide;
-    }
-
-    getForceJump(): boolean {
-        return this.forceJump;
-    }
-
-    getBoardSize(): BoardSize {
-        return this.boardSize;
-    }
-
-    getGameMode(): GameMode {
-        return this.gameMode;
-    }
-
-    getDifficulty(): Difficulty {
-        return this.difficulty;
-    }
-
-    start() {
-        this.initializeBoard();
-        this.currentPlayer = 'RED';
-        this.selectedPiece = null;
-        this.validMoves = [];
-        this.moveHistory = [];
-        this.captureInProgress = false;
-        this.startTime = Date.now();
-        this.elapsedTime = 0;
-        this.winner = null;
-        this.isAIThinking = false;
-
-        this.gameState = 'PLAYING';
-        this.notifyStateChange();
-        this.startTimer();
-
-        // If AI plays RED (first), trigger move
-        if (this.gameMode === 'VS_AI' && this.aiSide === 'RED') {
-            this.makeAIMove();
+    if (move.captures && move.captures.length > 0) {
+      const piece = this.board[toRow][toCol];
+      if (piece) {
+        const moreCaptures = this.getCaptureMoves(piece);
+        if (moreCaptures.length > 0) {
+          this.captureInProgress = true;
+          this.selectedPiece = piece;
+          this.validMoves = moreCaptures;
+          this.notifyBoardUpdate();
+          return true;
         }
+      }
     }
 
-    restart() {
-        this.stopTimer();
-        this.gameState = 'MENU';
-        this.notifyStateChange();
+    this.captureInProgress = false;
+    this.selectedPiece = null;
+    this.validMoves = [];
+    this.switchPlayer();
+    this.checkWinCondition();
+
+    // Notify move AFTER switching player for correct turn display
+    if (move) {
+      this.notifyMove(move);
+    }
+    this.notifyBoardUpdate();
+
+    // Trigger AI move if applicable
+    if (
+      this.gameState === "PLAYING" &&
+      this.gameMode === "VS_AI" &&
+      this.currentPlayer === this.aiSide
+    ) {
+      this.makeAIMove();
     }
 
-    private startTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-        }
-        this.timerInterval = window.setInterval(() => {
-            this.elapsedTime = Date.now() - this.startTime;
-            this.notifyTimerUpdate();
-        }, 1000);
-    }
+    return true;
+  }
 
-    private stopTimer() {
-        if (this.timerInterval) {
-            clearInterval(this.timerInterval);
-            this.timerInterval = null;
-        }
-    }
+  private async makeAIMove() {
+    this.isAIThinking = true;
+    this.notifyAIThinking(true);
 
-    selectPiece(row: number, col: number): boolean {
-        if (this.gameState !== 'PLAYING') return false;
-        if (this.isAIThinking) return false;
+    // Small delay for UX
+    setTimeout(() => {
+      const move = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
 
-        // In VS_AI mode, only allow player to select pieces
-        if (this.gameMode === 'VS_AI' && this.currentPlayer === this.aiSide) return false;
-
-        const piece = this.board[row][col];
-
-        if (!piece || piece.player !== this.currentPlayer) {
-            return false;
-        }
-
-        if (this.captureInProgress && this.selectedPiece) {
-            if (this.selectedPiece.row !== row || this.selectedPiece.col !== col) {
-                return false;
-            }
-        }
-
-        this.selectedPiece = piece;
-        this.validMoves = this.calculateValidMoves(piece);
-        this.notifyBoardUpdate();
-        return true;
-    }
-
-    makeMove(toRow: number, toCol: number): boolean {
-        if (!this.selectedPiece || this.gameState !== 'PLAYING') {
-            return false;
-        }
-        if (this.isAIThinking) return false;
-
-        const move = this.validMoves.find(m =>
-            m.to.row === toRow && m.to.col === toCol
-        );
-
-        if (!move) {
-            return false;
-        }
-
-        this.executeMove(move);
-        this.checkKingPromotion(toRow, toCol);
-
-        if (move.captures && move.captures.length > 0) {
-            const piece = this.board[toRow][toCol];
-            if (piece) {
-                const moreCaptures = this.getCaptureMoves(piece);
-                if (moreCaptures.length > 0) {
-                    this.captureInProgress = true;
-                    this.selectedPiece = piece;
-                    this.validMoves = moreCaptures;
-                    this.notifyBoardUpdate();
-                    return true;
-                }
-            }
-        }
-
-        this.captureInProgress = false;
-        this.selectedPiece = null;
-        this.validMoves = [];
-        this.switchPlayer();
-        this.checkWinCondition();
-
-        // Notify move AFTER switching player for correct turn display
-        if (move) {
-            this.notifyMove(move);
-        }
-        this.notifyBoardUpdate();
-
-        // Trigger AI move if applicable
-        if (this.gameState === 'PLAYING' && this.gameMode === 'VS_AI' && this.currentPlayer === this.aiSide) {
-            this.makeAIMove();
-        }
-
-        return true;
-    }
-
-    private async makeAIMove() {
-        this.isAIThinking = true;
-        this.notifyAIThinking(true);
-
-        // Small delay for UX
-        setTimeout(() => {
-            const move = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
-
-            if (move) {
-                this.executeAIMoveSequence(move);
-            } else {
-                // AI has no moves, it loses (should be handled by checkWinCondition, but just in case)
-                this.endGame('RED');
-                this.isAIThinking = false;
-                this.notifyAIThinking(false);
-            }
-        }, 500);
-    }
-
-    private executeAIMoveSequence(move: Move) {
-        // Execute the move
-        this.executeMove(move);
-        this.checkKingPromotion(move.to.row, move.to.col);
-
-        // Check for multi-captures
-        if (move.captures && move.captures.length > 0) {
-            const piece = this.board[move.to.row][move.to.col];
-            if (piece) {
-                const moreCaptures = this.getCaptureMoves(piece);
-                if (moreCaptures.length > 0) {
-                    // AI must continue capturing
-                    // For simplicity in this version, we'll just pick the first available capture
-                    // A better AI would look ahead for the best multi-capture path
-                    // But getBestMove should ideally return the full sequence or we just greedily take next capture
-
-                    // Recursive call with delay to show the jump
-                    setTimeout(() => {
-                        // We need to find which move corresponds to the best continuation
-                        // For now, let's just pick the first one or ask AI again?
-                        // Asking AI again is safer but might be overkill. 
-                        // Let's just pick the first one for now as mandatory capture rule usually implies any capture is fine, 
-                        // though strategy differs.
-                        // Actually, let's ask AI for the best move from this specific state where it MUST capture with this piece
-                        const nextMove = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
-                        if (nextMove) {
-                            this.executeAIMoveSequence(nextMove);
-                        } else {
-                            this.finishAITurn();
-                        }
-                    }, 300);
-                    return;
-                }
-            }
-        }
-
-        this.finishAITurn();
-    }
-
-    private finishAITurn() {
-        this.switchPlayer();
-        this.checkWinCondition();
-
-        // Notify last move AFTER switching for correct turn display
-        if (this.moveHistory.length > 0) {
-            const lastMove = this.moveHistory[this.moveHistory.length - 1];
-            this.notifyMove(lastMove);
-        }
-
-        this.notifyBoardUpdate();
+      if (move) {
+        this.executeAIMoveSequence(move);
+      } else {
+        // AI has no moves, it loses (should be handled by checkWinCondition, but just in case)
+        this.endGame("RED");
         this.isAIThinking = false;
         this.notifyAIThinking(false);
-    }
+      }
+    }, 500);
+  }
 
-    // Made public for AI to use
-    public executeMove(move: Move, board: (Piece | null)[][] = this.board) {
-        const piece = board[move.from.row][move.from.col];
-        if (!piece) return;
+  private executeAIMoveSequence(move: Move) {
+    // Execute the move
+    this.executeMove(move);
+    this.checkKingPromotion(move.to.row, move.to.col);
 
-        if (move.captures) {
-            move.captures.forEach(cap => {
-                board[cap.row][cap.col] = null;
-            });
-        }
+    // Check for multi-captures
+    if (move.captures && move.captures.length > 0) {
+      const piece = this.board[move.to.row][move.to.col];
+      if (piece) {
+        const moreCaptures = this.getCaptureMoves(piece);
+        if (moreCaptures.length > 0) {
+          // AI must continue capturing
+          // For simplicity in this version, we'll just pick the first available capture
+          // A better AI would look ahead for the best multi-capture path
+          // But getBestMove should ideally return the full sequence or we just greedily take next capture
 
-        board[move.from.row][move.from.col] = null;
-
-        // Update piece position if it's the main board
-        if (board === this.board) {
-            piece.row = move.to.row;
-            piece.col = move.to.col;
-            this.moveHistory.push(move);
-            // Move notifyMove to after switchPlayer for correct turn display
-        } else {
-            // For simulation, we need to clone the piece effectively or handle it differently
-            // Since we are modifying the board array directly, we just move the reference
-            // But we shouldn't mutate the original piece object if we are simulating?
-            // Actually, in simulation we clone the board, so the pieces are also cloned (shallow or deep)
-            // We need to be careful about deep cloning the board for AI
-        }
-
-        board[move.to.row][move.to.col] = piece;
-    }
-
-    private checkKingPromotion(row: number, col: number) {
-        const piece = this.board[row][col];
-        if (!piece || piece.type === 'KING') return;
-
-        if ((piece.player === 'RED' && row === 0) ||
-            (piece.player === 'BLACK' && row === this.boardSize - 1)) {
-            piece.type = 'KING';
-        }
-    }
-
-    // Public for AI
-    public calculateValidMoves(piece: Piece, board: (Piece | null)[][] = this.board): Move[] {
-        const captureMoves = this.getCaptureMoves(piece, board);
-
-        if (captureMoves.length > 0) {
-            return captureMoves;
-        }
-
-        // Only enforce mandatory capture if forceJump is enabled
-        if (this.forceJump) {
-            const allPieces = this.getAllPieces(piece.player, board);
-
-            for (const p of allPieces) {
-                if (p.row === piece.row && p.col === piece.col) continue;
-                const otherCaptures = this.getCaptureMoves(p, board);
-                if (otherCaptures.length > 0) {
-                    return [];
-                }
+          // Recursive call with delay to show the jump
+          setTimeout(() => {
+            // We need to find which move corresponds to the best continuation
+            // For now, let's just pick the first one or ask AI again?
+            // Asking AI again is safer but might be overkill.
+            // Let's just pick the first one for now as mandatory capture rule usually implies any capture is fine,
+            // though strategy differs.
+            // Actually, let's ask AI for the best move from this specific state where it MUST capture with this piece
+            const nextMove = this.aiSide ? this.ai.getBestMove(this.board, this.aiSide) : null;
+            if (nextMove) {
+              this.executeAIMoveSequence(nextMove);
+            } else {
+              this.finishAITurn();
             }
+          }, 300);
+          return;
         }
-
-        return this.getRegularMoves(piece, board);
+      }
     }
 
-    // Public for AI
-    public getCaptureMoves(piece: Piece, board: (Piece | null)[][] = this.board): Move[] {
-        const moves: Move[] = [];
-        const directions = piece.type === 'KING'
-            ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
-            : piece.player === 'RED'
-                ? [[-1, -1], [-1, 1]]
-                : [[1, -1], [1, 1]];
+    this.finishAITurn();
+  }
 
-        for (const [dRow, dCol] of directions) {
-            this.findCaptures(piece, dRow, dCol, [], moves, board);
-        }
+  private finishAITurn() {
+    this.switchPlayer();
+    this.checkWinCondition();
 
-        return moves;
+    // Notify last move AFTER switching for correct turn display
+    if (this.moveHistory.length > 0) {
+      const lastMove = this.moveHistory[this.moveHistory.length - 1];
+      this.notifyMove(lastMove);
     }
 
-    private findCaptures(
-        piece: Piece,
-        dRow: number,
-        dCol: number,
-        capturedSoFar: Position[],
-        allMoves: Move[],
-        board: (Piece | null)[][]
+    this.notifyBoardUpdate();
+    this.isAIThinking = false;
+    this.notifyAIThinking(false);
+  }
+
+  // Made public for AI to use
+  public executeMove(move: Move, board: (Piece | null)[][] = this.board) {
+    const piece = board[move.from.row][move.from.col];
+    if (!piece) return;
+
+    if (move.captures) {
+      move.captures.forEach((cap) => {
+        board[cap.row][cap.col] = null;
+      });
+    }
+
+    board[move.from.row][move.from.col] = null;
+
+    // Update piece position if it's the main board
+    if (board === this.board) {
+      piece.row = move.to.row;
+      piece.col = move.to.col;
+      this.moveHistory.push(move);
+      // Move notifyMove to after switchPlayer for correct turn display
+    } else {
+      // For simulation, we need to clone the piece effectively or handle it differently
+      // Since we are modifying the board array directly, we just move the reference
+      // But we shouldn't mutate the original piece object if we are simulating?
+      // Actually, in simulation we clone the board, so the pieces are also cloned (shallow or deep)
+      // We need to be careful about deep cloning the board for AI
+    }
+
+    board[move.to.row][move.to.col] = piece;
+  }
+
+  private checkKingPromotion(row: number, col: number) {
+    const piece = this.board[row][col];
+    if (!piece || piece.type === "KING") return;
+
+    if (
+      (piece.player === "RED" && row === 0) ||
+      (piece.player === "BLACK" && row === this.boardSize - 1)
     ) {
-        const enemyRow = piece.row + dRow;
-        const enemyCol = piece.col + dCol;
-        const landRow = piece.row + 2 * dRow;
-        const landCol = piece.col + 2 * dCol;
+      piece.type = "KING";
+    }
+  }
 
-        if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
-            return;
+  // Public for AI
+  public calculateValidMoves(piece: Piece, board: (Piece | null)[][] = this.board): Move[] {
+    const captureMoves = this.getCaptureMoves(piece, board);
+
+    if (captureMoves.length > 0) {
+      return captureMoves;
+    }
+
+    // Only enforce mandatory capture if forceJump is enabled
+    if (this.forceJump) {
+      const allPieces = this.getAllPieces(piece.player, board);
+
+      for (const p of allPieces) {
+        if (p.row === piece.row && p.col === piece.col) continue;
+        const otherCaptures = this.getCaptureMoves(p, board);
+        if (otherCaptures.length > 0) {
+          return [];
         }
+      }
+    }
 
-        const enemyPiece = board[enemyRow][enemyCol];
-        if (!enemyPiece || enemyPiece.player === piece.player) {
-            return;
+    return this.getRegularMoves(piece, board);
+  }
+
+  // Public for AI
+  public getCaptureMoves(piece: Piece, board: (Piece | null)[][] = this.board): Move[] {
+    const moves: Move[] = [];
+    const directions =
+      piece.type === "KING"
+        ? [
+            [-1, -1],
+            [-1, 1],
+            [1, -1],
+            [1, 1],
+          ]
+        : piece.player === "RED"
+          ? [
+              [-1, -1],
+              [-1, 1],
+            ]
+          : [
+              [1, -1],
+              [1, 1],
+            ];
+
+    for (const [dRow, dCol] of directions) {
+      this.findCaptures(piece, dRow, dCol, [], moves, board);
+    }
+
+    return moves;
+  }
+
+  private findCaptures(
+    piece: Piece,
+    dRow: number,
+    dCol: number,
+    capturedSoFar: Position[],
+    allMoves: Move[],
+    board: (Piece | null)[][]
+  ) {
+    const enemyRow = piece.row + dRow;
+    const enemyCol = piece.col + dCol;
+    const landRow = piece.row + 2 * dRow;
+    const landCol = piece.col + 2 * dCol;
+
+    if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
+      return;
+    }
+
+    const enemyPiece = board[enemyRow][enemyCol];
+    if (!enemyPiece || enemyPiece.player === piece.player) {
+      return;
+    }
+
+    if (capturedSoFar.some((c) => c.row === enemyRow && c.col === enemyCol)) {
+      return;
+    }
+
+    if (board[landRow][landCol] !== null) {
+      return;
+    }
+
+    const newCaptures = [...capturedSoFar, { row: enemyRow, col: enemyCol }];
+    const move: Move = {
+      from: { row: piece.row, col: piece.col }, // Keep original start
+      to: { row: landRow, col: landCol },
+      captures: newCaptures,
+    };
+
+    // If this is a new path or extends an existing one
+    // Note: This logic simplifies multi-jumps.
+    // We add the move. If we find further jumps, we'll add those AS WELL (or instead?)
+    // Standard checkers rules: you must complete the jump sequence.
+    // So we should only add the "terminal" states of jump sequences?
+    // Or add all valid intermediate states? Usually you must complete the jump.
+    // But for UI it's often step-by-step.
+    // For AI, we want the full move.
+    // Let's stick to the current logic: add this move. Then check for extensions.
+    // If extensions exist, we might remove this one if "max capture" is required?
+    // For now, let's just add all valid steps.
+
+    // Actually, for AI we need the full sequence as one move or handle it step-by-step.
+    // My UI handles step-by-step (captureInProgress).
+    // So for AI, getBestMove should probably return the immediate next step.
+
+    allMoves.push(move);
+
+    const tempPiece = { ...piece, row: landRow, col: landCol };
+    const jumpDirections =
+      piece.type === "KING"
+        ? [
+            [-1, -1],
+            [-1, 1],
+            [1, -1],
+            [1, 1],
+          ]
+        : piece.player === "RED"
+          ? [
+              [-1, -1],
+              [-1, 1],
+            ]
+          : [
+              [1, -1],
+              [1, 1],
+            ];
+
+    for (const [nextDRow, nextDCol] of jumpDirections) {
+      this.findMultiCaptures(tempPiece, nextDRow, nextDCol, newCaptures, move, allMoves, board);
+    }
+  }
+
+  private findMultiCaptures(
+    piece: Piece,
+    dRow: number,
+    dCol: number,
+    capturedSoFar: Position[],
+    currentMove: Move,
+    allMoves: Move[],
+    board: (Piece | null)[][]
+  ) {
+    const enemyRow = piece.row + dRow;
+    const enemyCol = piece.col + dCol;
+    const landRow = piece.row + 2 * dRow;
+    const landCol = piece.col + 2 * dCol;
+
+    if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
+      return;
+    }
+
+    const enemyPiece = board[enemyRow][enemyCol];
+    if (!enemyPiece || enemyPiece.player === piece.player) {
+      return;
+    }
+
+    if (capturedSoFar.some((c) => c.row === enemyRow && c.col === enemyCol)) {
+      return;
+    }
+
+    if (board[landRow][landCol] !== null) {
+      return;
+    }
+
+    const newCaptures = [...capturedSoFar, { row: enemyRow, col: enemyCol }];
+
+    // If we found a longer sequence, remove the shorter prefix from valid moves
+    // This enforces "maximize jump" locally if we want, but usually we just allow the user to keep jumping.
+    // For AI, we want to know it CAN jump further.
+    const index = allMoves.indexOf(currentMove);
+    if (index > -1) {
+      allMoves.splice(index, 1);
+    }
+
+    const extendedMove: Move = {
+      from: currentMove.from,
+      to: { row: landRow, col: landCol },
+      captures: newCaptures,
+    };
+
+    allMoves.push(extendedMove);
+
+    const tempPiece = { ...piece, row: landRow, col: landCol };
+    const jumpDirections =
+      piece.type === "KING"
+        ? [
+            [-1, -1],
+            [-1, 1],
+            [1, -1],
+            [1, 1],
+          ]
+        : piece.player === "RED"
+          ? [
+              [-1, -1],
+              [-1, 1],
+            ]
+          : [
+              [1, -1],
+              [1, 1],
+            ];
+
+    for (const [nextDRow, nextDCol] of jumpDirections) {
+      this.findMultiCaptures(
+        tempPiece,
+        nextDRow,
+        nextDCol,
+        newCaptures,
+        extendedMove,
+        allMoves,
+        board
+      );
+    }
+  }
+
+  // Public for AI
+  public getRegularMoves(piece: Piece, board: (Piece | null)[][] = this.board): Move[] {
+    const moves: Move[] = [];
+    const directions =
+      piece.type === "KING"
+        ? [
+            [-1, -1],
+            [-1, 1],
+            [1, -1],
+            [1, 1],
+          ]
+        : piece.player === "RED"
+          ? [
+              [-1, -1],
+              [-1, 1],
+            ]
+          : [
+              [1, -1],
+              [1, 1],
+            ];
+
+    for (const [dRow, dCol] of directions) {
+      const newRow = piece.row + dRow;
+      const newCol = piece.col + dCol;
+
+      if (newRow >= 0 && newRow < this.boardSize && newCol >= 0 && newCol < this.boardSize) {
+        if (board[newRow][newCol] === null) {
+          moves.push({
+            from: { row: piece.row, col: piece.col },
+            to: { row: newRow, col: newCol },
+          });
         }
+      }
+    }
 
-        if (capturedSoFar.some(c => c.row === enemyRow && c.col === enemyCol)) {
-            return;
+    return moves;
+  }
+
+  private switchPlayer() {
+    this.currentPlayer = this.currentPlayer === "RED" ? "BLACK" : "RED";
+  }
+
+  private checkWinCondition() {
+    const redPieces = this.getAllPieces("RED");
+    const blackPieces = this.getAllPieces("BLACK");
+
+    if (redPieces.length === 0) {
+      this.endGame("BLACK");
+    } else if (blackPieces.length === 0) {
+      this.endGame("RED");
+    } else {
+      const hasValidMoves = this.currentPlayerHasMoves();
+      if (!hasValidMoves) {
+        const winner = this.currentPlayer === "RED" ? "BLACK" : "RED";
+        this.endGame(winner);
+      }
+    }
+  }
+
+  private currentPlayerHasMoves(): boolean {
+    const pieces = this.getAllPieces(this.currentPlayer);
+    for (const piece of pieces) {
+      const moves = this.calculateValidMoves(piece);
+      if (moves.length > 0) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Public for AI
+  public getAllPieces(player: Player, board: (Piece | null)[][] = this.board): Piece[] {
+    const pieces: Piece[] = [];
+    for (let row = 0; row < this.boardSize; row++) {
+      for (let col = 0; col < this.boardSize; col++) {
+        const piece = board[row][col];
+        if (piece && piece.player === player) {
+          pieces.push(piece);
         }
-
-        if (board[landRow][landCol] !== null) {
-            return;
-        }
-
-        const newCaptures = [...capturedSoFar, { row: enemyRow, col: enemyCol }];
-        const move: Move = {
-            from: { row: piece.row, col: piece.col }, // Keep original start
-            to: { row: landRow, col: landCol },
-            captures: newCaptures
-        };
-
-        // If this is a new path or extends an existing one
-        // Note: This logic simplifies multi-jumps. 
-        // We add the move. If we find further jumps, we'll add those AS WELL (or instead?)
-        // Standard checkers rules: you must complete the jump sequence.
-        // So we should only add the "terminal" states of jump sequences?
-        // Or add all valid intermediate states? Usually you must complete the jump.
-        // But for UI it's often step-by-step.
-        // For AI, we want the full move.
-        // Let's stick to the current logic: add this move. Then check for extensions.
-        // If extensions exist, we might remove this one if "max capture" is required?
-        // For now, let's just add all valid steps.
-
-        // Actually, for AI we need the full sequence as one move or handle it step-by-step.
-        // My UI handles step-by-step (captureInProgress).
-        // So for AI, getBestMove should probably return the immediate next step.
-
-        allMoves.push(move);
-
-        const tempPiece = { ...piece, row: landRow, col: landCol };
-        const jumpDirections = piece.type === 'KING'
-            ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
-            : piece.player === 'RED'
-                ? [[-1, -1], [-1, 1]]
-                : [[1, -1], [1, 1]];
-
-        for (const [nextDRow, nextDCol] of jumpDirections) {
-            this.findMultiCaptures(tempPiece, nextDRow, nextDCol, newCaptures, move, allMoves, board);
-        }
+      }
     }
+    return pieces;
+  }
 
-    private findMultiCaptures(
-        piece: Piece,
-        dRow: number,
-        dCol: number,
-        capturedSoFar: Position[],
-        currentMove: Move,
-        allMoves: Move[],
-        board: (Piece | null)[][]
-    ) {
-        const enemyRow = piece.row + dRow;
-        const enemyCol = piece.col + dCol;
-        const landRow = piece.row + 2 * dRow;
-        const landCol = piece.col + 2 * dCol;
+  private endGame(winner: Player) {
+    this.stopTimer();
+    this.gameState = "RESULT";
+    this.winner = winner;
+    this.notifyStateChange();
+  }
 
-        if (landRow < 0 || landRow >= this.boardSize || landCol < 0 || landCol >= this.boardSize) {
-            return;
-        }
+  // Public getters
+  getBoard(): (Piece | null)[][] {
+    return this.board;
+  }
 
-        const enemyPiece = board[enemyRow][enemyCol];
-        if (!enemyPiece || enemyPiece.player === piece.player) {
-            return;
-        }
+  getCurrentPlayer(): Player {
+    return this.currentPlayer;
+  }
 
-        if (capturedSoFar.some(c => c.row === enemyRow && c.col === enemyCol)) {
-            return;
-        }
+  getState(): GameState {
+    return this.gameState;
+  }
 
-        if (board[landRow][landCol] !== null) {
-            return;
-        }
+  getSelectedPiece(): Piece | null {
+    return this.selectedPiece;
+  }
 
-        const newCaptures = [...capturedSoFar, { row: enemyRow, col: enemyCol }];
+  getValidMoves(): Move[] {
+    return this.validMoves;
+  }
 
-        // If we found a longer sequence, remove the shorter prefix from valid moves
-        // This enforces "maximize jump" locally if we want, but usually we just allow the user to keep jumping.
-        // For AI, we want to know it CAN jump further.
-        const index = allMoves.indexOf(currentMove);
-        if (index > -1) {
-            allMoves.splice(index, 1);
-        }
+  getMoves(): Move[] {
+    return this.moveHistory;
+  }
 
-        const extendedMove: Move = {
-            from: currentMove.from,
-            to: { row: landRow, col: landCol },
-            captures: newCaptures
-        };
+  getWinner(): Player | null {
+    return this.winner;
+  }
 
-        allMoves.push(extendedMove);
+  getElapsedTime(): number {
+    return this.elapsedTime;
+  }
 
-        const tempPiece = { ...piece, row: landRow, col: landCol };
-        const jumpDirections = piece.type === 'KING'
-            ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
-            : piece.player === 'RED'
-                ? [[-1, -1], [-1, 1]]
-                : [[1, -1], [1, 1]];
+  // Event listeners
+  onStateChange(listener: (state: GameState) => void) {
+    this.stateChangeListeners.push(listener);
+  }
 
-        for (const [nextDRow, nextDCol] of jumpDirections) {
-            this.findMultiCaptures(tempPiece, nextDRow, nextDCol, newCaptures, extendedMove, allMoves, board);
-        }
-    }
+  onMove(listener: (move: Move) => void) {
+    this.moveListeners.push(listener);
+  }
 
-    // Public for AI
-    public getRegularMoves(piece: Piece, board: (Piece | null)[][] = this.board): Move[] {
-        const moves: Move[] = [];
-        const directions = piece.type === 'KING'
-            ? [[-1, -1], [-1, 1], [1, -1], [1, 1]]
-            : piece.player === 'RED'
-                ? [[-1, -1], [-1, 1]]
-                : [[1, -1], [1, 1]];
+  onBoardUpdate(listener: () => void) {
+    this.boardUpdateListeners.push(listener);
+  }
 
-        for (const [dRow, dCol] of directions) {
-            const newRow = piece.row + dRow;
-            const newCol = piece.col + dCol;
+  onAIThinking(listener: (thinking: boolean) => void) {
+    this.aiThinkingListeners.push(listener);
+  }
 
-            if (newRow >= 0 && newRow < this.boardSize && newCol >= 0 && newCol < this.boardSize) {
-                if (board[newRow][newCol] === null) {
-                    moves.push({
-                        from: { row: piece.row, col: piece.col },
-                        to: { row: newRow, col: newCol }
-                    });
-                }
-            }
-        }
+  onTimerUpdate(listener: (elapsed: number) => void) {
+    this.timerUpdateListeners.push(listener);
+  }
 
-        return moves;
-    }
+  private notifyStateChange() {
+    this.stateChangeListeners.forEach((listener) => listener(this.gameState));
+  }
 
-    private switchPlayer() {
-        this.currentPlayer = this.currentPlayer === 'RED' ? 'BLACK' : 'RED';
-    }
+  private notifyMove(move: Move) {
+    this.moveListeners.forEach((listener) => listener(move));
+  }
 
-    private checkWinCondition() {
-        const redPieces = this.getAllPieces('RED');
-        const blackPieces = this.getAllPieces('BLACK');
+  private notifyBoardUpdate() {
+    this.boardUpdateListeners.forEach((listener) => listener());
+  }
 
-        if (redPieces.length === 0) {
-            this.endGame('BLACK');
-        } else if (blackPieces.length === 0) {
-            this.endGame('RED');
-        } else {
-            const hasValidMoves = this.currentPlayerHasMoves();
-            if (!hasValidMoves) {
-                const winner = this.currentPlayer === 'RED' ? 'BLACK' : 'RED';
-                this.endGame(winner);
-            }
-        }
-    }
+  private notifyAIThinking(thinking: boolean) {
+    this.aiThinkingListeners.forEach((listener) => listener(thinking));
+  }
 
-    private currentPlayerHasMoves(): boolean {
-        const pieces = this.getAllPieces(this.currentPlayer);
-        for (const piece of pieces) {
-            const moves = this.calculateValidMoves(piece);
-            if (moves.length > 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Public for AI
-    public getAllPieces(player: Player, board: (Piece | null)[][] = this.board): Piece[] {
-        const pieces: Piece[] = [];
-        for (let row = 0; row < this.boardSize; row++) {
-            for (let col = 0; col < this.boardSize; col++) {
-                const piece = board[row][col];
-                if (piece && piece.player === player) {
-                    pieces.push(piece);
-                }
-            }
-        }
-        return pieces;
-    }
-
-    private endGame(winner: Player) {
-        this.stopTimer();
-        this.gameState = 'RESULT';
-        this.winner = winner;
-        this.notifyStateChange();
-    }
-
-    // Public getters
-    getBoard(): (Piece | null)[][] {
-        return this.board;
-    }
-
-    getCurrentPlayer(): Player {
-        return this.currentPlayer;
-    }
-
-    getState(): GameState {
-        return this.gameState;
-    }
-
-    getSelectedPiece(): Piece | null {
-        return this.selectedPiece;
-    }
-
-    getValidMoves(): Move[] {
-        return this.validMoves;
-    }
-
-    getMoves(): Move[] {
-        return this.moveHistory;
-    }
-
-    getWinner(): Player | null {
-        return this.winner;
-    }
-
-    getElapsedTime(): number {
-        return this.elapsedTime;
-    }
-
-
-    // Event listeners
-    onStateChange(listener: (state: GameState) => void) {
-        this.stateChangeListeners.push(listener);
-    }
-
-    onMove(listener: (move: Move) => void) {
-        this.moveListeners.push(listener);
-    }
-
-    onBoardUpdate(listener: () => void) {
-        this.boardUpdateListeners.push(listener);
-    }
-
-    onAIThinking(listener: (thinking: boolean) => void) {
-        this.aiThinkingListeners.push(listener);
-    }
-
-    onTimerUpdate(listener: (elapsed: number) => void) {
-        this.timerUpdateListeners.push(listener);
-    }
-
-    private notifyStateChange() {
-        this.stateChangeListeners.forEach(listener => listener(this.gameState));
-    }
-
-    private notifyMove(move: Move) {
-        this.moveListeners.forEach(listener => listener(move));
-    }
-
-    private notifyBoardUpdate() {
-        this.boardUpdateListeners.forEach(listener => listener());
-    }
-
-    private notifyAIThinking(thinking: boolean) {
-        this.aiThinkingListeners.forEach(listener => listener(thinking));
-    }
-
-    private notifyTimerUpdate() {
-        this.timerUpdateListeners.forEach(listener => listener(this.elapsedTime));
-    }
+  private notifyTimerUpdate() {
+    this.timerUpdateListeners.forEach((listener) => listener(this.elapsedTime));
+  }
 }
 
 export const game = new CheckersGame();

@@ -1,57 +1,57 @@
 export const ja = {
-    ui: {
-        // Title
-        gameTitle: 'チェス',
+  ui: {
+    // Title
+    gameTitle: "チェス",
 
-        // Menu
-        menuTitle: 'ゲーム設定',
-        startGame: 'ゲーム開始',
+    // Menu
+    menuTitle: "ゲーム設定",
+    startGame: "ゲーム開始",
 
-        // Game
-        newGame: '新しいゲーム',
-        whiteTurn: '白の番',
-        blackTurn: '黒の番',
+    // Game
+    newGame: "新しいゲーム",
+    whiteTurn: "白の番",
+    blackTurn: "黒の番",
 
-        // Stats
-        time: '時間',
-        moves: '手数',
-        totalTime: '時間',
-        totalMoves: '総手数',
+    // Stats
+    time: "時間",
+    moves: "手数",
+    totalTime: "時間",
+    totalMoves: "総手数",
 
-        // Game States
-        check: 'チェック！',
-        checkmate: 'チェックメイト！',
-        stalemate: 'ステイルメイト！',
+    // Game States
+    check: "チェック！",
+    checkmate: "チェックメイト！",
+    stalemate: "ステイルメイト！",
 
-        // Result
-        gameOver: 'ゲーム終了',
-        whiteWins: '白の勝ち！',
-        blackWins: '黒の勝ち！',
-        draw: '引き分け！',
-        playAgain: 'もう一度',
+    // Result
+    gameOver: "ゲーム終了",
+    whiteWins: "白の勝ち！",
+    blackWins: "黒の勝ち！",
+    draw: "引き分け！",
+    playAgain: "もう一度",
 
-        // Promotion
-        promotion: '昇進',
-        queen: '女王',
-        rook: 'ロク',
-        bishop: 'ビショップ',
-        knight: 'ナイト',
+    // Promotion
+    promotion: "昇進",
+    queen: "女王",
+    rook: "ロク",
+    bishop: "ビショップ",
+    knight: "ナイト",
 
-        // Game Mode
-        labelMode: 'ゲームモード',
-        twoPlayers: '二人対戦',
-        vsAI: 'AI対戦',
-        labelDifficulty: '難易度',
-        difficultyEasy: '簡単',
-        difficultyMedium: '普通',
-        difficultyHard: '難しい',
-        labelSide: 'サイド選択',
-        sideWhite: '白',
-        sideBlack: '黒',
-        aiThinking: 'AIが考え中...',
+    // Game Mode
+    labelMode: "ゲームモード",
+    twoPlayers: "二人対戦",
+    vsAI: "AI対戦",
+    labelDifficulty: "難易度",
+    difficultyEasy: "簡単",
+    difficultyMedium: "普通",
+    difficultyHard: "難しい",
+    labelSide: "サイド選択",
+    sideWhite: "白",
+    sideBlack: "黒",
+    aiThinking: "AIが考え中...",
 
-        highScores: 'ハイスコア',
-        rank: '順位',
-        date: '日付',
-    }
+    highScores: "ハイスコア",
+    rank: "順位",
+    date: "日付",
+  },
 };

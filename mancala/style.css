@@ -1,519 +1,534 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 /* Import common styles */
-@import url('../common/style.css');
+@import url("../common/style.css");
 
 :root {
-    --wood-brown: #8b4513;
-    --pit-bg: #654321;
-    --stone-color: #d4af37;
+  --wood-brown: #8b4513;
+  --pit-bg: #654321;
+  --stone-color: #d4af37;
 }
 
 #app {
-    max-width: 1000px;
+  max-width: 1000px;
 }
 
 /* --- Game View --- */
 .game-info {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    flex-wrap: wrap;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  flex-wrap: wrap;
 }
 
 .current-turn {
-    font-size: 1.2rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .turn-indicator {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    box-shadow: var(--shadow-sm);
-    transition: all 0.3s ease;
-    animation: pulse 2s ease-in-out infinite;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .turn-indicator.player1 {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
 .turn-indicator.player2 {
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
 }
 
 .move-count,
 .game-timer {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
 /* --- Mancala Board --- */
 
 #board-container {
-    width: 100%;
-    max-width: 800px;
+  width: 100%;
+  max-width: 800px;
 }
 
 .mancala-board {
-    display: flex;
-    gap: 1rem;
-    padding: 1.5rem;
-    background: linear-gradient(135deg, #8b4513, #654321);
-    border-radius: 1rem;
-    box-shadow: var(--shadow-lg);
-    border: 3px solid #5c3317;
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #8b4513, #654321);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lg);
+  border: 3px solid #5c3317;
 }
 
 .store {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle, #3e2723, #1b0f0a);
-    border-radius: 50%;
-    width: 120px;
-    height: 240px;
-    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
-    border: 3px solid #2c1810;
-    user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #3e2723, #1b0f0a);
+  border-radius: 50%;
+  width: 120px;
+  height: 240px;
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 3px solid #2c1810;
+  user-select: none;
 }
 
 .store .stone-count {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--stone-color);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--stone-color);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .pits-area {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
 }
 
 .pit-row {
-    display: flex;
-    gap: 0.75rem;
-    justify-content: space-around;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-around;
 }
 
 .pit-row.player1-pits {
-    margin-top: auto;
+  margin-top: auto;
 }
 
 .pit {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle, #40302a, #2c1810);
-    border-radius: 50%;
-    aspect-ratio: 1;
-    min-width: 80px;
-    max-width: 120px;
-    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
-    border: 3px solid #1b0f0a;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    user-select: none;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #40302a, #2c1810);
+  border-radius: 50%;
+  aspect-ratio: 1;
+  min-width: 80px;
+  max-width: 120px;
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.5),
+    0 4px 8px rgba(0, 0, 0, 0.3);
+  border: 3px solid #1b0f0a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
 }
 
 .pit.clickable {
-    cursor: pointer;
-    border-color: var(--accent-primary);
-    animation: glow 2s ease-in-out infinite;
+  cursor: pointer;
+  border-color: var(--accent-primary);
+  animation: glow 2s ease-in-out infinite;
 }
 
 .pit.clickable:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5),
-        0 8px 16px rgba(138, 180, 248, 0.4);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow:
+    inset 0 4px 8px rgba(0, 0, 0, 0.5),
+    0 8px 16px rgba(138, 180, 248, 0.4);
 }
 
 .pit .stone-count {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--stone-color);
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--stone-color);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .pit.last-move {
-    box-shadow: 0 0 0 4px #ffd700, inset 0 4px 8px rgba(0, 0, 0, 0.5);
-    animation: lastMovePulse 0.6s ease-out;
+  box-shadow:
+    0 0 0 4px #ffd700,
+    inset 0 4px 8px rgba(0, 0, 0, 0.5);
+  animation: lastMovePulse 0.6s ease-out;
 }
 
 @keyframes lastMovePulse {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 0 4px #ffd700, inset 0 4px 8px rgba(0, 0, 0, 0.5);
-    }
+  0% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 4px #ffd700,
+      inset 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
 
-    50% {
-        transform: scale(1.08);
-        box-shadow: 0 0 0 8px #ffd700, 0 0 20px rgba(255, 215, 0, 0.6), inset 0 4px 8px rgba(0, 0, 0, 0.5);
-    }
+  50% {
+    transform: scale(1.08);
+    box-shadow:
+      0 0 0 8px #ffd700,
+      0 0 20px rgba(255, 215, 0, 0.6),
+      inset 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
 
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 4px #ffd700, inset 0 4px 8px rgba(0, 0, 0, 0.5);
-    }
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 0 4px #ffd700,
+      inset 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
 }
 
 @keyframes glow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 4px 8px rgba(0, 0, 0, 0.5),
+      0 0 8px rgba(138, 180, 248, 0.3);
+  }
 
-    0%,
-    100% {
-        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5),
-            0 0 8px rgba(138, 180, 248, 0.3);
-    }
-
-    50% {
-        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5),
-            0 0 20px rgba(138, 180, 248, 0.6);
-    }
+  50% {
+    box-shadow:
+      inset 0 4px 8px rgba(0, 0, 0, 0.5),
+      0 0 20px rgba(138, 180, 248, 0.6);
+  }
 }
 
 /* --- Stone Visuals --- */
 
 .stones-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 8px;
-    width: 100%;
-    height: 100%;
-    position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px;
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 .stones-container.small {
-    max-width: 80px;
+  max-width: 80px;
 }
 
 .stones-container.large {
-    position: relative;
+  position: relative;
 }
 
 .stone {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #f4d03f, #d4af37, #b8860b);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4),
-        inset 0 1px 2px rgba(255, 255, 255, 0.3);
-    border: 1px solid #8b7355;
-    flex-shrink: 0;
-    animation: stonePop 0.3s ease;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #f4d03f, #d4af37, #b8860b);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  border: 1px solid #8b7355;
+  flex-shrink: 0;
+  animation: stonePop 0.3s ease;
 }
 
 @keyframes stonePop {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
 
-    50% {
-        transform: scale(1.2);
-    }
+  50% {
+    transform: scale(1.2);
+  }
 
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* For stores */
 .store .stone {
-    width: 8px;
-    height: 8px;
+  width: 8px;
+  height: 8px;
 }
 
 .stone-badge {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    background: rgba(0, 0, 0, 0.8);
-    color: var(--stone-color);
-    font-size: 1.2rem;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 12px;
-    border: 2px solid var(--stone-color);
-    min-width: 32px;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--stone-color);
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 2px solid var(--stone-color);
+  min-width: 32px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 @keyframes glow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 4px 8px rgba(0, 0, 0, 0.5),
+      0 0 8px rgba(138, 180, 248, 0.3);
+  }
 
-    0%,
-    100% {
-        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5),
-            0 0 8px rgba(138, 180, 248, 0.3);
-    }
-
-    50% {
-        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5),
-            0 0 20px rgba(138, 180, 248, 0.6);
-    }
+  50% {
+    box-shadow:
+      inset 0 4px 8px rgba(0, 0, 0, 0.5),
+      0 0 20px rgba(138, 180, 248, 0.6);
+  }
 }
 
 /* --- Result View --- */
 .winner-display {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    margin: 2rem 0;
-    font-size: 1.5rem;
-    font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .winner-icon {
-    font-size: 3rem;
-    animation: bounce 1s ease infinite;
+  font-size: 3rem;
+  animation: bounce 1s ease infinite;
 }
 
 @keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
 
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .game-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: var(--bg-secondary);
-    border-radius: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
 }
 
 .stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .stat-label {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent-primary);
 }
 
 /* --- Animations --- */
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
 
-    0%,
-    100% {
-        transform: scale(1);
-    }
-
-    50% {
-        transform: scale(1.05);
-    }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .animate-fade-in {
-    animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.3s ease;
 }
 
 /* --- Responsive --- */
 
 @media (max-width: 768px) {
-    h1 {
-        font-size: 2rem;
-    }
+  h1 {
+    font-size: 2rem;
+  }
 
-    .card {
-        padding: 1.5rem;
-    }
+  .card {
+    padding: 1.5rem;
+  }
 
-    .mancala-board {
-        gap: 0.5rem;
-        padding: 1rem;
-    }
+  .mancala-board {
+    gap: 0.5rem;
+    padding: 1rem;
+  }
 
-    .pits-area {
-        height: 180px;
-        justify-content: space-between;
-    }
+  .pits-area {
+    height: 180px;
+    justify-content: space-between;
+  }
 
-    .store {
-        width: 80px;
-        height: 180px;
-        flex-shrink: 0;
-    }
+  .store {
+    width: 80px;
+    height: 180px;
+    flex-shrink: 0;
+  }
 
-    .store .stone-count {
-        font-size: 1.5rem;
-    }
+  .store .stone-count {
+    font-size: 1.5rem;
+  }
 
-    .pit {
-        min-width: 50px;
-        max-width: 70px;
-    }
+  .pit {
+    min-width: 50px;
+    max-width: 70px;
+  }
 
-    .pit .stone-count {
-        font-size: 1.2rem;
-    }
+  .pit .stone-count {
+    font-size: 1.2rem;
+  }
 
-    .game-info {
-        flex-direction: column;
-        gap: 0.75rem;
-        text-align: center;
-    }
+  .game-info {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
 
-    .mode-selector,
-    .pit-selector {
-        flex-wrap: wrap;
-    }
+  .mode-selector,
+  .pit-selector {
+    flex-wrap: wrap;
+  }
 
-    .game-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
+  .game-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 480px) {
-    .mancala-board {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.75rem;
-        padding: 0.75rem;
-    }
+  .mancala-board {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
 
-    /* Reorder: Player 2 pits at top */
-    .pits-area {
-        width: 100%;
-        order: 1;
-        gap: 0.25rem;
-    }
+  /* Reorder: Player 2 pits at top */
+  .pits-area {
+    width: 100%;
+    order: 1;
+    gap: 0.25rem;
+  }
 
-    .pit-row.player2-pits {
-        order: -1;
-        gap: 0.25rem;
-        /* Move player 2 pits to top */
-    }
+  .pit-row.player2-pits {
+    order: -1;
+    gap: 0.25rem;
+    /* Move player 2 pits to top */
+  }
 
-    .pit-row.player1-pits {
-        order: 1;
-        gap: 0.25rem;
-        /* Keep player 1 pits at bottom */
-    }
+  .pit-row.player1-pits {
+    order: 1;
+    gap: 0.25rem;
+    /* Keep player 1 pits at bottom */
+  }
 
-    /* Smaller pits for mobile */
-    .pit {
-        min-width: 40px;
-        max-width: 60px;
-    }
+  /* Smaller pits for mobile */
+  .pit {
+    min-width: 40px;
+    max-width: 60px;
+  }
 
-    .pit .stone-count {
-        font-size: 0.9rem;
-    }
+  .pit .stone-count {
+    font-size: 0.9rem;
+  }
 
-    /* Smaller stones for mobile */
-    .stone {
-        width: 6px;
-        height: 6px;
-    }
+  /* Smaller stones for mobile */
+  .stone {
+    width: 6px;
+    height: 6px;
+  }
 
-    .store .stone {
-        width: 6px;
-        height: 6px;
-    }
+  .store .stone {
+    width: 6px;
+    height: 6px;
+  }
 
-    /* Stores in a horizontal row between pit rows */
-    .store {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-    }
+  /* Stores in a horizontal row between pit rows */
+  .store {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+  }
 
-    .store .stone-count {
-        font-size: 1.25rem;
-    }
+  .store .stone-count {
+    font-size: 1.25rem;
+  }
 
-    .store:first-of-type {
-        order: 0;
-        justify-self: start;
-        /* Store 1 (left) */
-    }
+  .store:first-of-type {
+    order: 0;
+    justify-self: start;
+    /* Store 1 (left) */
+  }
 
-    .store:last-of-type {
-        order: 0;
-        justify-self: end;
-        /* Store 2 (right) */
-    }
+  .store:last-of-type {
+    order: 0;
+    justify-self: end;
+    /* Store 2 (right) */
+  }
 
-    /* Create a stores row wrapper */
-    .mancala-board {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-areas:
-            "pit2 pit2"
-            "store1 store2"
-            "pit1 pit1";
-        gap: 0.75rem;
-    }
+  /* Create a stores row wrapper */
+  .mancala-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "pit2 pit2"
+      "store1 store2"
+      "pit1 pit1";
+    gap: 0.75rem;
+  }
 
-    .pit-row.player2-pits {
-        grid-area: pit2;
-    }
+  .pit-row.player2-pits {
+    grid-area: pit2;
+  }
 
-    .store:first-of-type {
-        grid-area: store1;
-    }
+  .store:first-of-type {
+    grid-area: store1;
+  }
 
-    .store:last-of-type {
-        grid-area: store2;
-    }
+  .store:last-of-type {
+    grid-area: store2;
+  }
 
-    .pit-row.player1-pits {
-        grid-area: pit1;
-    }
+  .pit-row.player1-pits {
+    grid-area: pit1;
+  }
 
-    .pits-area {
-        display: contents;
-        /* Unwrap pits-area */
-    }
+  .pits-area {
+    display: contents;
+    /* Unwrap pits-area */
+  }
 }

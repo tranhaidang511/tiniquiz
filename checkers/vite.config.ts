@@ -1,12 +1,12 @@
-import { defineConfig } from 'vite';
-import { viteSingleFile } from 'vite-plugin-singlefile';
+import { defineConfig } from "vite";
+import { viteSingleFile } from "vite-plugin-singlefile";
 
 export default defineConfig({
-    root: 'checkers',
-    base: '/checkers/',
-    plugins: [viteSingleFile()],
-    build: {
-        outDir: '../dist/checkers',
-        emptyOutDir: true,
-    }
+  root: "checkers",
+  base: "/checkers/",
+  plugins: [viteSingleFile()],
+  build: {
+    outDir: "../dist/checkers",
+    emptyOutDir: true,
+  },
 });
