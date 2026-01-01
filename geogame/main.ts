@@ -152,10 +152,6 @@ const setupEventListeners = () => {
     btn.addEventListener('click', (e) => {
       const lang = (e.target as HTMLElement).dataset.lang as Language;
       localization.setLanguage(lang);
-
-      // Update active class
-      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-      (e.target as HTMLElement).classList.add('active');
     });
   });
 
@@ -452,7 +448,7 @@ const renderHighScores = () => {
         tr.classList.add('current-run');
       }
 
-      const dateStr = util.formatDate(s.date, localization.language);
+      const dateStr = util.formatDate(s.date, localization.language as any);
 
       tr.innerHTML = `
               <td>${index + 1}</td>
@@ -465,7 +461,11 @@ const renderHighScores = () => {
   }
 };
 
-localization.subscribe(() => {
+localization.subscribe((lang) => {
+  document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === lang);
+  });
   updateTexts();
   populateFilters();
   if (game.getState() === 'RESULT') {

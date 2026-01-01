@@ -7,6 +7,7 @@ import en from './i18n/en';
 import ja from './i18n/ja';
 import vi from './i18n/vi';
 import zh from './i18n/zh';
+import ar from './i18n/ar';
 import { Consent } from '../common/Consent';
 import { util } from '../common/util';
 
@@ -22,7 +23,7 @@ new Consent();
 
 // Initialize Localization
 const savedLang = localStorage.getItem('language') as Language | null;
-const localization = new Localization({ en, ja, vi, zh }, savedLang || 'en');
+const localization = new Localization({ en, ja, vi, zh, ar }, savedLang || 'en');
 
 let savedCustomConfig: { rows: number; cols: number; mines: number } = { rows: 10, cols: 10, mines: 10 };
 
@@ -157,9 +158,6 @@ const setupEventListeners = () => {
         btn.addEventListener('click', (e) => {
             const lang = (e.target as HTMLElement).dataset.lang as Language;
             localization.setLanguage(lang);
-
-            document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-            (e.target as HTMLElement).classList.add('active');
         });
     });
 
@@ -484,7 +482,7 @@ const renderHighScores = () => {
             }
 
 
-            const dateStr = util.formatDate(s.date, localization.language);
+            const dateStr = util.formatDate(s.date, localization.language as any);
 
             tr.innerHTML = `
                 <td>${index + 1}</td>
@@ -497,7 +495,11 @@ const renderHighScores = () => {
 };
 
 // Subscribe to language changes
-localization.subscribe(() => {
+localization.subscribe((lang) => {
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === lang);
+    });
     updateTexts();
     if (game.getState() === 'WON' || game.getState() === 'LOST') {
         displayResult();

@@ -1,0 +1,28 @@
+export default {
+    ui: {
+        gameTitle: "كنس الألغام",
+        gameSetup: "إعداد اللعبة",
+        difficulty: "الصعوبة",
+        beginner: "مبتدئ",
+        easy: "سهل",
+        medium: "متوسط",
+        hard: "صعب",
+        expert: "خبير",
+        custom: "تخصيص",
+        rows: "الصفوف",
+        cols: "الأعمدة",
+        startGame: "ابدأ اللعبة",
+        newGame: "لعبة جديدة",
+        time: "الوقت",
+        mines: "الألغام",
+        gameOver: "انتهت اللعبة!",
+        youWin: "أنت فزت!",
+        congratulations: "تهانينا! لقد قمت بتطهير اللوحة!",
+        hitMine: "لقد اصطدمت بلغم!",
+        totalTime: "الوقت الإجمالي",
+        playAgain: "العب مرة أخرى",
+        highScores: "أعلى النتائج",
+        rank: "الترتيب",
+        date: "التاريخ"
+    }
+};

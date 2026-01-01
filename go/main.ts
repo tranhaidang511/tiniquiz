@@ -7,6 +7,7 @@ import { en } from './i18n/en';
 import { ja } from './i18n/ja';
 import { vi } from './i18n/vi';
 import { zh } from './i18n/zh';
+import ar from './i18n/ar';
 import { Consent } from '../common/Consent';
 import { util } from '../common/util';
 
@@ -23,7 +24,7 @@ let lastScoreDate: number | null = null;
 // Initialize Components
 new Consent();
 const savedLang = localStorage.getItem('language') as Language | null;
-const localization = new Localization({ en, ja, vi, zh }, savedLang || 'en');
+const localization = new Localization({ en, ja, vi, zh, ar }, savedLang || 'en');
 
 // --- State and UI ---
 
@@ -411,14 +412,9 @@ function setupEventListeners() {
 
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const lang = (e.currentTarget as HTMLElement).dataset.lang as Language;
-            if (lang) {
-                localization.setLanguage(lang);
-                updateTexts();
-                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                (e.currentTarget as HTMLElement).classList.add('active');
-                localStorage.setItem('language', lang);
-            }
+            const lang = (e.target as HTMLElement).dataset.lang as Language;
+            localization.setLanguage(lang);
+            localStorage.setItem('language', lang);
         });
     });
 }
@@ -479,6 +475,16 @@ function updateTexts() {
     if (game.getState() === 'RESULT') displayResult();
 }
 
+localization.subscribe((lang) => {
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === lang);
+    });
+    updateTexts();
+    if (game.getState() === 'RESULT') {
+        displayResult();
+    }
+});
 // --- High Scores ---
 
 function saveHighScore() {
@@ -539,7 +545,7 @@ function renderHighScores() {
                 <td>${s.score.toFixed(1)}</td>
                 <td>${s.moves}</td>
                 <td>${util.formatTime(s.time)}</td>
-                <td>${util.formatDate(s.date, localization.language)}</td>
+                <td>${util.formatDate(s.date, localization.language as any)}</td>
             `;
             tbody.appendChild(tr);
         });

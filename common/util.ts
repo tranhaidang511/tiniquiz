@@ -17,6 +17,7 @@ class Util {
                 'vi': 'vi-VN',
                 'ja': 'ja-JP',
                 'zh': 'zh-CN',
+                'ar': 'ar-SA',
                 'en': 'en-US'
             };
             const locale = localeMap[language] || 'en-US';

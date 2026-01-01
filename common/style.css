@@ -1,3 +1,12 @@
+:root {
+    direction: ltr;
+}
+
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
 * {
     margin: 0;
     padding: 0;

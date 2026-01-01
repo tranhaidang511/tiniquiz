@@ -11,6 +11,7 @@ import { en } from './i18n/en.js';
 import { ja } from './i18n/ja.js';
 import { vi } from './i18n/vi.js';
 import { zh } from './i18n/zh.js';
+import { ar } from './i18n/ar.js';
 
 // --- Types ---
 interface HighScore {
@@ -32,17 +33,26 @@ const BOARD_HEIGHT = PADDING * 2 + (ROWS - 1) * CELL_SIZE;
 // --- Initialization ---
 new Consent();
 const savedLang = localStorage.getItem('language') as Language | null;
-const localization = new Localization({ en, ja, vi, zh }, savedLang || 'en');
+const localization = new Localization({ en, ja, vi, zh, ar }, savedLang || 'en');
+
+localization.subscribe((lang) => {
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === lang);
+    });
+    updateTexts();
+    if (game.getState() === 'RESULT') {
+        displayResult();
+    }
+});
 
 function init() {
     setupEventListeners();
     loadSetup();
 
     // Initial localization
-    updateTexts();
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.toggle('active', (btn as HTMLElement).dataset.lang === localization.language);
-    });
+    // The subscription handles initial updateTexts and active button state
+    localization.setLanguage(localization.language); // Trigger subscription for initial setup
 
     // Check if game was already running (reload) or start fresh
     // For now, always show menu on load
@@ -73,9 +83,6 @@ function setupEventListeners() {
             if (lang) {
                 localization.setLanguage(lang);
                 localStorage.setItem('language', lang);
-                document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                updateTexts();
                 const currentState = game.getState();
                 if (currentState === 'PLAYING' || currentState === 'CHECK') {
                     updateGameInfo();
@@ -570,11 +577,12 @@ function renderHighScores() {
             if (s.date === lastScoreDate) {
                 tr.classList.add('current-run');
             }
+            const dateStr = util.formatDate(s.date, localization.language as any);
             tr.innerHTML = `
                 <td>${i + 1}</td>
                 <td>${s.moves}</td>
                 <td>${util.formatTime(s.time)}</td>
-                <td>${util.formatDate(s.date, localization.language)}</td>
+                <td>${dateStr}</td>
             `;
             tbody.appendChild(tr);
         });
