@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeEach } from "vitest";
-import { Game } from '../../src/sudoku/Game';
+import { Game } from "../../src/sudoku/Game";
 
 describe("Sudoku Game Logic", () => {
   let game: Game;

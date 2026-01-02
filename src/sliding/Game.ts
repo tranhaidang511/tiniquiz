@@ -18,7 +18,7 @@ export class Game {
   private movesListeners: ((moves: number) => void)[] = [];
   private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
-  constructor() { }
+  constructor() {}
 
   // --- Setup ---
 

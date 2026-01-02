@@ -326,7 +326,6 @@ const renderBoard = () => {
   bg.setAttribute("height", "600");
   bg.setAttribute("rx", "8");
 
-
   if (boardStyle === "XO") {
     bg.setAttribute("fill", "#f8f9fa"); // Brighter, close to white
     bg.setAttribute("stroke", "#e2e8f0");
@@ -801,8 +800,6 @@ const displayResult = () => {
   const totalMoves = document.getElementById("total-moves");
   const totalTime = document.getElementById("total-time");
 
-
-
   if (totalMoves) {
     totalMoves.textContent = game.getMoves().length.toString();
   }
@@ -819,9 +816,7 @@ const displayResult = () => {
 
       if (boardStyle === "XO") {
         playerWinsText =
-          winner === "BLACK"
-            ? localization.getUIText("winsX")
-            : localization.getUIText("winsO");
+          winner === "BLACK" ? localization.getUIText("winsX") : localization.getUIText("winsO");
       } else {
         playerWinsText =
           winner === "BLACK"

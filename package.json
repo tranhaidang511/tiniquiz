@@ -12,7 +12,7 @@
     "format:write": "prettier --write .",
     "test": "vitest",
     "test:run": "vitest run",
-    "build:all": "node scripts/build-all.js && vite build",
+    "build:all": "vite build && node scripts/build-all.js",
     "cap:sync": "npx cap sync",
     "android:open": "npx cap open android",
     "ios:open": "npx cap open ios",

@@ -210,7 +210,12 @@ function renderBoard() {
         if (lastMove && lastMove.row === r && lastMove.col === c) {
           className += " last-move";
           // Only animate if the very last action was THIS stone placement
-          if (lastAction && lastAction.pos && lastAction.pos.row === r && lastAction.pos.col === c) {
+          if (
+            lastAction &&
+            lastAction.pos &&
+            lastAction.pos.row === r &&
+            lastAction.pos.col === c
+          ) {
             className += " animate";
           }
         }

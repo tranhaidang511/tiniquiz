@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeEach } from "vitest";
-import { CheckersGame } from '../../src/checkers/Game';
+import { CheckersGame } from "../../src/checkers/Game";
 
 describe("Checkers Game Logic", () => {
   let game: CheckersGame;

@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeEach } from "vitest";
-import { OthelloGame } from '../../src/othello/Game';
+import { OthelloGame } from "../../src/othello/Game";
 
 describe("Othello Game Logic", () => {
   let game: OthelloGame;

@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeEach } from "vitest";
-import { Game } from '../../src/gomoku/Game';
+import { Game } from "../../src/gomoku/Game";
 
 describe("Gomoku Game Logic", () => {
   let game: Game;

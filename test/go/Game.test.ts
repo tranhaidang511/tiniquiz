@@ -1,5 +1,5 @@
 import { expect, test, describe, beforeEach } from "vitest";
-import { GoGame } from '../../src/go/Game';
+import { GoGame } from "../../src/go/Game";
 
 describe("Go Game Logic", () => {
   let game: GoGame;

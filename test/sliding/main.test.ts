@@ -4,8 +4,8 @@ import en from "../../src/sliding/i18n/en";
 
 // Mock DOM since main.ts interacts with it heavily
 describe("Sliding Puzzle UI Integration", () => {
-    beforeEach(() => {
-        document.body.innerHTML = `
+  beforeEach(() => {
+    document.body.innerHTML = `
             <div id="game-title"></div>
             <div id="menu-view"></div>
             <div id="game-view" class="hidden"></div>
@@ -39,16 +39,16 @@ describe("Sliding Puzzle UI Integration", () => {
             <div id="reference-board"></div>
             <input type="checkbox" id="show-numbers-check" />
         `;
-    });
+  });
 
-    test("Localization should update UI text", () => {
-        const localization = new Localization({ en, ja: en, vi: en, zh: en, ar: en }, "en");
-        // Simple verification that we can get text
-        expect(localization.getUIText("gameTitle")).toBe(en.ui.gameTitle);
-    });
+  test("Localization should update UI text", () => {
+    const localization = new Localization({ en, ja: en, vi: en, zh: en, ar: en }, "en");
+    // Simple verification that we can get text
+    expect(localization.getUIText("gameTitle")).toBe(en.ui.gameTitle);
+  });
 
-    // Note: Testing actual main.ts requires complex mocking of imports
-    // because it executes immediately. Usually, we'd refactor main.ts
-    // to export an init function, but for now we'll focus on the logic
-    // and basic DOM availability.
+  // Note: Testing actual main.ts requires complex mocking of imports
+  // because it executes immediately. Usually, we'd refactor main.ts
+  // to export an init function, but for now we'll focus on the logic
+  // and basic DOM availability.
 });

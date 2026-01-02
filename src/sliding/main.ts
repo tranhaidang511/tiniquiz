@@ -11,9 +11,12 @@ import ar from "./i18n/ar";
 import { Consent } from "../common/Consent";
 import { util } from "../common/util";
 
+import natureImg from "./assets/nature.png";
+import cartoonImg from "./assets/cartoon.png";
+
 const IMAGES = {
-  NATURE: "./assets/nature.png",
-  CARTOON: "./assets/cartoon.png",
+  NATURE: natureImg,
+  CARTOON: cartoonImg,
 };
 
 interface HighScore {
@@ -91,7 +94,8 @@ const loadSetup = () => {
 const updateTexts = () => {
   document.getElementById("game-title")!.textContent = localization.getUIText("gameTitle");
   document.getElementById("menu-title")!.textContent = localization.getUIText("gameSetup");
-  document.getElementById("label-background")!.textContent = localization.getUIText("labelBackground");
+  document.getElementById("label-background")!.textContent =
+    localization.getUIText("labelBackground");
   document.getElementById("opt-bg-none")!.textContent = localization.getUIText("bgNone");
   document.getElementById("opt-bg-nature")!.textContent = localization.getUIText("bgNature");
   document.getElementById("opt-bg-cartoon")!.textContent = localization.getUIText("bgCartoon");
