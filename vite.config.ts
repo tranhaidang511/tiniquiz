@@ -9,7 +9,6 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: resolve(__dirname, "index.html"),
-                menu: resolve(__dirname, "menu/index.html"),
                 minesweeper: resolve(__dirname, "minesweeper/index.html"),
                 sudoku: resolve(__dirname, "sudoku/index.html"),
                 sliding: resolve(__dirname, "sliding/index.html"),
@@ -25,6 +24,6 @@ export default defineConfig({
         },
     },
     server: {
-        open: "/menu/index.html",
+        open: "/index.html",
     },
 });
