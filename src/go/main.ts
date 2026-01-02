@@ -205,9 +205,14 @@ function renderBoard() {
 
         let className = `stone ${player.toLowerCase()}`;
 
-        // Only animate the stone that was just placed
+        const lastAction = game.getLastAction();
+        // Always mark the last played stone
         if (lastMove && lastMove.row === r && lastMove.col === c) {
-          className += " animate last-move";
+          className += " last-move";
+          // Only animate if the very last action was THIS stone placement
+          if (lastAction && lastAction.pos && lastAction.pos.row === r && lastAction.pos.col === c) {
+            className += " animate";
+          }
         }
 
         circle.setAttribute("class", className);

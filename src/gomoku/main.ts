@@ -60,12 +60,14 @@ const renderApp = () => {
 const saveSetup = () => {
   const modeBtn = document.querySelector(".mode-btn.active") as HTMLElement;
   const sizeBtn = document.querySelector(".size-btn.active") as HTMLElement;
+  const styleBtn = document.querySelector(".style-btn.active") as HTMLElement;
 
   if (modeBtn && sizeBtn) {
     const setup = {
       mode: modeBtn.dataset.mode,
       size: sizeBtn.dataset.size,
       side: (document.querySelector(".side-btn.active") as HTMLElement)?.dataset.side || "BLACK",
+      style: styleBtn?.dataset.style || "GO",
     };
     localStorage.setItem("gomoku_setup", JSON.stringify(setup));
   }
@@ -118,7 +120,38 @@ const loadSetup = () => {
         }
       }
 
+      // Restore Style
+      if ("style" in JSON.parse(saved)) {
+        const { style } = JSON.parse(saved);
+        if (style) {
+          document.querySelectorAll(".style-btn").forEach((btn) => {
+            const btnStyle = (btn as HTMLElement).dataset.style;
+            if (btnStyle === style) {
+              btn.classList.add("active");
+            } else {
+              btn.classList.remove("active");
+            }
+          });
+        }
+      }
+
+      // Restore Style
+      if ("style" in JSON.parse(saved)) {
+        const { style } = JSON.parse(saved);
+        if (style) {
+          document.querySelectorAll(".style-btn").forEach((btn) => {
+            const btnStyle = (btn as HTMLElement).dataset.style;
+            if (btnStyle === style) {
+              btn.classList.add("active");
+            } else {
+              btn.classList.remove("active");
+            }
+          });
+        }
+      }
+
       toggleSideSelector();
+      updateTexts();
     }
   } catch (e) {
     console.error("Failed to load Gomoku setup:", e);
@@ -137,8 +170,24 @@ const updateTexts = () => {
   document.getElementById("mode-vs-ai")!.textContent = localization.getUIText("vsAI");
   document.getElementById("label-board-size")!.textContent = localization.getUIText("boardSize");
   document.getElementById("label-side")!.textContent = localization.getUIText("labelSide");
-  document.getElementById("side-black")!.textContent = localization.getUIText("sideBlack");
-  document.getElementById("side-white")!.textContent = localization.getUIText("sideWhite");
+
+  const styleBtn = document.querySelector(".style-btn.active") as HTMLElement;
+  const boardStyle = styleBtn?.dataset.style || "GO";
+
+  if (boardStyle === "XO") {
+    document.getElementById("side-black")!.textContent = localization.getUIText("sideX");
+    document.getElementById("side-white")!.textContent = localization.getUIText("sideO");
+  } else {
+    document.getElementById("side-black")!.textContent = localization.getUIText("sideBlack");
+    document.getElementById("side-white")!.textContent = localization.getUIText("sideWhite");
+  }
+
+  document.getElementById("label-board-style")!.textContent = localization.getUIText("boardStyle");
+  document.querySelectorAll(".style-btn").forEach((btn) => {
+    const style = (btn as HTMLElement).dataset.style;
+    if (style === "GO") btn.textContent = localization.getUIText("styleGo");
+    if (style === "XO") btn.textContent = localization.getUIText("styleXO");
+  });
   document.getElementById("start-btn")!.textContent = localization.getUIText("startGame");
   // Game view
   document.getElementById("label-move")!.textContent = localization.getUIText("move");
@@ -210,6 +259,16 @@ const setupEventListeners = () => {
     });
   });
 
+  // Board Style selection
+  document.querySelectorAll(".style-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const target = e.currentTarget as HTMLElement;
+      document.querySelectorAll(".style-btn").forEach((b) => b.classList.remove("active"));
+      target.classList.add("active");
+      updateTexts();
+    });
+  });
+
   // Start game
   document.getElementById("start-btn")?.addEventListener("click", () => {
     saveSetup();
@@ -251,22 +310,44 @@ const renderBoard = () => {
   const boardSize = game.getBoardSize();
   const padding = 30;
   const boardWidth = 600 - 2 * padding;
-  const cellSize = boardWidth / (boardSize - 1);
+
+  const styleBtn = document.querySelector(".style-btn.active") as HTMLElement;
+  const boardStyle = styleBtn?.dataset.style || "GO";
+
+  // Calculate cell size based on style
+  // GO: Intersections (size-1 spaces)
+  // XO: Cells (size spaces)
+  const cellSize = boardStyle === "XO" ? boardWidth / boardSize : boardWidth / (boardSize - 1);
 
   // Background
   const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   bg.setAttribute("width", "600");
+  bg.setAttribute("width", "600");
   bg.setAttribute("height", "600");
-  bg.setAttribute("fill", "var(--board-color)");
   bg.setAttribute("rx", "8");
+
+
+  if (boardStyle === "XO") {
+    bg.setAttribute("fill", "#f8f9fa"); // Brighter, close to white
+    bg.setAttribute("stroke", "#e2e8f0");
+    bg.setAttribute("stroke-width", "2");
+  } else {
+    bg.setAttribute("fill", "var(--board-color)");
+  }
   svg.appendChild(bg);
 
   // Grid lines
   const gridGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  gridGroup.setAttribute("stroke", "var(--board-line)");
+  if (boardStyle === "XO") {
+    gridGroup.setAttribute("stroke", "#cbd5e0"); // Lighter grid for XO
+  } else {
+    gridGroup.setAttribute("stroke", "var(--board-line)");
+  }
   gridGroup.setAttribute("stroke-width", "1.5");
 
-  for (let i = 0; i < boardSize; i++) {
+  // Draw grid
+  const lineCount = boardStyle === "XO" ? boardSize + 1 : boardSize;
+  for (let i = 0; i < lineCount; i++) {
     const pos = padding + i * cellSize;
 
     // Horizontal line
@@ -319,27 +400,30 @@ const renderBoard = () => {
     ];
   }
 
-  starPoints.forEach(([row, col]) => {
-    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    circle.setAttribute("cx", (padding + col * cellSize).toString());
-    circle.setAttribute("cy", (padding + row * cellSize).toString());
-    circle.setAttribute("r", "4");
-    circle.setAttribute("fill", "var(--board-line)");
-    svg.appendChild(circle);
-  });
+  if (boardStyle === "XO") {
+    // Don't show star points in XO mode
+  } else {
+    starPoints.forEach(([row, col]) => {
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", (padding + col * cellSize).toString());
+      circle.setAttribute("cy", (padding + row * cellSize).toString());
+      circle.setAttribute("r", "4");
+      circle.setAttribute("fill", "var(--board-line)");
+      svg.appendChild(circle);
+    });
+  }
 
   // Stones group
   const stonesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
   stonesGroup.setAttribute("id", "stones-group");
   svg.appendChild(stonesGroup);
 
-  // Hover stone
-  const hoverStone = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  hoverStone.setAttribute("r", (cellSize * 0.42).toString());
-  hoverStone.setAttribute("class", "stone-hover");
-  hoverStone.style.opacity = "0";
-  hoverStone.style.pointerEvents = "none";
-  svg.appendChild(hoverStone);
+  // Hover element group
+  const hoverGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  hoverGroup.setAttribute("class", "stone-hover-group");
+  hoverGroup.style.opacity = "0";
+  hoverGroup.style.pointerEvents = "none";
+  svg.appendChild(hoverGroup);
 
   // Create transparent hit area for mouse events
   const hitArea = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -352,28 +436,86 @@ const renderBoard = () => {
 
   hitArea.addEventListener("mousemove", (e) => {
     if (game.getState() !== "PLAYING") {
-      hoverStone.style.opacity = "0";
+      hoverGroup.style.opacity = "0";
       return;
     }
 
     const rect = svg.getBoundingClientRect();
     const scale = 600 / rect.width;
-    const col = Math.round(((e.clientX - rect.left) * scale - padding) / cellSize);
-    const row = Math.round(((e.clientY - rect.top) * scale - padding) / cellSize);
+    const x = (e.clientX - rect.left) * scale;
+    const y = (e.clientY - rect.top) * scale;
+
+    let col, row;
+    if (boardStyle === "XO") {
+      // Hit detection for cells
+      col = Math.floor((x - padding) / cellSize);
+      row = Math.floor((y - padding) / cellSize);
+    } else {
+      // Hit detection for intersections
+      col = Math.round((x - padding) / cellSize);
+      row = Math.round((y - padding) / cellSize);
+    }
 
     if (row >= 0 && row < boardSize && col >= 0 && col < boardSize && !game.getBoard()[row][col]) {
       const currentPlayer = game.getCurrentPlayer();
-      hoverStone.setAttribute("cx", (padding + col * cellSize).toString());
-      hoverStone.setAttribute("cy", (padding + row * cellSize).toString());
-      hoverStone.setAttribute("class", `stone-hover ${currentPlayer.toLowerCase()}`);
-      hoverStone.style.opacity = "0.4";
+      let cx, cy;
+
+      if (boardStyle === "XO") {
+        cx = padding + col * cellSize + cellSize / 2;
+        cy = padding + row * cellSize + cellSize / 2;
+      } else {
+        cx = padding + col * cellSize;
+        cy = padding + row * cellSize;
+      }
+
+      // Clear previous hover content
+      hoverGroup.innerHTML = "";
+
+      if (boardStyle === "XO") {
+        if (currentPlayer === "BLACK") {
+          // Draw X
+          const size = cellSize * 0.6;
+          const x1 = cx - size / 2;
+          const y1 = cy - size / 2;
+          const x2 = cx + size / 2;
+          const y2 = cy + size / 2;
+
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("d", `M${x1},${y1} L${x2},${y2} M${x2},${y1} L${x1},${y2}`);
+          path.setAttribute("stroke", "var(--accent-secondary)");
+          path.setAttribute("stroke-width", "2");
+          path.setAttribute("stroke-linecap", "round");
+          path.setAttribute("class", "stone-hover xo");
+          hoverGroup.appendChild(path);
+        } else {
+          // Draw O
+          const hoverCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          hoverCircle.setAttribute("cx", cx.toString());
+          hoverCircle.setAttribute("cy", cy.toString());
+          hoverCircle.setAttribute("r", (cellSize * 0.35).toString());
+          hoverCircle.setAttribute("fill", "transparent");
+          hoverCircle.setAttribute("stroke", "var(--accent-primary)");
+          hoverCircle.setAttribute("stroke-width", "2");
+          hoverCircle.setAttribute("class", "stone-hover xo");
+          hoverGroup.appendChild(hoverCircle);
+        }
+      } else {
+        const hoverCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        hoverCircle.setAttribute("cx", cx.toString());
+        hoverCircle.setAttribute("cy", cy.toString());
+        hoverCircle.setAttribute("r", (cellSize * 0.42).toString());
+        hoverCircle.setAttribute("class", `stone-hover ${currentPlayer.toLowerCase()}`);
+        hoverGroup.appendChild(hoverCircle);
+      }
+
+      hoverGroup.style.opacity = "0.4";
     } else {
-      hoverStone.style.opacity = "0";
+      hoverGroup.style.opacity = "0";
     }
   });
 
   hitArea.addEventListener("mouseleave", () => {
-    hoverStone.style.opacity = "0";
+    hoverGroup.style.opacity = "0";
   });
 
   hitArea.addEventListener("click", (e) => {
@@ -388,8 +530,14 @@ const renderBoard = () => {
     const boardX = x * scale;
     const boardY = y * scale;
 
-    const col = Math.round((boardX - padding) / cellSize);
-    const row = Math.round((boardY - padding) / cellSize);
+    let col, row;
+    if (boardStyle === "XO") {
+      col = Math.floor((boardX - padding) / cellSize);
+      row = Math.floor((boardY - padding) / cellSize);
+    } else {
+      col = Math.round((boardX - padding) / cellSize);
+      row = Math.round((boardY - padding) / cellSize);
+    }
 
     if (row >= 0 && row < boardSize && col >= 0 && col < boardSize) {
       game.makeMove(row, col);
@@ -407,11 +555,67 @@ const addStone = (stone: Stone) => {
   const boardSize = game.getBoardSize();
   const padding = 30;
   const boardWidth = 600 - 2 * padding;
-  const cellSize = boardWidth / (boardSize - 1);
+  const styleBtn = document.querySelector(".style-btn.active") as HTMLElement;
+  const boardStyle = styleBtn?.dataset.style || "GO";
+
+  const cellSize = boardStyle === "XO" ? boardWidth / boardSize : boardWidth / (boardSize - 1);
+  let cx, cy;
+
+  if (boardStyle === "XO") {
+    cx = padding + stone.col * cellSize + cellSize / 2;
+    cy = padding + stone.row * cellSize + cellSize / 2;
+  } else {
+    cx = padding + stone.col * cellSize;
+    cy = padding + stone.row * cellSize;
+  }
+
   const stoneRadius = cellSize * 0.42;
 
-  const cx = padding + stone.col * cellSize;
-  const cy = padding + stone.row * cellSize;
+  if (boardStyle === "XO") {
+    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    group.classList.add("stone-animate");
+    group.classList.add("last-move-target"); // Add class for identifying last move in XO mode
+
+    if (stone.player === "BLACK") {
+      // Draw X
+      // Use Accent Secondary (Red-ish) for Black/X
+      const size = cellSize * 0.6;
+      const x1 = cx - size / 2;
+      const y1 = cy - size / 2;
+      const x2 = cx + size / 2;
+      const y2 = cy + size / 2;
+
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", `M${x1},${y1} L${x2},${y2} M${x2},${y1} L${x1},${y2}`);
+      path.setAttribute("stroke", "var(--accent-secondary)");
+      path.setAttribute("stroke-width", "4");
+      path.setAttribute("stroke-linecap", "round");
+      group.appendChild(path);
+    } else {
+      // Draw O
+      // Use Accent Primary (Blue-ish) for White/O
+      const radius = cellSize * 0.35;
+      const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", cx.toString());
+      circle.setAttribute("cy", cy.toString());
+      circle.setAttribute("r", radius.toString());
+      circle.setAttribute("stroke", "var(--accent-primary)");
+      circle.setAttribute("stroke-width", "4");
+      circle.setAttribute("fill", "transparent");
+      group.appendChild(circle);
+    }
+
+    stonesGroup.appendChild(group);
+
+    // Update last move highlight specific for XO
+    const previousLast = svg.querySelector(".xo-last-move");
+    if (previousLast) {
+      previousLast.classList.remove("xo-last-move");
+    }
+    group.classList.add("xo-last-move");
+
+    return;
+  }
 
   // Stone shadow
   const shadow = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
@@ -484,14 +688,28 @@ const updateGameInfo = () => {
   const moves = game.getMoves();
 
   if (turnIndicator) {
+    const styleBtn = document.querySelector(".style-btn.active") as HTMLElement;
+    const boardStyle = styleBtn?.dataset.style || "GO";
     turnIndicator.className = `turn-indicator ${currentPlayer.toLowerCase()}`;
+    if (boardStyle === "XO") {
+      turnIndicator.classList.add("xo");
+    }
   }
 
   if (turnText) {
-    turnText.textContent =
-      currentPlayer === "BLACK"
-        ? localization.getUIText("blackTurn")
-        : localization.getUIText("whiteTurn");
+    const styleBtn = document.querySelector(".style-btn.active") as HTMLElement;
+    const boardStyle = styleBtn?.dataset.style || "GO";
+    if (boardStyle === "XO") {
+      turnText.textContent =
+        currentPlayer === "BLACK"
+          ? localization.getUIText("turnX")
+          : localization.getUIText("turnO");
+    } else {
+      turnText.textContent =
+        currentPlayer === "BLACK"
+          ? localization.getUIText("blackTurn")
+          : localization.getUIText("whiteTurn");
+    }
   }
 
   if (moveNumber) {
@@ -583,6 +801,8 @@ const displayResult = () => {
   const totalMoves = document.getElementById("total-moves");
   const totalTime = document.getElementById("total-time");
 
+
+
   if (totalMoves) {
     totalMoves.textContent = game.getMoves().length.toString();
   }
@@ -593,13 +813,24 @@ const displayResult = () => {
 
   if (winner) {
     if (winnerDisplay) {
-      const playerWinsText =
-        winner === "BLACK"
-          ? localization.getUIText("blackPlayerWins")
-          : localization.getUIText("whitePlayerWins");
+      let playerWinsText;
+      const styleBtn = document.querySelector(".style-btn.active") as HTMLElement;
+      const boardStyle = styleBtn?.dataset.style || "GO";
+
+      if (boardStyle === "XO") {
+        playerWinsText =
+          winner === "BLACK"
+            ? localization.getUIText("winsX")
+            : localization.getUIText("winsO");
+      } else {
+        playerWinsText =
+          winner === "BLACK"
+            ? localization.getUIText("blackPlayerWins")
+            : localization.getUIText("whitePlayerWins");
+      }
 
       winnerDisplay.innerHTML = `
-        <div class="winner-stone ${winner.toLowerCase()}"></div>
+        <div class="winner-stone ${winner.toLowerCase()} ${boardStyle === "XO" ? "xo" : ""}"></div>
         <span>${playerWinsText}</span>
       `;
     }

@@ -1,6 +1,6 @@
 export type GameState = "MENU" | "PLAYING" | "WON";
 export type BoardSize = 3 | 4 | 5 | 6 | 7;
-export type PuzzleType = "NUMBERS" | "IMAGE";
+export type Background = "NONE" | "NATURE" | "CARTOON";
 
 export class Game {
   private state: GameState = "MENU";
@@ -8,7 +8,7 @@ export class Game {
   private board: (number | null)[] = [];
   private emptyIndex: number = 0;
   private moves: number = 0;
-  private puzzleType: PuzzleType = "NUMBERS";
+  private background: Background = "NONE";
   private startTime: number = 0;
   private elapsedTime: number = 0;
 
@@ -18,7 +18,7 @@ export class Game {
   private movesListeners: ((moves: number) => void)[] = [];
   private timerUpdateListeners: ((elapsed: number) => void)[] = [];
 
-  constructor() {}
+  constructor() { }
 
   // --- Setup ---
 
@@ -26,8 +26,8 @@ export class Game {
     this.boardSize = size;
   }
 
-  setPuzzleType(type: PuzzleType) {
-    this.puzzleType = type;
+  setBackground(bg: Background) {
+    this.background = bg;
   }
 
   getBoardSize(): BoardSize {
@@ -167,8 +167,8 @@ export class Game {
     return this.state;
   }
 
-  getPuzzleType(): PuzzleType {
-    return this.puzzleType;
+  getBackground(): Background {
+    return this.background;
   }
 
   getBoard(): (number | null)[] {

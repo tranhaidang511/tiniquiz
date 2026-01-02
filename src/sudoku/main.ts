@@ -363,8 +363,8 @@ const saveHighScore = () => {
 
   util.saveHighScore(key, newScore, (a, b) => {
     if (a.hintsUsed !== b.hintsUsed) return a.hintsUsed - b.hintsUsed;
-    if (a.time !== b.time) return a.time - b.time;
-    return a.mistakes - b.mistakes;
+    if (a.mistakes !== b.mistakes) return a.mistakes - b.mistakes;
+    return a.time - b.time;
   });
 };
 
@@ -424,8 +424,8 @@ const renderHighScores = () => {
       tr.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${s.hintsUsed}</td>
-                <td>${util.formatTime(s.time)}</td>
                 <td>${s.mistakes}</td>
+                <td>${util.formatTime(s.time)}</td>
                 <td>${dateStr}</td>
             `;
       tbody.appendChild(tr);

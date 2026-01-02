@@ -199,6 +199,24 @@
   height: var(--ref-size-px);
 }
 
+/* Select Box */
+.styled-select {
+  width: 100%;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.styled-select:focus {
+  border-color: var(--accent-primary);
+}
+
+
 /* Controls */
 #image-controls {
   margin-top: 1rem;

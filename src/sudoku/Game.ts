@@ -14,9 +14,9 @@ export class Game {
   private board: Cell[][] = [];
   private solution: number[][] = [];
   private mistakes: number = 0;
-  private maxMistakes: number = 3;
+  private maxMistakes: number = 20;
   private hintsUsed: number = 0;
-  private maxHints: number = 10;
+  private maxHints: number = 5;
   private startTime: number = 0;
   private elapsedTime: number = 0;
   private selectedCell: { row: number; col: number } | null = null;

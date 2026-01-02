@@ -448,6 +448,11 @@ export class GoGame {
     return null;
   }
 
+  getLastAction(): Move | null {
+    if (this.history.length === 0) return null;
+    return this.history[this.history.length - 1];
+  }
+
   // --- Notification Helpers ---
 
   private notifyStateChange() {
