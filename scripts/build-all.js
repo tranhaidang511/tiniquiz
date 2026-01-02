@@ -16,9 +16,10 @@ try {
 
     // 2. Build each game using its own config
     for (const game of games) {
-        if (existsSync(join(process.cwd(), game))) {
+        const gamePath = join(process.cwd(), 'src', game);
+        if (existsSync(gamePath)) {
             console.log(`\n📦 Building ${game}...`);
-            execSync(`npx vite build --config ${game}/vite.config.ts`, { stdio: 'inherit' });
+            execSync(`npx vite build`, { cwd: gamePath, stdio: 'inherit' });
         }
     }
 
