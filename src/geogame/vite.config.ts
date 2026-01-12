@@ -8,5 +8,6 @@ export default defineConfig({
   build: {
     outDir: "../../dist/geogame",
     emptyOutDir: true,
+    assetsInlineLimit: 100000000,
   },
 });

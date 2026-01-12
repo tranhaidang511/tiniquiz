@@ -10,6 +10,12 @@ import vi from "./i18n/vi";
 import zh from "./i18n/zh";
 import ar from "./i18n/ar";
 
+// @ts-ignore
+const flagImages: Record<string, string> = import.meta.glob("./assets/flags/*.png", {
+  eager: true,
+  import: "default",
+});
+
 class GeogameLocalization extends Localization {
   getCountryName(code: string): string {
     // @ts-ignore
@@ -188,7 +194,8 @@ export class Game {
         const question: Question = { target, choices, isProvince: false };
 
         if (this.mode === "FLAGS") {
-          question.flagUrl = `https://flagcdn.com/w320/${target.code.toLowerCase()}.png`;
+          const code = target.code.toLowerCase();
+          question.flagUrl = flagImages[`./assets/flags/${code}.png`] || `https://flagcdn.com/w320/${code}.png`;
         }
 
         this.questions.push(question);

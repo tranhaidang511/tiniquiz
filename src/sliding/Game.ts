@@ -50,6 +50,7 @@ export class Game {
     // Shuffle the board
     this.shuffle();
 
+    this.moves = 0;
     this.startTime = Date.now();
     this.elapsedTime = 0;
     this.setState("PLAYING");
