@@ -1,246 +1,118 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <!-- Google Consent Mode -->
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('consent', 'default', {
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied',
-            'analytics_storage': 'denied'
-        });
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("consent", "default", {
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+        analytics_storage: "denied",
+      });
     </script>
     <!-- End Google Consent Mode -->
 
     <!-- Google Tag Manager -->
     <script>
-        (function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', 'GTM-56G5F5W4');
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-56G5F5W4");
     </script>
     <!-- End Google Tag Manager -->
 
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TiniQuiz - Free Online Games Collection</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>TiniQuiz - Free Board Game Collection</title>
 
-    <meta name="description"
-        content="Play free online games! Challenge yourself with quizzes, puzzles, and strategy board games." />
-    <meta name="keywords"
-        content="online games, free games, board games, strategy games, geography quiz, gomoku, sudoku, minesweeper, sliding puzzle, checkers, othello, mancala, chess, xiangqi, go" />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta
+      name="description"
+      content="Play free online games! Challenge yourself with quizzes, puzzles, and strategy board games."
+    />
+    <meta
+      name="keywords"
+      content="online games, free games, board games, strategy games, geography quiz, gomoku, sudoku, minesweeper, sliding puzzle, checkers, othello, mancala, chess, xiangqi, go"
+    />
     <meta name="author" content="Tran Hai Dang" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:title" content="TiniQuiz - Free Online Games" />
-    <meta property="og:description" content="Play free online games! Geography quiz and strategy board games." />
+    <meta
+      property="og:description"
+      content="Play free online games! Geography quiz and strategy board games."
+    />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://tiniquiz.com/" />
+    <meta property="og:image" content="https://tiniquiz.com/favicon.svg" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="TiniQuiz - Free Online Games" />
-    <meta name="twitter:description" content="Play free online games! Geography quiz and strategy board games." />
+    <meta
+      name="twitter:description"
+      content="Play free online games! Geography quiz and strategy board games."
+    />
+    <meta name="twitter:image" content="https://tiniquiz.com/favicon.svg" />
+    <script type="module" crossorigin src="/main-JEyQSs-2.js"></script>
+    <link rel="stylesheet" crossorigin href="/main-BWcUa-GY.css">
+  </head>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="./style.css">
-</head>
-
-<body>
+  <body>
     <!-- Google Tag Manager (noscript) -->
     <noscript>
-        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-56G5F5W4" height="0" width="0"
-            style="display:none;visibility:hidden"></iframe>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-56G5F5W4"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe>
     </noscript>
     <!-- End Google Tag Manager (noscript) -->
+    <div id="app">
+      <header>
+        <h1 id="main-title">TiniQuiz</h1>
+        <p class="subtitle" id="main-subtitle">Ultimate Board Game Collection</p>
+      </header>
 
-    <div class="container">
-        <!-- Language Switcher -->
-        <div class="lang-switcher">
-            <button class="lang-btn active" data-lang="en">EN</button>
-            <button class="lang-btn" data-lang="ja">JA</button>
-            <button class="lang-btn" data-lang="vi">VI</button>
-            <button class="lang-btn" data-lang="zh">ZH</button>
-            <button class="lang-btn" data-lang="ar">AR</button>
+      <!-- Language Switcher -->
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="ja">JA</button>
+        <button class="lang-btn" data-lang="vi">VI</button>
+        <button class="lang-btn" data-lang="zh">ZH</button>
+        <button class="lang-btn" data-lang="ar">AR</button>
+      </div>
+
+      <main>
+        <div id="game-grid" class="game-grid">
+          <!-- Games will be injected here -->
         </div>
-        <header>
-            <h1 data-i18n="title">TiniQuiz</h1>
-            <p class="subtitle" data-i18n="subtitle">Free Online Games Collection</p>
-        </header>
+      </main>
 
-        <div class="games-grid">
-            <a href="./geogame/" class="game-card geo">
-                <span class="game-icon">🌍</span>
-                <h2 class="game-title" data-i18n="geo-title">GeoGame</h2>
-                <p class="game-description" data-i18n="geo-desc">
-                    Test your geography knowledge! Identify countries by their capitals or flags in this engaging quiz
-                    game.
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="geo-feature1">Capitals & Flags modes</li>
-                    <li data-i18n="geo-feature2">Filter by region or continent</li>
-                </ul>
-                <div class="play-button" data-i18n="geo-button">Play GeoGame</div>
-            </a>
-
-            <a href="./sudoku/" class="game-card sudoku">
-                <span class="game-icon">🔢</span>
-                <h2 class="game-title" data-i18n="sudoku-title">Sudoku</h2>
-                <p class="game-description" data-i18n="sudoku-desc">
-                    Classic number puzzle game. Fill the 9×9 grid with digits so each row, column, and 3×3 box contains
-                    all numbers from 1-9.
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="sudoku-feature1">5 difficulty levels</li>
-                    <li data-i18n="sudoku-feature2">Hints & notes system</li>
-                </ul>
-                <div class="play-button" data-i18n="sudoku-button">Play Sudoku</div>
-            </a>
-
-            <a href="./minesweeper/" class="game-card minesweeper">
-                <span class="game-icon">💣</span>
-                <h2 class="game-title" data-i18n="minesweeper-title">Minesweeper</h2>
-                <p class="game-description" data-i18n="minesweeper-desc">
-                    Classic puzzle game. Clear the board without hitting any mines! Use logic to flag dangerous cells.
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="minesweeper-feature1">3 difficulty levels</li>
-                    <li data-i18n="minesweeper-feature2">High score tracking</li>
-                </ul>
-                <div class="play-button" data-i18n="minesweeper-button">Play Minesweeper</div>
-            </a>
-
-            <a href="./sliding/" class="game-card sliding">
-                <span class="game-icon">🧩</span>
-                <h2 class="game-title" data-i18n="sliding-title">Sliding Puzzle</h2>
-                <p class="game-description" data-i18n="sliding-desc">
-                    Classic puzzle game. Slide tiles to order them numerically. Challenge yourself with different
-                    board sizes!
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="sliding-feature1">3x3 to 7x7 board sizes</li>
-                    <li data-i18n="sliding-feature2">Move counter & timer</li>
-                </ul>
-                <div class="play-button" data-i18n="sliding-button">Play Sliding Puzzle</div>
-            </a>
-
-            <a href="./chess/" class="game-card chess">
-                <span class="game-icon">♚</span>
-                <h2 class="game-title" data-i18n="chess-title">Chess</h2>
-                <p class="game-description" data-i18n="chess-desc">
-                    Classic chess strategy game for two players!
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="chess-feature1">2-Player or vs AI mode</li>
-                    <li data-i18n="chess-feature2">Valid move hints</li>
-                </ul>
-                <div class="play-button" data-i18n="chess-button">Play Chess</div>
-            </a>
-
-            <a href="./xiangqi/" class="game-card xiangqi">
-                <span class="game-icon">象</span>
-                <h2 class="game-title" data-i18n="xiangqi-title">Xiangqi</h2>
-                <p class="game-description" data-i18n="xiangqi-desc">
-                    Classic Asian strategy board game!
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="xiangqi-feature1">2-Player or vs AI mode</li>
-                    <li data-i18n="xiangqi-feature2">Valid move hints</li>
-                </ul>
-                <div class="play-button" data-i18n="xiangqi-button">Play Xiangqi</div>
-            </a>
-
-            <a href="./go/" class="game-card go">
-                <span class="game-icon">⚪</span>
-                <h2 class="game-title" data-i18n="go-title">Go</h2>
-                <p class="game-description" data-i18n="go-desc">
-                    Ancient strategy board game. Surround more territory than your opponent to win!
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="go-feature1">Multiple board sizes</li>
-                    <li data-i18n="go-feature2">Handicap and Komi support</li>
-                </ul>
-                <div class="play-button" data-i18n="go-button">Play Go</div>
-            </a>
-
-            <a href="./gomoku/" class="game-card gomoku">
-                <span class="game-icon">5️⃣</span>
-                <h2 class="game-title" data-i18n="gomoku-title">Gomoku</h2>
-                <p class="game-description" data-i18n="gomoku-desc">
-                    Classic strategy board game. Place 5 stones in a row to win! Play against a friend or challenge the AI.
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="gomoku-feature1">2-Player or vs AI mode</li>
-                    <li data-i18n="gomoku-feature2">15×15 or 19×19 board</li>
-                </ul>
-                <div class="play-button" data-i18n="gomoku-button">Play Gomoku</div>
-            </a>
-
-            <a href="./checkers/" class="game-card checkers">
-                <span class="game-icon">🏁</span>
-                <h2 class="game-title" data-i18n="checkers-title">Checkers</h2>
-                <p class="game-description" data-i18n="checkers-desc">
-                    Classic board game. Jump over your opponent's pieces to capture them. King your pieces to move in
-                    all directions!
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="checkers-feature1">2-Player or vs AI mode</li>
-                    <li data-i18n="checkers-feature2">Multiple board sizes</li>
-                </ul>
-                <div class="play-button" data-i18n="checkers-button">Play Checkers</div>
-            </a>
-
-            <a href="./othello/" class="game-card othello">
-                <span class="game-icon">🌗</span>
-                <h2 class="game-title" data-i18n="othello-title">Othello</h2>
-                <p class="game-description" data-i18n="othello-desc">
-                    Classic strategy board game. Flip your opponent's pieces to your color. Most pieces at the end wins!
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="othello-feature1">2-Player or vs AI mode</li>
-                    <li data-i18n="othello-feature2">2 difficulty levels</li>
-                </ul>
-                <div class="play-button" data-i18n="othello-button">Play Othello</div>
-            </a>
-
-            <a href="./mancala/" class="game-card mancala">
-                <span class="game-icon">🗿</span>
-                <h2 class="game-title" data-i18n="mancala-title">Mancala</h2>
-                <p class="game-description" data-i18n="mancala-desc">
-                    Ancient strategy board game. Capture stones by moving them around the board. Empty your opponent's side to win!
-                </p>
-                <ul class="game-features">
-                    <li data-i18n="mancala-feature1">2-Player or vs AI mode</li>
-                    <li data-i18n="mancala-feature2">Multiple number of pits and stones</li>
-                </ul>
-                <div class="play-button" data-i18n="mancala-button">Play Mancala</div>
-            </a>
-        </div>
-
-        <footer>
-            <p data-i18n="footer-made">Made by Tran Hai Dang</p>
-            <p style="margin-top: 0.5rem; font-size: 0.8rem;" data-i18n="footer-copyright">© 2025 TiniQuiz. All rights
-                reserved.</p>
-        </footer>
+      <footer>
+        <p id="footer-text">&copy; 2026 TiniQuiz</p>
+      </footer>
     </div>
 
-    <div id="consent-dialog" class="consent-dialog">
-        <div class="consent-content">
-            <h3>We value your privacy</h3>
-            <p>We use cookies to improve your experience, analyze traffic, and show relevant ads.</p>
-            <p>You can choose to accept or reject these cookies.</p>
-            <p>Essential cookies are always on because they are required for the site to work.</p>
-            <div class="consent-buttons">
-                <button id="btn-reject" class="btn-reject">Reject All</button>
-                <button id="btn-accept" class="btn-accept">Accept All</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="./script.js"></script>
-</body>
-
+  </body>
 </html>
