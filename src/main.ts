@@ -3,17 +3,17 @@ import type { Language } from "./common/Localization";
 import { Consent } from "./common/Consent";
 
 const games = [
-  { id: "geogame", name: "GeoGame", icon: "🌍" },
-  { id: "sudoku", name: "Sudoku", icon: "🔢" },
-  { id: "minesweeper", name: "Minesweeper", icon: "💣" },
-  { id: "sliding", name: "Sliding Puzzle", icon: "🧩" },
-  { id: "chess", name: "Chess", icon: "♚" },
-  { id: "xiangqi", name: "Xiangqi", icon: "象" },
-  { id: "go", name: "Go", icon: "⚪" },
-  { id: "gomoku", name: "Gomoku", icon: "5️⃣" },
-  { id: "checkers", name: "Checkers", icon: "🏁" },
-  { id: "othello", name: "Othello", icon: "🌗" },
-  { id: "mancala", name: "Mancala", icon: "🏺" },
+  { id: "geogame", titleKey: "geo-title", icon: "🌍" },
+  { id: "sudoku", titleKey: "sudoku-title", icon: "🔢" },
+  { id: "minesweeper", titleKey: "minesweeper-title", icon: "💣" },
+  { id: "sliding", titleKey: "sliding-title", icon: "🧩" },
+  { id: "chess", titleKey: "chess-title", icon: "♚" },
+  { id: "xiangqi", titleKey: "xiangqi-title", icon: "象" },
+  { id: "go", titleKey: "go-title", icon: "⚪" },
+  { id: "gomoku", titleKey: "gomoku-title", icon: "5️⃣" },
+  { id: "checkers", titleKey: "checkers-title", icon: "🏁" },
+  { id: "othello", titleKey: "othello-title", icon: "🌗" },
+  { id: "mancala", titleKey: "mancala-title", icon: "🏺" },
 ];
 
 // Initialize Consent Banner
@@ -27,6 +27,14 @@ function updateTexts() {
   if (titleEl) titleEl.textContent = localization.getUIText("title");
   if (subtitleEl) subtitleEl.textContent = localization.getUIText("subtitle");
   if (footerEl) footerEl.textContent = localization.getUIText("footer");
+
+  // Update game titles
+  games.forEach((game) => {
+    const gameNameEl = document.querySelector(`[data-game-id="${game.id}"] .game-name`);
+    if (gameNameEl) {
+      gameNameEl.textContent = localization.getUIText(game.titleKey as any);
+    }
+  });
 }
 
 function setupLanguageSwitcher() {
@@ -52,10 +60,11 @@ function init() {
     const card = document.createElement("a");
     card.href = `./${game.id}/`;
     card.className = "game-card";
+    card.dataset.gameId = game.id;
 
     card.innerHTML = `
       <div class="game-icon">${game.icon}</div>
-      <div class="game-name">${game.name}</div>
+      <div class="game-name">${localization.getUIText(game.titleKey as any)}</div>
     `;
 
     grid.appendChild(card);
