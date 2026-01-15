@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Capacitor auto-generated files
+android/capacitor.settings.gradle
+android/app/capacitor.build.gradle
+ios/App/CapApp-SPM/Package.swift
