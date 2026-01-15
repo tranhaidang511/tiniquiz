@@ -1,3 +1,7 @@
+/* Import shared common styles */
+@import url("./common/style.css");
+
+/* Homepage-specific overrides and additions */
 :root {
   --primary: #6366f1;
   --primary-hover: #4f46e5;
@@ -9,19 +13,10 @@
   --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 body {
   font-family: "Outfit", sans-serif;
   background: var(--bg-gradient);
   color: var(--text-main);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
   overflow-x: hidden;
 }
 
@@ -45,6 +40,7 @@ h1 {
   font-weight: 800;
   letter-spacing: -0.02em;
   background: linear-gradient(to right, #818cf8, #c084fc);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.5rem;

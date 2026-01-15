@@ -23,7 +23,11 @@ try {
   console.log("\n🔍 Running type check...");
   execSync("npm run lint:tsc", { stdio: "inherit" });
 
-  // 2. Build each game using its own config
+  // 2. Build homepage
+  console.log("\n🏠 Building Homepage...");
+  execSync(`npx vite build src`, { stdio: "inherit" });
+
+  // 3. Build each game using its own config
   for (const game of games) {
     const gamePath = join(process.cwd(), "src", game);
     if (existsSync(gamePath)) {

@@ -204,7 +204,7 @@ const renderReferenceBoard = () => {
     tileDiv.className = "tile";
     if (background !== "NONE") {
       tileDiv.classList.add("image-mode");
-      const imgUrl = IMAGES[background as keyof typeof IMAGES] || IMAGES.NATURE;
+      const imgUrl = IMAGES[background] || IMAGES.NATURE;
       tileDiv.style.backgroundImage = `url(${imgUrl})`;
       const { x, y } = getBackgroundPosition(i - 1, size);
       tileDiv.style.backgroundPosition = `${x}% ${y}%`;
@@ -250,7 +250,7 @@ const renderBoard = () => {
         tileDiv.classList.add("image-mode");
         if (showNumbers) tileDiv.classList.add("show-numbers");
 
-        const imgUrl = IMAGES[background as keyof typeof IMAGES] || IMAGES.NATURE;
+        const imgUrl = IMAGES[background] || IMAGES.NATURE;
         tileDiv.style.backgroundImage = `url(${imgUrl})`;
 
         const { x, y } = getBackgroundPosition(value - 1, size);

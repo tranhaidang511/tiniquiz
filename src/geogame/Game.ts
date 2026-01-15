@@ -195,7 +195,8 @@ export class Game {
 
         if (this.mode === "FLAGS") {
           const code = target.code.toLowerCase();
-          question.flagUrl = flagImages[`./assets/flags/${code}.png`] || `https://flagcdn.com/w320/${code}.png`;
+          question.flagUrl =
+            flagImages[`./assets/flags/${code}.png`] || `https://flagcdn.com/w320/${code}.png`;
         }
 
         this.questions.push(question);

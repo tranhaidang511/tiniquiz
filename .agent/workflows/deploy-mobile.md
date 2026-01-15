@@ -37,6 +37,7 @@ npx cap open android
 ```
 
 **In Android Studio:**
+
 1.  Wait for Gradle sync to finish.
 2.  Select a device or emulator from the device dropdown.
 3.  Click the **Run** button (green play icon) or press `Shift + F10`.
@@ -50,5 +51,6 @@ npx cap open ios
 ```
 
 **In Xcode:**
+
 1.  Select a simulator or connected device from the scheme menu (top left).
 2.  Click the **Run** button (play icon) or press `Cmd + R`.
