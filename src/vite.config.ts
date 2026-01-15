@@ -1,22 +1,12 @@
 import { defineConfig } from "vite";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
+import { viteSingleFile } from "vite-plugin-singlefile";
 
 export default defineConfig({
-  root: __dirname,
+  root: ".",
+  plugins: [viteSingleFile()],
   build: {
     outDir: "../dist",
-    assetsDir: "",
     emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, "index.html"),
-      },
-    },
-  },
-  server: {
-    open: "/index.html",
+    assetsInlineLimit: 100000000,
   },
 });
