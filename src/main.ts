@@ -11,7 +11,7 @@ const games = [
   { id: "sudoku", titleKey: "sudoku-title", icon: "🔢" },
   { id: "minesweeper", titleKey: "minesweeper-title", icon: "💣" },
   { id: "sliding", titleKey: "sliding-title", icon: "🧩" },
-  { id: "chess", titleKey: "chess-title", icon: "♚" },
+  { id: "chess", titleKey: "chess-title", icon: "👑" },
   { id: "xiangqi", titleKey: "xiangqi-title", icon: "象" },
   { id: "go", titleKey: "go-title", icon: "⚪" },
   { id: "gomoku", titleKey: "gomoku-title", icon: "5️⃣" },
@@ -62,7 +62,7 @@ function init() {
 
   games.forEach((game) => {
     const card = document.createElement("a");
-    card.href = `./${game.id}/`;
+    card.href = `./${game.id}/index.html`;
     card.className = "game-card";
     card.dataset.gameId = game.id;
 
