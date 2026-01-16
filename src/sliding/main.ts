@@ -9,6 +9,10 @@ import vi from "./i18n/vi";
 import zh from "./i18n/zh";
 import ar from "./i18n/ar";
 import { Consent } from "../common/Consent";
+import { admob } from "../common/AdMob";
+
+// Initialize AdMob
+admob.initialize();
 import { util } from "../common/util";
 
 import natureImg from "./assets/nature.png";

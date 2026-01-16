@@ -16,7 +16,7 @@ First, you must build the web application to generate the `dist/` directory cont
 
 ```bash
 // turbo
-npm run build:all
+npm run build
 ```
 
 ## 2. Sync with Native Projects
