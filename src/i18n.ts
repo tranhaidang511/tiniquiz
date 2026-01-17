@@ -60,7 +60,7 @@ const vi: { ui: UITexts } = {
     title: "Tiniquiz",
     subtitle: "Bộ sưu tập game trí tuệ miễn phí",
     footer: "© 2026 Tiniquiz",
-    "geo-title": "Trò chơi Địa lý",
+    "geo-title": "Địa lý",
     "sudoku-title": "Sudoku",
     "minesweeper-title": "Dò mìn",
     "sliding-title": "Xếp hình",

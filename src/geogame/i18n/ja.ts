@@ -1,5 +1,6 @@
 export default {
   ui: {
+    gameTitle: "GeoGame",
     gameSetup: "ゲーム設定",
     filterByRegion: "地域でフィルター",
     numberOfQuestions: "問題数",

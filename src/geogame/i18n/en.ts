@@ -1,5 +1,6 @@
 export default {
   ui: {
+    gameTitle: "GeoGame",
     gameSetup: "Game Setup",
     filterByRegion: "Filter by Region",
     numberOfQuestions: "Number of Questions",

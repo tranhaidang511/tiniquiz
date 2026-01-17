@@ -1,5 +1,6 @@
 export default {
   ui: {
+    gameTitle: "地理游戏",
     gameSetup: "游戏设置",
     filterByRegion: "按地区筛选",
     numberOfQuestions: "题目数量",

@@ -54,12 +54,14 @@ body {
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
   --shadow-glow: 0 0 20px rgba(138, 180, 248, 0.3);
+  --ad-banner-height: 100px;
 }
 
 #app {
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  padding-bottom: var(--ad-banner-height);
 }
 
 h1 {

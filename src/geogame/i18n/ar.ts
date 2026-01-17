@@ -1,5 +1,6 @@
 export default {
   ui: {
+    gameTitle: "لعبة الجغرافيا",
     gameSetup: "إعداد اللعبة",
     filterByRegion: "التصفية حسب المنطقة",
     numberOfQuestions: "عدد الأسئلة",

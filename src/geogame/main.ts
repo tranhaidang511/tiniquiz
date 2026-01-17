@@ -110,6 +110,9 @@ const loadSetup = () => {
 // --- Text Updates ---
 
 const updateTexts = () => {
+  // Global Header
+  document.getElementById("game-title")!.textContent = localization.getUIText("gameTitle");
+
   // Menu
   document.getElementById("menu-title")!.textContent = localization.getUIText("gameSetup");
   document.getElementById("start-btn")!.textContent = localization.getUIText("startGame");

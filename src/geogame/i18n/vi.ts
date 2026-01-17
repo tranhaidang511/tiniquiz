@@ -1,5 +1,6 @@
 export default {
   ui: {
+    gameTitle: "Địa lý",
     gameSetup: "Thiết lập trò chơi",
     filterByRegion: "Lọc theo khu vực",
     numberOfQuestions: "Số lượng câu hỏi",
