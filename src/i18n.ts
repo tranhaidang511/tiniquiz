@@ -19,9 +19,9 @@ interface UITexts {
 
 const en: { ui: UITexts } = {
   ui: {
-    title: "TiniQuiz",
+    title: "Tiniquiz",
     subtitle: "Free Board Game Collection",
-    footer: "© 2026 TiniQuiz",
+    footer: "© 2026 Tiniquiz",
     "geo-title": "GeoGame",
     "sudoku-title": "Sudoku",
     "minesweeper-title": "Minesweeper",
@@ -38,9 +38,9 @@ const en: { ui: UITexts } = {
 
 const ja: { ui: UITexts } = {
   ui: {
-    title: "TiniQuiz",
+    title: "Tiniquiz",
     subtitle: "無料のボードゲームコレクション",
-    footer: "© 2026 TiniQuiz",
+    footer: "© 2026 Tiniquiz",
     "geo-title": "GeoGame",
     "sudoku-title": "数独",
     "minesweeper-title": "マインスイーパー",
@@ -57,9 +57,9 @@ const ja: { ui: UITexts } = {
 
 const vi: { ui: UITexts } = {
   ui: {
-    title: "TiniQuiz",
+    title: "Tiniquiz",
     subtitle: "Bộ sưu tập game trí tuệ miễn phí",
-    footer: "© 2026 TiniQuiz",
+    footer: "© 2026 Tiniquiz",
     "geo-title": "Trò chơi Địa lý",
     "sudoku-title": "Sudoku",
     "minesweeper-title": "Dò mìn",
@@ -76,9 +76,9 @@ const vi: { ui: UITexts } = {
 
 const zh: { ui: UITexts } = {
   ui: {
-    title: "TiniQuiz",
+    title: "Tiniquiz",
     subtitle: "免费益智游戏合集",
-    footer: "© 2026 TiniQuiz",
+    footer: "© 2026 Tiniquiz",
     "geo-title": "地理游戏",
     "sudoku-title": "数独",
     "minesweeper-title": "扫雷",
@@ -95,9 +95,9 @@ const zh: { ui: UITexts } = {
 
 const ar: { ui: UITexts } = {
   ui: {
-    title: "TiniQuiz",
+    title: "Tiniquiz",
     subtitle: "مجموعة ألعاب ألغاز مجانية",
-    footer: "© 2026 TiniQuiz",
+    footer: "© 2026 Tiniquiz",
     "geo-title": "لعبة الجغرافيا",
     "sudoku-title": "سودوكو",
     "minesweeper-title": "كانسة الألغام",

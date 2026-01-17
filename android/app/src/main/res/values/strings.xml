@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">TiniQuiz</string>
-    <string name="title_activity_main">TiniQuiz</string>
+    <string name="app_name">Tiniquiz</string>
+    <string name="title_activity_main">Tiniquiz</string>
     <string name="package_name">com.tranhaidang.tiniquiz</string>
     <string name="custom_url_scheme">com.tranhaidang.tiniquiz</string>
 </resources>
