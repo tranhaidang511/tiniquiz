@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- 2x2 Grid representing "Collection" -->
+  <!-- Top Left: Indigo (Primary) -->
+  <rect x="10" y="10" width="35" height="35" rx="10" fill="#818cf8" />
+  
+  <!-- Top Right: Purple (Secondary) -->
+  <rect x="55" y="10" width="35" height="35" rx="10" fill="#c084fc" />
+  
+  <!-- Bottom Left: Pink (Fun) -->
+  <rect x="10" y="55" width="35" height="35" rx="10" fill="#f472b6" />
+  
+  <!-- Bottom Right: Teal (Strategy) -->
+  <rect x="55" y="55" width="35" height="35" rx="10" fill="#2dd4bf" />
+</svg>

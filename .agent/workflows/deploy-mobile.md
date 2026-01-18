@@ -10,6 +10,21 @@ This workflow describes the steps to build the web assets and deploy them to the
 - **Xcode** (for iOS build - macOS only)
 - **CocoaPods** (for iOS dependencies)
 
+## 0. AdMob
+
+Replace with Real IDs
+When you are ready to publish, replace the following IDs with your actual AdMob IDs:
+
+Android App ID: In AndroidManifest.xml (line 14).
+iOS App ID: In Info.plist (line 52).
+Banner Unit ID: In src/common/AdMob.ts (lines 43-44).
+
+## 0. App Icon
+
+```bash
+npx @capacitor/assets generate --icon src/assets/icon.svg --splash src/assets/icon.svg --ios --android
+```
+
 ## 1. Build Web Assets
 
 First, you must build the web application to generate the `dist/` directory containing all game assets.
