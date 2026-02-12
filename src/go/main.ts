@@ -9,10 +9,10 @@ import { vi } from "./i18n/vi";
 import { zh } from "./i18n/zh";
 import ar from "./i18n/ar";
 import { Consent } from "../common/Consent";
-import { admob } from "../common/AdMob";
+import { adService } from "../common/AdService";
 
-// Initialize AdMob
-admob.initialize();
+// Initialize AdService
+adService.initialize();
 import { util } from "../common/util";
 
 interface HighScore {

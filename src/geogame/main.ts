@@ -6,10 +6,10 @@ import type { Language } from "../common/Localization";
 import type { Country } from "./data/countries";
 import type { Province } from "./data/provinces";
 import { Consent } from "../common/Consent";
-import { admob } from "../common/AdMob";
+import { adService } from "../common/AdService";
 
-// Initialize AdMob
-admob.initialize();
+// Initialize AdService
+adService.initialize();
 import { util } from "../common/util";
 
 interface HighScore {

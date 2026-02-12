@@ -4,6 +4,10 @@ import type { Piece, GameState, PieceType, Player, GameMode } from "./Game.js";
 import { Localization } from "../common/Localization.js";
 import type { Language } from "../common/Localization.js";
 import { Consent } from "../common/Consent.js";
+import { adService } from "../common/AdService.js";
+
+// Initialize AdService
+adService.initialize();
 import { util } from "../common/util.js";
 
 import { en } from "./i18n/en.js";

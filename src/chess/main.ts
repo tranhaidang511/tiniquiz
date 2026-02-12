@@ -4,10 +4,10 @@ import type { GameState, Piece, GameMode, Player } from "./Game";
 import { Localization } from "../common/Localization";
 import type { Language } from "../common/Localization";
 import { Consent } from "../common/Consent";
-import { admob } from "../common/AdMob";
+import { adService } from "../common/AdService";
 
-// Initialize AdMob
-admob.initialize();
+// Initialize AdService
+adService.initialize();
 import { util } from "../common/util";
 
 import { en } from "./i18n/en";

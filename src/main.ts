@@ -1,10 +1,10 @@
 import { localization } from "./i18n";
 import type { Language } from "./common/Localization";
 import { Consent } from "./common/Consent";
-import { admob } from "./common/AdMob";
+import { adService } from "./common/AdService";
 
-// Initialize AdMob
-admob.initialize();
+// Initialize AdService
+adService.initialize();
 
 const games = [
   { id: "geogame", titleKey: "geo-title", icon: "🌍" },
