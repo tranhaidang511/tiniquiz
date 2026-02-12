@@ -10,14 +10,14 @@ import { Capacitor } from "@capacitor/core";
 const AD_CONFIG = {
   // AdSense (Web)
   ADSENSE: {
-    CLIENT: "ADSENSE_CLIENT",
+    CLIENT: "",
     // NOTE: Generate a new "Display Ad" unit in AdSense console and paste the SLOT ID here.
-    SLOT: "ADSENSE_SLOT_ID",
+    SLOT: "",
   },
   // AdMob (Native)
   ADMOB: {
-    IOS_BANNER_ID: "ADMOB_IOS_BANNER_ID", // Test ID
-    ANDROID_BANNER_ID: "ADMOB_ANDROID_BANNER_ID", // Test ID
+    IOS_BANNER_ID: "", // Test ID
+    ANDROID_BANNER_ID: "", // Test ID
   },
 };
 
@@ -111,6 +111,13 @@ export class AdService {
     adContainer.style.textAlign = "center";
     adContainer.style.zIndex = "1000";
     adContainer.style.backgroundColor = "#fff";
+    // Ensure container has a minimum height to match the padding reservation
+    adContainer.style.minHeight = "var(--ad-banner-height, 100px)";
+    adContainer.style.display = "flex";
+    adContainer.style.justifyContent = "center";
+    adContainer.style.alignItems = "center";
+    // Add a shadow to distinguish it from content if it's white-on-white
+    adContainer.style.boxShadow = "0 -2px 10px rgba(0,0,0,0.1)";
 
     const ins = document.createElement("ins");
     ins.className = "adsbygoogle";
