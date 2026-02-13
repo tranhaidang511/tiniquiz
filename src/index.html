@@ -1,49 +1,49 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <!-- Google Consent Mode -->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("consent", "default", {
-      ad_storage: "denied",
-      ad_user_data: "denied",
-      ad_personalization: "denied",
-      analytics_storage: "denied",
-    });
-  </script>
-  <!-- End Google Consent Mode -->
+  <head>
+    <!-- Google Consent Mode -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("consent", "default", {
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+        analytics_storage: "denied",
+      });
+    </script>
+    <!-- End Google Consent Mode -->
 
-  <!-- Google Tag Manager -->
-  <script>
-    (function (w, d, s, l, i) {
-      w[l] = w[l] || [];
-      w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
-      var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s),
-        dl = l != "dataLayer" ? "&l=" + l : "";
-      j.async = true;
-      j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-      f.parentNode.insertBefore(j, f);
-    })(window, document, "script", "dataLayer", "GTM-56G5F5W4");
-  </script>
-  <!-- End Google Tag Manager -->
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-56G5F5W4");
+    </script>
+    <!-- End Google Tag Manager -->
 
-  <meta charset="UTF-8" />
+    <meta charset="UTF-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-  <title>Tiniquiz - Free Board Game Collection</title>
+    <title>Tiniquiz - Free Board Game Collection</title>
 
-  <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./style.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap"
       rel="stylesheet"
     />
-  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
 
     <meta
       name="description"
@@ -53,67 +53,67 @@
       name="keywords"
       content="online games, free games, board games, strategy games, geography quiz, gomoku, sudoku, minesweeper, sliding puzzle, checkers, othello, mancala, chess, xiangqi, go"
     />
-  <meta name="author" content="Tran Hai Dang" />
+    <meta name="author" content="Tran Hai Dang" />
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:title" content="Tiniquiz - Free Online Games" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="Tiniquiz - Free Online Games" />
     <meta
       property="og:description"
       content="Play free online games! Geography quiz and strategy board games."
     />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://tiniquiz.com/" />
-  <meta property="og:image" content="https://tiniquiz.com/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tiniquiz.com/" />
+    <meta property="og:image" content="https://tiniquiz.com/favicon.svg" />
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Tiniquiz - Free Online Games" />
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tiniquiz - Free Online Games" />
     <meta
       name="twitter:description"
       content="Play free online games! Geography quiz and strategy board games."
     />
-  <meta name="twitter:image" content="https://tiniquiz.com/favicon.svg" />
-</head>
+    <meta name="twitter:image" content="https://tiniquiz.com/favicon.svg" />
+  </head>
 
-<body>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
       <iframe
         src="https://www.googletagmanager.com/ns.html?id=GTM-56G5F5W4"
         height="0"
         width="0"
         style="display: none; visibility: hidden"
       ></iframe>
-  </noscript>
-  <!-- End Google Tag Manager (noscript) -->
-  <div id="app">
-    <header>
-      <h1 id="main-title">Tiniquiz</h1>
-      <p class="subtitle" id="main-subtitle">Ultimate Board Game Collection</p>
-    </header>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <div id="app">
+      <header>
+        <h1 id="main-title">Tiniquiz</h1>
+        <p class="subtitle" id="main-subtitle">Ultimate Board Game Collection</p>
+      </header>
 
-    <!-- Language Switcher -->
-    <div class="lang-switcher">
-      <button class="lang-btn active" data-lang="en">EN</button>
-      <button class="lang-btn" data-lang="ja">JA</button>
-      <button class="lang-btn" data-lang="vi">VI</button>
-      <button class="lang-btn" data-lang="zh">ZH</button>
-      <button class="lang-btn" data-lang="ar">AR</button>
-    </div>
-
-    <main>
-      <div id="game-grid" class="game-grid">
-        <!-- Games will be injected here -->
+      <!-- Language Switcher -->
+      <div class="lang-switcher">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="ja">JA</button>
+        <button class="lang-btn" data-lang="vi">VI</button>
+        <button class="lang-btn" data-lang="zh">ZH</button>
+        <button class="lang-btn" data-lang="ar">AR</button>
       </div>
-    </main>
 
-    <footer>
-      <p id="footer-text">&copy; 2026 Tiniquiz</p>
-      <p id="contact-text">
-        <a href="mailto:contact@tiniquiz.com">contact@tiniquiz.com</a>
-      </p>
-    </footer>
-  </div>
-  <script type="module" src="./main.ts"></script>
-</body>
+      <main>
+        <div id="game-grid" class="game-grid">
+          <!-- Games will be injected here -->
+        </div>
+      </main>
+
+      <footer>
+        <p id="footer-text">&copy; 2026 Tiniquiz</p>
+        <p id="contact-text">
+          <a href="mailto:contact@tiniquiz.com">contact@tiniquiz.com</a>
+        </p>
+      </footer>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
 </html>

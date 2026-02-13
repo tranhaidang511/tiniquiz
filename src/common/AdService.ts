@@ -43,11 +43,9 @@ export class AdService {
       if (Capacitor.isNativePlatform()) {
         await AdMob.initialize();
         await AdMob.requestTrackingAuthorization();
-        console.log("AdMob initialized");
       } else {
         // Web: Initialize AdSense
         this.injectAdSenseScript();
-        console.log("AdSense initialized");
       }
       this.initialized = true;
 

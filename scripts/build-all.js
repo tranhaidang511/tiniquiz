@@ -21,19 +21,19 @@ function standardizeFavicon(distDir) {
     if (!existsSync(distDir)) return;
 
     const files = readdirSync(distDir);
-    const faviconFile = files.find(f => f.startsWith('favicon-') && f.endsWith('.svg'));
+    const faviconFile = files.find((f) => f.startsWith("favicon-") && f.endsWith(".svg"));
 
     if (faviconFile) {
       const oldPath = join(distDir, faviconFile);
-      const newPath = join(distDir, 'favicon.svg');
+      const newPath = join(distDir, "favicon.svg");
       renameSync(oldPath, newPath);
       console.log(`✨ Renamed ${faviconFile} to favicon.svg in ${distDir}`);
 
-      const indexHtmlPath = join(distDir, 'index.html');
+      const indexHtmlPath = join(distDir, "index.html");
       if (existsSync(indexHtmlPath)) {
-        let html = readFileSync(indexHtmlPath, 'utf-8');
+        let html = readFileSync(indexHtmlPath, "utf-8");
         // Replace the hashed filename with standard filename
-        html = html.split(faviconFile).join('favicon.svg');
+        html = html.split(faviconFile).join("favicon.svg");
         writeFileSync(indexHtmlPath, html);
         console.log(`📄 Updated index.html reference in ${distDir}`);
       }

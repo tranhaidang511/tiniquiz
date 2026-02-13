@@ -55,7 +55,13 @@ function init() {
 
   // Initial localization
   // The subscription handles initial updateTexts and active button state
-  localization.setLanguage(localization.language); // Trigger subscription for initial setup
+  updateTexts();
+
+  // Also update active button state manually
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", (btn as HTMLElement).dataset.lang === localization.language);
+  });
+  document.documentElement.dir = localization.language === "ar" ? "rtl" : "ltr";
 
   // Check if game was already running (reload) or start fresh
   // For now, always show menu on load

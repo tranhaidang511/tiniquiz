@@ -49,7 +49,7 @@ const ja: { ui: UITexts } = {
     "minesweeper-title": "マインスイーパー",
     "sliding-title": "スライディングパズル",
     "chess-title": "チェス",
-    "xiangqi-title": "将棋 (シャンチー)",
+    "xiangqi-title": "シャンチー",
     "go-title": "囲碁",
     "gomoku-title": "五目並べ",
     "checkers-title": "チェッカー",
