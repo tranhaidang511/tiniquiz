@@ -27,10 +27,21 @@ function updateTexts() {
   const titleEl = document.getElementById("main-title");
   const subtitleEl = document.getElementById("main-subtitle");
   const footerEl = document.getElementById("footer-text");
+  const contactEl = document.getElementById("contact-text");
 
   if (titleEl) titleEl.textContent = localization.getUIText("title");
   if (subtitleEl) subtitleEl.textContent = localization.getUIText("subtitle");
   if (footerEl) footerEl.textContent = localization.getUIText("footer");
+  if (contactEl) {
+    const contactText = localization.getUIText("contact");
+    const email = "contact@tiniquiz.com";
+    if (contactText.includes(email)) {
+      const parts = contactText.split(email);
+      contactEl.innerHTML = `${parts[0]}<a href="mailto:${email}">${email}</a>${parts[1]}`;
+    } else {
+      contactEl.textContent = contactText;
+    }
+  }
 
   // Update game titles
   games.forEach((game) => {

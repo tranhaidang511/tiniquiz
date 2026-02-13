@@ -15,6 +15,7 @@ interface UITexts {
   "checkers-title": string;
   "othello-title": string;
   "mancala-title": string;
+  contact: string;
 }
 
 const en: { ui: UITexts } = {
@@ -22,6 +23,7 @@ const en: { ui: UITexts } = {
     title: "Tiniquiz",
     subtitle: "Free Board Game Collection",
     footer: "© 2026 Tiniquiz",
+    contact: "Contact: contact@tiniquiz.com",
     "geo-title": "GeoGame",
     "sudoku-title": "Sudoku",
     "minesweeper-title": "Minesweeper",
@@ -41,6 +43,7 @@ const ja: { ui: UITexts } = {
     title: "Tiniquiz",
     subtitle: "無料のボードゲームコレクション",
     footer: "© 2026 Tiniquiz",
+    contact: "お問い合わせ: contact@tiniquiz.com",
     "geo-title": "GeoGame",
     "sudoku-title": "数独",
     "minesweeper-title": "マインスイーパー",
@@ -60,6 +63,7 @@ const vi: { ui: UITexts } = {
     title: "Tiniquiz",
     subtitle: "Bộ sưu tập game trí tuệ miễn phí",
     footer: "© 2026 Tiniquiz",
+    contact: "Liên hệ: contact@tiniquiz.com",
     "geo-title": "Địa lý",
     "sudoku-title": "Sudoku",
     "minesweeper-title": "Dò mìn",
@@ -79,6 +83,7 @@ const zh: { ui: UITexts } = {
     title: "Tiniquiz",
     subtitle: "免费益智游戏合集",
     footer: "© 2026 Tiniquiz",
+    contact: "联系我们: contact@tiniquiz.com",
     "geo-title": "地理游戏",
     "sudoku-title": "数独",
     "minesweeper-title": "扫雷",
@@ -98,6 +103,7 @@ const ar: { ui: UITexts } = {
     title: "Tiniquiz",
     subtitle: "مجموعة ألعاب ألغاز مجانية",
     footer: "© 2026 Tiniquiz",
+    contact: "اتصل بنا: contact@tiniquiz.com",
     "geo-title": "لعبة الجغرافيا",
     "sudoku-title": "سودوكو",
     "minesweeper-title": "كانسة الألغام",
