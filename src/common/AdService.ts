@@ -113,6 +113,8 @@ export class AdService {
     adContainer.style.backgroundColor = "#fff";
     // Ensure container has a minimum height to match the padding reservation
     adContainer.style.minHeight = "var(--ad-banner-height, 100px)";
+    adContainer.style.maxHeight = "var(--ad-banner-height, 100px)"; // Enforce max height
+    adContainer.style.overflow = "hidden"; // Clip if ad tries to be larger
     adContainer.style.display = "flex";
     adContainer.style.justifyContent = "center";
     adContainer.style.alignItems = "center";
@@ -122,17 +124,24 @@ export class AdService {
     const ins = document.createElement("ins");
     ins.className = "adsbygoogle";
     ins.style.display = "block";
+    ins.style.minWidth = "300px";
+    ins.style.width = "100%";
+    ins.style.height = "100%"; // Constrain ins height
     ins.setAttribute("data-ad-client", AD_CONFIG.ADSENSE.CLIENT);
     ins.setAttribute("data-ad-slot", AD_CONFIG.ADSENSE.SLOT);
-    ins.setAttribute("data-ad-format", "auto");
+    // Use 'horizontal' to prefer banner-like shapes instead of 'auto' rectangle
+    ins.setAttribute("data-ad-format", "horizontal");
     ins.setAttribute("data-full-width-responsive", "true");
 
     adContainer.appendChild(ins);
     document.body.appendChild(adContainer);
 
     try {
-      (window as any).adsbygoogle = (window as any).adsbygoogle || [];
-      (window as any).adsbygoogle.push({});
+      // Small delay to ensure DOM is ready and styles are applied for width calculation
+      setTimeout(() => {
+        (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+        (window as any).adsbygoogle.push({});
+      }, 100);
     } catch (e) {
       console.error("AdSense push failed", e);
     }
