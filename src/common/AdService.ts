@@ -129,7 +129,7 @@ export class AdService {
     ins.setAttribute("data-ad-slot", AD_CONFIG.ADSENSE.SLOT);
     // Use 'horizontal' to prefer banner-like shapes instead of 'auto' rectangle
     ins.setAttribute("data-ad-format", "horizontal");
-    ins.setAttribute("data-full-width-responsive", "true");
+    ins.setAttribute("data-full-width-responsive", "false");
 
     adContainer.appendChild(ins);
     document.body.appendChild(adContainer);
