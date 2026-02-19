@@ -2,6 +2,11 @@
   direction: ltr;
 }
 
+html {
+  background: #0f1419;
+}
+
+
 [dir="rtl"] {
   direction: rtl;
   text-align: right;
@@ -206,7 +211,7 @@ h1 {
   transition: all 0.2s ease;
 }
 
-.radio-label input:checked + span {
+.radio-label input:checked+span {
   background: var(--accent-primary);
   color: white;
   box-shadow: var(--shadow-sm);

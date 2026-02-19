@@ -7,7 +7,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        // Set background colors to match app dark theme (#0f1419) to prevent
+        // white flash when navigating between pages.
+        let darkColor = UIColor(red: 0.059, green: 0.078, blue: 0.098, alpha: 1.0)
+        
+        // Set root window background and force dark mode
+        self.window?.backgroundColor = darkColor
+        self.window?.overrideUserInterfaceStyle = .dark
+        
+        if let bridge = window?.rootViewController as? CAPBridgeViewController {
+            bridge.view.backgroundColor = darkColor
+            bridge.webView?.backgroundColor = darkColor
+            bridge.webView?.scrollView.backgroundColor = darkColor
+            bridge.webView?.isOpaque = false
+        }
         return true
     }
 
