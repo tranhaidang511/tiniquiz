@@ -1,11 +1,7 @@
 import { localization } from "./i18n";
 import type { Language } from "./common/Localization";
 import { Consent } from "./common/Consent";
-import { adService } from "./common/AdService";
 import { Capacitor } from "@capacitor/core";
-
-// Initialize AdService
-adService.initialize();
 
 const games = [
   { id: "geogame", titleKey: "geo-title", icon: "🌍" },
