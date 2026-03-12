@@ -1,5 +1,5 @@
 import { execSync } from "child_process";
-import { readdirSync, existsSync, renameSync, readFileSync, writeFileSync } from "fs";
+import { readdirSync, existsSync, renameSync, readFileSync, writeFileSync, cpSync } from "fs";
 import { join } from "path";
 
 const games = [
@@ -63,6 +63,14 @@ try {
       execSync(`npx vite build`, { cwd: gamePath, stdio: "inherit" });
       standardizeFavicon(join(process.cwd(), "dist", game));
     }
+  }
+
+  // 4. Copy public files to dist
+  console.log("\n📁 Copying src/public to dist...");
+  const publicDir = join(process.cwd(), "src", "public");
+  const distDir = join(process.cwd(), "dist");
+  if (existsSync(publicDir)) {
+    cpSync(publicDir, distDir, { recursive: true });
   }
 
   console.log("\n✅ All games built successfully!");

@@ -16,6 +16,8 @@ interface UITexts {
   "othello-title": string;
   "mancala-title": string;
   contact: string;
+  "ios-download": string;
+  "qr-scan": string;
 }
 
 const en: { ui: UITexts } = {
@@ -35,6 +37,8 @@ const en: { ui: UITexts } = {
     "checkers-title": "Checkers",
     "othello-title": "Othello",
     "mancala-title": "Mancala",
+    "ios-download": "Download on the App Store",
+    "qr-scan": "Scan to Download",
   },
 };
 
@@ -55,6 +59,8 @@ const ja: { ui: UITexts } = {
     "checkers-title": "チェッカー",
     "othello-title": "オセロ",
     "mancala-title": "マンカラ",
+    "ios-download": "App Storeからダウンロード",
+    "qr-scan": "スキャンしてダウンロード",
   },
 };
 
@@ -75,6 +81,8 @@ const vi: { ui: UITexts } = {
     "checkers-title": "Cờ đam",
     "othello-title": "Cờ lật",
     "mancala-title": "Mancala",
+    "ios-download": "Tải xuống trên App Store",
+    "qr-scan": "Quét để tải xuống",
   },
 };
 
@@ -95,6 +103,8 @@ const zh: { ui: UITexts } = {
     "checkers-title": "国际跳棋",
     "othello-title": "黑白棋",
     "mancala-title": "播棋",
+    "ios-download": "在 App Store 下载",
+    "qr-scan": "扫描下载",
   },
 };
 
@@ -115,6 +125,8 @@ const ar: { ui: UITexts } = {
     "checkers-title": "الداما",
     "othello-title": "أوثيلو",
     "mancala-title": "المنقلة",
+    "ios-download": "تنزيل من متجر التطبيقات",
+    "qr-scan": "امسح للتنزيل",
   },
 };
 

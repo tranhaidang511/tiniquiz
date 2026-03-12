@@ -2,6 +2,7 @@ import { localization } from "./i18n";
 import type { Language } from "./common/Localization";
 import { Consent } from "./common/Consent";
 import { adService } from "./common/AdService";
+import { Capacitor } from "@capacitor/core";
 
 // Initialize AdService
 adService.initialize();
@@ -42,6 +43,12 @@ function updateTexts() {
       contactEl.textContent = contactText;
     }
   }
+
+  const iosDownloadEl = document.getElementById("ios-download-text");
+  if (iosDownloadEl) iosDownloadEl.textContent = localization.getUIText("ios-download" as any);
+
+  const qrScanEl = document.getElementById("qr-scan-text");
+  if (qrScanEl) qrScanEl.textContent = localization.getUIText("qr-scan" as any);
 
   // Update game titles
   games.forEach((game) => {
@@ -88,6 +95,14 @@ function init() {
   // Setup language switcher
   setupLanguageSwitcher();
   updateTexts();
+
+  // Hide the iOS app link if running as a native app
+  if (Capacitor.isNativePlatform()) {
+    const iosContainer = document.getElementById("ios-app-container");
+    if (iosContainer) {
+      iosContainer.style.display = "none";
+    }
+  }
 
   // Set initial text direction for RTL languages
   document.documentElement.dir = localization.language === "ar" ? "rtl" : "ltr";

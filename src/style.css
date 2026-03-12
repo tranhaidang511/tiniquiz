@@ -52,6 +52,83 @@ h1 {
   color: var(--text-muted);
   font-size: 1.1rem;
   font-weight: 400;
+  margin-bottom: 1.5rem;
+}
+
+.app-download-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--text-main);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.app-download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  background: #e2e8f0;
+}
+
+.app-download-container {
+  position: relative;
+  display: inline-block;
+}
+
+.qr-tooltip {
+  position: absolute;
+  top: calc(100% + 15px);
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: var(--text-main);
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+}
+
+.qr-tooltip::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent var(--text-main) transparent;
+}
+
+.qr-tooltip img {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.qr-tooltip span {
+  color: #000;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.app-download-container:hover .qr-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 .game-grid {
